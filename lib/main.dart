@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_crashcourse/screens/bottom_bar.dart';
 import 'package:flutter_crashcourse/screens/drawer_nav.dart';
 
 void main() {
