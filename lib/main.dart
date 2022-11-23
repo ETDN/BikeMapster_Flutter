@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_crashcourse/screens/drawer_nav.dart';
+import 'package:flutter_crashcourse/screens/landing_page.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    home: Home(),
+  runApp(new MaterialApp(
+    home: new SplashScreen(),
   ));
 }
 
@@ -23,6 +24,19 @@ class Home extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.white,
       ),
+
+      body: Container(
+          color: Colors.white,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/logo_white_no_bg.png',
+                  fit: BoxFit.contain,
+                ),
+              )
+            ],
+          )),
 
       // backgroundColor: Color.fromRGBO(23, 23, 23, 1),
       // body: Center(

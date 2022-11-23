@@ -80,14 +80,14 @@ class DrawerNav extends StatelessWidget {
         break;
       case 1:
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const LandingPage()));
+            MaterialPageRoute(builder: (context) => const AllRoutes()));
         break;
       case 2:
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const Favorites()));
         break;
       case 3:
-        Navigator.push(
+        Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const Settings()));
         break;
       default:
