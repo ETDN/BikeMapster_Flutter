@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class DrawerItem extends StatelessWidget {
   const DrawerItem(
@@ -28,11 +27,11 @@ class DrawerItem extends StatelessWidget {
                 color: Colors.white,
               ),
               SizedBox(
-                width: 40,
+                width: 30,
               ),
               Text(
                 name,
-                style: const TextStyle(fontSize: 20, color: Colors.white),
+                style: GoogleFonts.bebasNeue(fontSize: 17, color: Colors.white),
               )
             ],
           ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import 'drawer_nav.dart';
 
 class MapPage extends StatelessWidget {
@@ -12,10 +12,13 @@ class MapPage extends StatelessWidget {
     return Scaffold(
         drawer: const DrawerNav(),
         appBar: AppBar(
-          title: const Text('Maps',
-              style: TextStyle(
-                color: Color.fromRGBO(98, 156, 68, 1),
-              )),
+          title: Text(
+            'Map',
+            style: GoogleFonts.bebasNeue(
+                fontSize: 22,
+                fontWeight: FontWeight.w300,
+                color: Color.fromRGBO(98, 156, 68, 1)),
+          ),
           iconTheme: IconThemeData(color: Color.fromRGBO(98, 156, 68, 1)),
           centerTitle: true,
           backgroundColor: Colors.white,

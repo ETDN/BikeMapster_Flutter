@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_crashcourse/screens/all_routes.dart';
-
 import 'package:flutter_crashcourse/screens/drawer_item.dart';
 import 'package:flutter_crashcourse/screens/favorites.dart';
-import 'package:flutter_crashcourse/screens/landing_page.dart';
 import 'package:flutter_crashcourse/screens/map.dart';
 import 'package:flutter_crashcourse/screens/settings.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class DrawerNav extends StatelessWidget {
   const DrawerNav({Key? key}) : super(key: key);
@@ -101,14 +100,16 @@ class DrawerNav extends StatelessWidget {
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text('My account',
-                style: TextStyle(fontSize: 15, color: Colors.white)),
+          children: [
+            Text(
+              '[user name]',
+              style: GoogleFonts.bebasNeue(fontSize: 17, color: Colors.white),
+            ),
             SizedBox(
               height: 10,
             ),
-            Text('emilie@gmail.com',
-                style: TextStyle(fontSize: 14, color: Colors.white))
+            Text('[user email @ gmail]',
+                style: GoogleFonts.bebasNeue(fontSize: 14, color: Colors.white))
           ],
         )
       ],

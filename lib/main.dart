@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_crashcourse/screens/drawer_nav.dart';
 import 'package:flutter_crashcourse/screens/landing_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(new MaterialApp(
@@ -16,9 +17,12 @@ class Home extends StatelessWidget {
     return Scaffold(
       drawer: const DrawerNav(),
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Bike Mapster',
-          style: TextStyle(color: Color.fromRGBO(98, 156, 68, 1)),
+          style: GoogleFonts.bebasNeue(
+              fontSize: 22,
+              fontWeight: FontWeight.w300,
+              color: Color.fromRGBO(98, 156, 68, 1)),
         ),
         iconTheme: IconThemeData(color: Color.fromRGBO(98, 156, 68, 1)),
         centerTitle: true,

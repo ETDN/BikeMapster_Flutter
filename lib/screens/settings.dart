@@ -1,8 +1,7 @@
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import 'drawer_nav.dart';
-
 import 'package:flutter/material.dart';
 
 class Settings extends StatelessWidget {
@@ -13,9 +12,16 @@ class Settings extends StatelessWidget {
     return Scaffold(
       drawer: const DrawerNav(),
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(
+          'Settings',
+          style: GoogleFonts.bebasNeue(
+              fontSize: 22,
+              fontWeight: FontWeight.w300,
+              color: Color.fromRGBO(98, 156, 68, 1)),
+        ),
+        iconTheme: IconThemeData(color: Color.fromRGBO(98, 156, 68, 1)),
         centerTitle: true,
-        backgroundColor: Colors.lightGreen,
+        backgroundColor: Colors.white,
       ),
     );
   }
