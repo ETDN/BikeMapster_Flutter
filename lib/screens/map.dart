@@ -17,9 +17,9 @@ class MapPage extends StatelessWidget {
             style: GoogleFonts.bebasNeue(
                 fontSize: 22,
                 fontWeight: FontWeight.w300,
-                color: Color.fromRGBO(98, 156, 68, 1)),
+                color: Color.fromRGBO(0, 181, 107, 1)),
           ),
-          iconTheme: IconThemeData(color: Color.fromRGBO(98, 156, 68, 1)),
+          iconTheme: IconThemeData(color: Color.fromRGBO(0, 181, 107, 1)),
           centerTitle: true,
           backgroundColor: Colors.white,
         ),
@@ -31,7 +31,7 @@ class MapPage extends StatelessWidget {
           layers: [
             TileLayerOptions(
                 urlTemplate:
-                    "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg",
+                    "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg",
                 subdomains: ['a', 'b', 'c']),
             MarkerLayerOptions(
               markers: [

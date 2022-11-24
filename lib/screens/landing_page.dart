@@ -3,6 +3,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_crashcourse/main.dart';
 import 'package:flutter_crashcourse/screens/favorites.dart';
+import 'package:flutter_crashcourse/screens/login.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -14,10 +15,10 @@ class LandingPage extends State<SplashScreen> {
   void initState() {
     super.initState();
     new Future.delayed(
-        const Duration(seconds: 3),
+        const Duration(seconds: 2),
         () => Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => Home()),
+              MaterialPageRoute(builder: (context) => LoginPage()),
             ));
   }
 

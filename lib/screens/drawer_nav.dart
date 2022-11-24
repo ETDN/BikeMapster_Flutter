@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_crashcourse/screens/all_routes.dart';
 import 'package:flutter_crashcourse/screens/drawer_item.dart';
 import 'package:flutter_crashcourse/screens/favorites.dart';
+import 'package:flutter_crashcourse/screens/login.dart';
 import 'package:flutter_crashcourse/screens/map.dart';
 import 'package:flutter_crashcourse/screens/settings.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,7 +14,7 @@ class DrawerNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
         child: Material(
-            color: Color.fromRGBO(98, 156, 68, 1),
+            color: Color.fromRGBO(0, 181, 107, 1),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24.0, 80, 24, 0),
               child: Column(
@@ -25,7 +26,7 @@ class DrawerNav extends StatelessWidget {
                   const Divider(
                     thickness: 1,
                     height: 10,
-                    color: Colors.grey,
+                    color: Colors.white,
                   ),
                   const SizedBox(
                     height: 20,
@@ -48,7 +49,7 @@ class DrawerNav extends StatelessWidget {
                   const Divider(
                     thickness: 1,
                     height: 10,
-                    color: Colors.grey,
+                    color: Colors.white,
                   ),
                   const SizedBox(
                     height: 20,
@@ -88,6 +89,10 @@ class DrawerNav extends StatelessWidget {
       case 3:
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const Settings()));
+        break;
+      case 4:
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const LoginPage()));
         break;
       default:
         Navigator.pop(context);
