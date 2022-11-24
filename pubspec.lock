@@ -92,13 +92,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.4"
-  fluentui_icons:
-    dependency: "direct main"
-    description:
-      name: fluentui_icons
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
   firebase_core:
     dependency: "direct main"
     description:
@@ -120,6 +113,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  fluentui_icons:
+    dependency: "direct main"
+    description:
+      name: fluentui_icons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -158,6 +158,11 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "10.2.1"
+  flutter_web_plugins:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   google_fonts:
     dependency: "direct main"
     description:
@@ -186,6 +191,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.17.0"
+  js:
+    dependency: transitive
+    description:
+      name: js
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.4"
   latlong:
     dependency: transitive
     description:
