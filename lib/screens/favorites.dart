@@ -18,9 +18,9 @@ class Favorites extends StatelessWidget {
           style: GoogleFonts.bebasNeue(
               fontSize: 22,
               fontWeight: FontWeight.w300,
-              color: Color.fromRGBO(98, 156, 68, 1)),
+              color: Color.fromRGBO(0, 181, 107, 1)),
         ),
-        iconTheme: IconThemeData(color: Color.fromRGBO(98, 156, 68, 1)),
+        iconTheme: IconThemeData(color: Color.fromRGBO(0, 181, 107, 1)),
         centerTitle: true,
         backgroundColor: Colors.white,
       ),

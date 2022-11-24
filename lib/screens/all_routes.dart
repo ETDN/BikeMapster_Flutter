@@ -14,14 +14,14 @@ class AllRoutes extends StatelessWidget {
       drawer: const DrawerNav(),
       appBar: AppBar(
           centerTitle: true,
-          iconTheme: IconThemeData(color: Color.fromRGBO(98, 156, 68, 1)),
+          iconTheme: IconThemeData(color: Color.fromRGBO(0, 181, 107, 1)),
           backgroundColor: Colors.white,
           title: Text(
             'All Routes',
             style: GoogleFonts.bebasNeue(
                 fontSize: 22,
                 fontWeight: FontWeight.w300,
-                color: Color.fromRGBO(98, 156, 68, 1)),
+                color: Color.fromRGBO(0, 181, 107, 1)),
           )),
     );
   }
