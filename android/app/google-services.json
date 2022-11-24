@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "845016712863",
+    "project_id": "bikers-flutter",
+    "storage_bucket": "bikers-flutter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:845016712863:android:e801328fca8ce65bb704aa",
+        "android_client_info": {
+          "package_name": "com.example.flutter_roadmaps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "845016712863-gqkmt4s6ttcbji57cv1a0chilm847f9i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAO9ECFTV6yVl99PfmC-rCnbO7v0hn6ES0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "845016712863-gqkmt4s6ttcbji57cv1a0chilm847f9i.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "845016712863-r6hvlc9v7am03hsnppkq2frh3a9dv6gg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterRoadmaps"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
