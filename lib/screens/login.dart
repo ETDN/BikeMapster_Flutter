@@ -1,119 +1,185 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_crashcourse/screens/register.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_crashcourse/screens/all_routes.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  @override
+  _MyLoginState createState() => new _MyLoginState();
+}
 
+class _MyLoginState extends State<LoginPage> {
+  final formKey = new GlobalKey<FormState>();
+  late String email, password;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-      child: Container(
+      body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(color: Colors.white),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 80,
-            ),
-            Image.asset(
-              'assets/images/pin_logo.png',
-              height: 40,
-            ),
-            Text(
-              'Sign in',
-              textAlign: TextAlign.left,
-              style: GoogleFonts.bebasNeue(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w300,
-                  color: Color.fromRGBO(53, 66, 74, 1)),
-            ),
-            Text(
-              'Hi, nice to see you !',
-              textAlign: TextAlign.left,
-              style: GoogleFonts.bebasNeue(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w300,
-                  color: Color.fromRGBO(152, 158, 177, 1)),
-            ),
-            SizedBox(
-              height: 40,
-            ),
-            Container(
-              width: 270,
-              child: TextFormField(
-                style: GoogleFonts.bebasNeue(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w300,
-                    color: Color.fromRGBO(98, 156, 68, 1)),
-                decoration: const InputDecoration(
-                  hintText: 'email',
+        child: Form(
+          child: _buildLoginForm(),
+        ),
+      ),
+    );
+  }
+
+  _buildLoginForm() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 25.0, right: 25.0),
+      child: ListView(
+        children: [
+          SizedBox(height: 90.0),
+          Container(
+            height: 80.0,
+            width: 200.0,
+            child: Stack(
+              children: [
+                Text(
+                  'Login',
+                  style: GoogleFonts.bebasNeue(
+                      fontSize: 25,
+                      fontWeight: FontWeight.w300,
+                      color: Color.fromRGBO(53, 66, 74, 1)),
                 ),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                },
-              ),
-            ),
-            Container(
-              width: 270,
-              child: TextFormField(
-                style: GoogleFonts.bebasNeue(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w300,
-                    color: Color.fromRGBO(98, 156, 68, 1)),
-                decoration: const InputDecoration(
-                  hintText: 'password',
+                Positioned(
+                  top: 5.0,
+                  right: 20.0,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Image.asset(
+                        'assets/images/pin_logo.png',
+                        scale: 1.5,
+                      ),
+                    ],
+                  ),
                 ),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                },
-              ),
+                Positioned(
+                  top: 30.0,
+                  child: Text(
+                    'Hi, nice to see you again',
+                    style: GoogleFonts.bebasNeue(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w300,
+                        color: Color.fromRGBO(152, 158, 177, 1)),
+                  ),
+                ),
+              ],
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(20, 20, 50, 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'No accounts? Sign in',
+          ),
+          SizedBox(height: 25.0),
+          TextFormField(
+            style: GoogleFonts.bebasNeue(
+                fontSize: 15,
+                fontWeight: FontWeight.w300,
+                color: Color.fromRGBO(53, 66, 74, 1)),
+            decoration: const InputDecoration(
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color.fromRGBO(0, 181, 107, 1),
+                ),
+              ),
+              hintText: 'email',
+            ),
+            validator: (String? value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter some text';
+              }
+              return null;
+            },
+          ),
+          TextFormField(
+            style: GoogleFonts.bebasNeue(
+                fontSize: 15,
+                fontWeight: FontWeight.w300,
+                color: Color.fromRGBO(53, 66, 74, 1)),
+            decoration: const InputDecoration(
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color.fromRGBO(0, 181, 107, 1),
+                ),
+              ),
+              hintText: 'password',
+            ),
+            validator: (String? value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter some text';
+              }
+              return null;
+            },
+          ),
+          SizedBox(height: 5.0),
+          // GestureDetector(
+          //   onTap: () {
+          //     //To do.......
+          //   },
+          //   child: Container(
+          //     alignment: Alignment(1.0, 0.0),
+          //     padding: EdgeInsets.only(top: 15.0, left: 20.0),
+          //     child: InkWell(
+          //       child: Text(
+          //         'No account ? Sign in',
+          //         style: GoogleFonts.bebasNeue(
+          //             fontSize: 15,
+          //             fontWeight: FontWeight.w300,
+          //             color: Color.fromRGBO(117, 169, 249, 1),
+          //             decoration: TextDecoration.underline),
+          //       ),
+          //     ),
+          //   ),
+          // ),
+
+          RichText(
+              textAlign: TextAlign.right,
+              text: TextSpan(children: [
+                TextSpan(
                     style: GoogleFonts.bebasNeue(
                         fontSize: 15,
                         fontWeight: FontWeight.w300,
-                        color: Color.fromRGBO(117, 169, 249, 1)),
-                  ),
-                ],
-              ),
+                        color: Color.fromRGBO(117, 169, 249, 1),
+                        decoration: TextDecoration.underline),
+                    text: "No account ? Sign in",
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Register()));
+                      }),
+              ])),
+
+          SizedBox(
+            height: 20,
+          ),
+          ElevatedButton(
+            onPressed: () => onItemPressed(context, index: 0),
+            style: ElevatedButton.styleFrom(
+              fixedSize: const Size(20, 50),
+              primary: Color.fromRGBO(0, 181, 107, 1), // Background color
             ),
-            SizedBox(
-              height: 10,
+            child: Text(
+              'Login',
+              style: GoogleFonts.bebasNeue(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w300,
+                  color: Colors.white),
             ),
-            GestureDetector(
-              child: ElevatedButton(
-                  child: const Text('Login'),
-                  onPressed: () => onItemPressed(context, index: 0)),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Image.asset(
-              'assets/images/cyclists.jpg',
-              height: 200,
-            ),
-          ],
-        ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Image.asset(
+            'assets/images/cyclists.png',
+            height: 200,
+          ),
+        ],
       ),
-    ));
+    );
   }
 
   void onItemPressed(BuildContext context, {required int index}) {
