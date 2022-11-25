@@ -4,6 +4,7 @@ import 'package:flutter_crashcourse/screens/drawer_item.dart';
 import 'package:flutter_crashcourse/screens/favorites.dart';
 import 'package:flutter_crashcourse/screens/login.dart';
 import 'package:flutter_crashcourse/screens/map.dart';
+import 'package:flutter_crashcourse/screens/register.dart';
 import 'package:flutter_crashcourse/screens/settings.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -88,11 +89,11 @@ class DrawerNav extends StatelessWidget {
         break;
       case 3:
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => const Settings()));
+            context, MaterialPageRoute(builder: (context) => Register()));
         break;
       case 4:
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const LoginPage()));
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => LoginPage()));
         break;
       default:
         Navigator.pop(context);
