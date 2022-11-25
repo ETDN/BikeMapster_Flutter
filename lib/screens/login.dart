@@ -41,9 +41,10 @@ class LoginPage extends StatelessWidget {
                   fontWeight: FontWeight.w300,
                   color: Color.fromRGBO(152, 158, 177, 1)),
             ),
-            SizedBox(
+            //Commented out by Pinto for testing
+            /*SizedBox(
               height: 40,
-            ),
+            ),*/
             Container(
               width: 270,
               child: TextFormField(
