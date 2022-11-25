@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:845016712863:android:e801328fca8ce65bb704aa",
         "android_client_info": {
-          "package_name": "com.example.flutter_roadmaps"
+          "package_name": "ch.hevs.bikemapster"
         }
       },
       "oauth_client": [
