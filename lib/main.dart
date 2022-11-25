@@ -2,9 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_crashcourse/screens/drawer_nav.dart';
 import 'package:flutter_crashcourse/screens/landing_page.dart';
-import 'package:flutter_crashcourse/screens/login.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
