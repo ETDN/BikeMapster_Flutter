@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'drawer_nav.dart';
+import 'navbar/drawer_nav.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});

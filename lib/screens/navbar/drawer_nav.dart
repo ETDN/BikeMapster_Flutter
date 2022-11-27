@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_crashcourse/screens/all_routes.dart';
-import 'package:flutter_crashcourse/screens/drawer_item.dart';
+import 'package:flutter_crashcourse/screens/navbar/drawer_item.dart';
 import 'package:flutter_crashcourse/screens/favorites.dart';
 import 'package:flutter_crashcourse/screens/login.dart';
 import 'package:flutter_crashcourse/screens/map.dart';
@@ -80,8 +80,8 @@ class DrawerNav extends StatelessWidget {
             context, MaterialPageRoute(builder: (context) => const MapPage()));
         break;
       case 1:
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const AllRoutes()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => AllRoutes()));
         break;
       case 2:
         Navigator.push(context,
