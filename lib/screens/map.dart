@@ -18,7 +18,14 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.green,
+          title: Text(
+            'Map',
+            style: GoogleFonts.bebasNeue(
+                fontSize: 22,
+                fontWeight: FontWeight.w300,
+                color: Color.fromRGBO(53, 66, 74, 1)),
+          ),
+          iconTheme: IconThemeData(color: Color.fromRGBO(53, 66, 74, 1)),
           centerTitle: true,
           title: Text('Bike Mapster'),
         ),
