@@ -49,20 +49,41 @@ class _AllRouteState extends State<AllRoutes> {
                     // delegate to customize the search bar
                     delegate: CustomSearchDelegate());
               },
-              icon: const Icon(Icons.filter_list),
-            ),
-            IconButton(
-              onPressed: () {
-                // method to show the search bar
-                showSearch(
-                    context: context,
-                    // delegate to customize the search bar
-                    delegate: CustomSearchDelegate());
-              },
               icon: const Icon(Icons.search),
             ),
+            Padding(
+              padding: EdgeInsets.only(right: 10),
+
+              //Dropdown filter
+              child: PopupMenuButton(
+                  itemBuilder: (context) => [
+                        PopupMenuItem(
+                            child: Row(children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Text('Distance'),
+                          ),
+                        ])),
+                        PopupMenuItem(
+                            child: Row(children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Text('Duration'),
+                          ),
+                        ])),
+                        PopupMenuItem(
+                            child: Row(children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Text('Elevation'),
+                          ),
+                        ]))
+                      ]),
+            )
           ],
         ),
+
+        //List of routes
         body: ListView(
           padding: const EdgeInsets.all(8),
           children: <Widget>[
@@ -86,7 +107,7 @@ class _AllRouteState extends State<AllRoutes> {
                   icon: (_isFavorited
                       ? const Icon(Icons.favorite)
                       : const Icon(Icons.favorite_border)),
-                  color: Color.fromRGBO(139, 0, 0, 1),
+                  color: Color.fromRGBO(0, 181, 107, 1),
                   onPressed: (_toggleFavorite),
                 )),
             ListTile(
@@ -109,7 +130,7 @@ class _AllRouteState extends State<AllRoutes> {
                   icon: (_isFavorited
                       ? const Icon(Icons.favorite)
                       : const Icon(Icons.favorite_border)),
-                  color: Color.fromRGBO(139, 0, 0, 1),
+                  color: Color.fromRGBO(0, 181, 107, 1),
                   onPressed: (_toggleFavorite),
                 )),
             ListTile(
@@ -132,7 +153,7 @@ class _AllRouteState extends State<AllRoutes> {
                   icon: (_isFavorited
                       ? const Icon(Icons.favorite)
                       : const Icon(Icons.favorite_border)),
-                  color: Color.fromRGBO(139, 0, 0, 1),
+                  color: Color.fromRGBO(0, 181, 107, 1),
                   onPressed: (_toggleFavorite),
                 )),
             ListTile(
@@ -155,13 +176,32 @@ class _AllRouteState extends State<AllRoutes> {
                   icon: (_isFavorited
                       ? const Icon(Icons.favorite)
                       : const Icon(Icons.favorite_border)),
-                  color: Color.fromRGBO(139, 0, 0, 1),
+                  color: Color.fromRGBO(0, 181, 107, 1),
                   onPressed: (_toggleFavorite),
-                ))
+                )),
+            Padding(padding: EdgeInsets.all(60)),
+
+            //Add a new route button
+
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: Color.fromRGBO(0, 181, 107, 1),
+              child: IconButton(
+                icon: Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  //do something...
+                },
+              ),
+            ),
           ],
         ));
   }
 }
+
+//Search by city method empty
 
 class CustomSearchDelegate extends SearchDelegate {
   List<String> nameCity = [];

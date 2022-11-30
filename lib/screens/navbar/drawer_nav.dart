@@ -14,61 +14,71 @@ class DrawerNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-        child: Material(
-            color: Color.fromRGBO(0, 181, 107, 1),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24.0, 80, 24, 0),
-              child: Column(
-                children: [
-                  headerWidget(),
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  const Divider(
-                    thickness: 1,
-                    height: 10,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  DrawerItem(
-                      name: 'Maps',
-                      icon: Icons.map,
-                      onPressed: () => onItemPressed(context, index: 0)),
-                  DrawerItem(
-                      name: 'All routes',
-                      icon: Icons.electric_bike,
-                      onPressed: () => onItemPressed(context, index: 1)),
-                  DrawerItem(
-                      name: 'Favorites',
-                      icon: Icons.favorite,
-                      onPressed: () => onItemPressed(context, index: 2)),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Divider(
-                    thickness: 1,
-                    height: 10,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  DrawerItem(
-                      name: 'Settings',
-                      icon: Icons.settings,
-                      onPressed: () => onItemPressed(context, index: 3)),
-                  DrawerItem(
-                      name: 'Logout',
-                      icon: Icons.logout,
-                      onPressed: () => onItemPressed(context, index: 4)),
-                  const SizedBox(
-                    height: 30,
-                  )
-                ],
+      child: ListView(
+        children: [
+          DrawerHeader(
+            child: Image.asset("assets/images/logo_white_no_bg.png"),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              image: DecorationImage(
+                image: NetworkImage(
+                    "https://images.unsplash.com/photo-1534787238916-9ba6764efd4f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1331&q=80"),
+                fit: BoxFit.fill,
               ),
-            )));
+            ),
+          ),
+          ListTile(
+              title: Text(
+                'Maps',
+                style: GoogleFonts.bebasNeue(
+                    fontSize: 17, color: Color.fromRGBO(53, 66, 74, 1)),
+              ),
+              leading: Icon(Icons.map, color: Color.fromRGBO(0, 181, 107, 1)),
+              onTap: () => onItemPressed(context, index: 0)),
+          ListTile(
+              title: Text(
+                'All routes',
+                style: GoogleFonts.bebasNeue(
+                    fontSize: 17, color: Color.fromRGBO(53, 66, 74, 1)),
+              ),
+              leading: Icon(Icons.electric_bike,
+                  color: Color.fromRGBO(0, 181, 107, 1)),
+              onTap: () => onItemPressed(context, index: 1)),
+          ListTile(
+              title: Text(
+                'Favorites',
+                style: GoogleFonts.bebasNeue(
+                    fontSize: 17, color: Color.fromRGBO(53, 66, 74, 1)),
+              ),
+              leading:
+                  Icon(Icons.favorite, color: Color.fromRGBO(0, 181, 107, 1)),
+              onTap: () => onItemPressed(context, index: 2)),
+          ListTile(
+              title: Text(
+                'Settings',
+                style: GoogleFonts.bebasNeue(
+                    fontSize: 17, color: Color.fromRGBO(53, 66, 74, 1)),
+              ),
+              leading:
+                  Icon(Icons.settings, color: Color.fromRGBO(0, 181, 107, 1)),
+              onTap: () => onItemPressed(context, index: 3)),
+          ListTile(
+              title: Text(
+                'Logout',
+                style: GoogleFonts.bebasNeue(
+                    fontSize: 17, color: Color.fromRGBO(53, 66, 74, 1)),
+              ),
+              leading: Icon(
+                Icons.logout,
+                color: Color.fromRGBO(0, 181, 107, 1),
+              ),
+              onTap: () => onItemPressed(context, index: 4)),
+          const SizedBox(
+            height: 30,
+          )
+        ],
+      ),
+    );
   }
 
   void onItemPressed(BuildContext context, {required int index}) {
@@ -99,26 +109,5 @@ class DrawerNav extends StatelessWidget {
         Navigator.pop(context);
         break;
     }
-  }
-
-  Widget headerWidget() {
-    return Row(
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '[user name]',
-              style: GoogleFonts.bebasNeue(fontSize: 17, color: Colors.white),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Text('[user email @ gmail]',
-                style: GoogleFonts.bebasNeue(fontSize: 14, color: Colors.white))
-          ],
-        )
-      ],
-    );
   }
 }
