@@ -18,6 +18,7 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const DrawerNav(),
       appBar: AppBar(
         title: Text(
           'Map',
@@ -28,6 +29,7 @@ class _MapPageState extends State<MapPage> {
         ),
         iconTheme: IconThemeData(color: Color.fromRGBO(53, 66, 74, 1)),
         centerTitle: true,
+        backgroundColor: Colors.white,
       ),
       body: Center(
         child: Container(
