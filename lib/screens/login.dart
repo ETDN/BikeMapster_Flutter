@@ -48,10 +48,9 @@ class _MyLoginState extends State<LoginPage> {
                   fontWeight: FontWeight.w300,
                   color: Color.fromRGBO(152, 158, 177, 1)),
             ),
-            //Commented out by Pinto for testing
-            /*SizedBox(
+            SizedBox(
               height: 40,
-            ),*/
+            ),
             Container(
               width: 270,
               child: TextFormField(
