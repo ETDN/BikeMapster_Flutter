@@ -39,17 +39,22 @@ class _MapPageState extends State<MapPage> {
           child: FlutterMap(
             options: MapOptions(
               center: LatLng(46.2293518, 7.3620487),
-              zoom: 13.0,
+              zoom: 10.0,
               onTap: (tapPosition, point) => _handleTap(point),
             ),
             children: [
               TileLayer(
                 urlTemplate:
-                    "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg",
+                    "https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg",
               ),
               MarkerLayer(
                 markers: myMarkers,
               ),
+              // FloatingActionButton(
+              //   onPressed: _changeMapType,
+              //   backgroundColor: Colors.amber,
+              //   child: const Icon(Icons.map, size: 30.0),
+              // )
             ],
           ),
           //     ),
@@ -73,6 +78,12 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
+  // _changeMapType() {
+  //   setState(() {
+  //     // _currentMapType = _currentMapType == MapType.
+  //   });
+  // }
+
   _handleTap(LatLng tappedPoint) {
     setState(() {
       // myMarkers = [];
@@ -92,6 +103,7 @@ class _MapPageState extends State<MapPage> {
             key: Key(tappedPoint.toString()),
           ),
         );
+        print(tappedPoint.toString());
       }
       if (currentIndex == 1) {
         if (myMarkers.length > 1) {
