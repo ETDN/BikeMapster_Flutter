@@ -18,43 +18,42 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Map',
-            style: GoogleFonts.bebasNeue(
-                fontSize: 22,
-                fontWeight: FontWeight.w300,
-                color: Color.fromRGBO(53, 66, 74, 1)),
-          ),
-          iconTheme: IconThemeData(color: Color.fromRGBO(53, 66, 74, 1)),
-          centerTitle: true,
+      appBar: AppBar(
+        title: Text(
+          'Map',
+          style: GoogleFonts.bebasNeue(
+              fontSize: 22,
+              fontWeight: FontWeight.w300,
+              color: Color.fromRGBO(53, 66, 74, 1)),
         ),
-        body: Center(
-          child: Container(
-            // child: Column(
-            //   children: [
-            //     Flexible(
-            child: FlutterMap(
-              options: MapOptions(
-                center: LatLng(46.2293518, 7.3620487),
-                zoom: 13.0,
-                onTap: (tapPosition, point) => _handleTap(point),
-              ),
-              children: [
-                TileLayer(
-                  urlTemplate:
-                      "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg",
-                ),
-                MarkerLayer(
-                  markers: myMarkers,
-                ),
-              ],
+        iconTheme: IconThemeData(color: Color.fromRGBO(53, 66, 74, 1)),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Container(
+          // child: Column(
+          //   children: [
+          //     Flexible(
+          child: FlutterMap(
+            options: MapOptions(
+              center: LatLng(46.2293518, 7.3620487),
+              zoom: 13.0,
+              onTap: (tapPosition, point) => _handleTap(point),
             ),
-            //     ),
-            //   ],
-            // ),
+            children: [
+              TileLayer(
+                urlTemplate:
+                    "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg",
+              ),
+              MarkerLayer(
+                markers: myMarkers,
+              ),
+            ],
           ),
-        ],
+          //     ),
+          //   ],
+          // ),
+        ),
       ),
     );
   }
