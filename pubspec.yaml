@@ -41,7 +41,6 @@ dependencies:
   fluentui_icons: ^1.0.0
   flutter_map: ^3.0.0
   font_awesome_flutter: ^10.2.1
-  firebase_core: ^2.3.0
   flutter_ui_box: ^0.0.9
   url_launcher: ^6.1.7
   favorite_button: ^0.0.4

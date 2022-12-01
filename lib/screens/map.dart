@@ -45,7 +45,7 @@ class _MapPageState extends State<MapPage> {
             children: [
               TileLayer(
                 urlTemplate:
-                    "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg",
+                    "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg",
               ),
               MarkerLayer(
                 markers: myMarkers,
@@ -57,6 +57,19 @@ class _MapPageState extends State<MapPage> {
           // ),
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: (index) => setState(() => currentIndex = index),
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.location_on),
+              label: 'Starting point',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.my_location_outlined),
+              label: 'Destination',
+            ),
+          ]),
     );
   }
 
