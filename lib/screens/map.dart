@@ -13,6 +13,7 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   List<Marker> myMarkers = [];
+  var currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,6 @@ class _MapPageState extends State<MapPage> {
           ),
           iconTheme: IconThemeData(color: Color.fromRGBO(53, 66, 74, 1)),
           centerTitle: true,
-          title: Text('Bike Mapster'),
         ),
         body: Center(
           child: Container(
@@ -54,23 +54,48 @@ class _MapPageState extends State<MapPage> {
             //   ],
             // ),
           ),
-        ));
+        ],
+      ),
+    );
   }
 
   _handleTap(LatLng tappedPoint) {
     setState(() {
-      myMarkers = [];
-      myMarkers.add(
-        Marker(
-          point: tappedPoint,
-          builder: (context) => Icon(
-            Icons.location_on_sharp,
-            color: Colors.green,
-            size: 50,
+      // myMarkers = [];
+      if (currentIndex == 0) {
+        if (myMarkers.length > 0) {
+          myMarkers.removeAt(currentIndex);
+        }
+        myMarkers.insert(
+          currentIndex,
+          Marker(
+            point: tappedPoint,
+            builder: (context) => Icon(
+              Icons.location_on_sharp,
+              color: Colors.redAccent,
+              size: 50,
+            ),
+            key: Key(tappedPoint.toString()),
           ),
-          key: Key(tappedPoint.toString()),
-        ),
-      );
+        );
+      }
+      if (currentIndex == 1) {
+        if (myMarkers.length > 1) {
+          myMarkers.removeAt(currentIndex);
+        }
+        myMarkers.insert(
+          currentIndex,
+          Marker(
+            point: tappedPoint,
+            builder: (context) => Icon(
+              Icons.my_location_sharp,
+              color: Colors.redAccent,
+              size: 50,
+            ),
+            key: Key(tappedPoint.toString()),
+          ),
+        );
+      }
     });
   }
 }
