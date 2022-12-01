@@ -24,14 +24,15 @@ class DrawerItem extends StatelessWidget {
               Icon(
                 icon,
                 size: 20,
-                color: Colors.white,
+                color: Color.fromRGBO(0, 181, 107, 1),
               ),
               SizedBox(
                 width: 30,
               ),
               Text(
                 name,
-                style: GoogleFonts.bebasNeue(fontSize: 17, color: Colors.white),
+                style: GoogleFonts.bebasNeue(
+                    fontSize: 18, color: Color.fromRGBO(0, 181, 107, 1)),
               )
             ],
           ),

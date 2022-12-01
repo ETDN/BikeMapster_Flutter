@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'drawer_nav.dart';
+import 'navbar/drawer_nav.dart';
 
 class MapPage extends StatelessWidget {
   const MapPage({super.key});
@@ -17,9 +17,9 @@ class MapPage extends StatelessWidget {
             style: GoogleFonts.bebasNeue(
                 fontSize: 22,
                 fontWeight: FontWeight.w300,
-                color: Color.fromRGBO(0, 181, 107, 1)),
+                color: Color.fromRGBO(53, 66, 74, 1)),
           ),
-          iconTheme: IconThemeData(color: Color.fromRGBO(0, 181, 107, 1)),
+          iconTheme: IconThemeData(color: Color.fromRGBO(53, 66, 74, 1)),
           centerTitle: true,
           backgroundColor: Colors.white,
         ),
