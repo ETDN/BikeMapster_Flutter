@@ -45,6 +45,7 @@ dependencies:
   url_launcher: ^6.1.7
   mockito: ^5.0.15
   favorite_button: ^0.0.4
+  cloud_firestore: ^4.1.0
 
 dev_dependencies:
   flutter_test:
