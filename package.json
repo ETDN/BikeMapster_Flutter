@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "leaflet-tilelayer-swiss": "^2.3.0"
+  }
+}
