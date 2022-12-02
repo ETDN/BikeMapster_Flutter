@@ -44,11 +44,16 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_core: ^2.3.0
   fluentui_icons: ^1.0.0
-  flutter_map: ^0.12.0
+  flutter_map: ^3.0.0
   font_awesome_flutter: ^10.2.1
   flutter_ui_box: ^0.0.9
   url_launcher: ^6.1.7
   favorite_button: ^0.0.4
+  mockito: ^5.0.15
+  cloud_firestore: ^4.1.0
+  routing_client_dart: ^0.3.1
+  http: ^0.13.5
+  http_requests: ^2.6.0
   cloud_firestore: ^4.1.0
   firebase_auth: ^4.1.3
 
