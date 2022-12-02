@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -11,7 +13,16 @@ class Register extends StatefulWidget {
 
 class _MyRegisterState extends State<Register> {
   final formKey = new GlobalKey<FormState>();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   late String email, password;
+
+  @override
+  void dispose() {
+    super.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +83,7 @@ class _MyRegisterState extends State<Register> {
           ),
           SizedBox(height: 25.0),
           TextFormField(
+            controller: emailController,
             style: GoogleFonts.bebasNeue(
                 fontSize: 15,
                 fontWeight: FontWeight.w300,
@@ -92,6 +104,7 @@ class _MyRegisterState extends State<Register> {
             },
           ),
           TextFormField(
+            controller: passwordController,
             style: GoogleFonts.bebasNeue(
                 fontSize: 15,
                 fontWeight: FontWeight.w300,
@@ -104,12 +117,11 @@ class _MyRegisterState extends State<Register> {
               ),
               hintText: 'password',
             ),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter some text';
-              }
-              return null;
-            },
+            obscureText: true, //Hide input text
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            validator: (value) => value != null && value.length < 6
+                ? 'Password must have min. 6 characters'
+                : null,
           ),
           SizedBox(height: 5.0),
           SizedBox(
@@ -117,7 +129,7 @@ class _MyRegisterState extends State<Register> {
           ),
           GestureDetector(
             child: ElevatedButton(
-              onPressed: () => onItemPressed(context, index: 0),
+              onPressed: signUp,
               style: ElevatedButton.styleFrom(
                 fixedSize: const Size(20, 50),
                 primary: Color.fromRGBO(0, 181, 107, 1), // Background color
@@ -151,6 +163,32 @@ class _MyRegisterState extends State<Register> {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const AllRoutes()));
         break;
+    }
+  }
+
+  Future signUp() async {
+    debugPrint(emailController.text.trim());
+    debugPrint(passwordController.text.trim());
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+      onItemPressed(context, index: 0);
+
+      //Store it in firebase
+      final docUser = FirebaseFirestore.instance
+          .collection("Bikers")
+          .doc(FirebaseAuth.instance.currentUser?.uid);
+      final json = {
+        "email": emailController.text.trim(),
+        "isAdmin": false,
+      };
+
+      await docUser.set(json);
+    } on FirebaseAuthException catch (e) {
+      debugPrint(e.message);
+      print(e);
     }
   }
 }

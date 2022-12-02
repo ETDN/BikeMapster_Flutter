@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_crashcourse/screens/all_routes.dart';
 import 'package:flutter_crashcourse/screens/navbar/drawer_item.dart';
@@ -72,7 +73,10 @@ class DrawerNav extends StatelessWidget {
                 Icons.logout,
                 color: Color.fromRGBO(0, 181, 107, 1),
               ),
-              onTap: () => onItemPressed(context, index: 4)),
+              onTap: () {
+                FirebaseAuth.instance.signOut();
+                onItemPressed(context, index: 4);
+              }),
           const SizedBox(
             height: 30,
           )
