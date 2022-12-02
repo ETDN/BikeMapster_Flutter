@@ -1,8 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_crashcourse/screens/Utils.dart';
 import 'package:flutter_crashcourse/screens/navbar/drawer_nav.dart';
 import 'package:flutter_crashcourse/screens/landing_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'screens/Utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

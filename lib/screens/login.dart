@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,16 @@ class LoginPage extends StatefulWidget {
 
 class _MyLoginState extends State<LoginPage> {
   final formKey = new GlobalKey<FormState>();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+  }
+
   late String email, password;
   @override
   Widget build(BuildContext context) {
@@ -74,6 +86,7 @@ class _MyLoginState extends State<LoginPage> {
           ),
           SizedBox(height: 25.0),
           TextFormField(
+            controller: emailController,
             style: GoogleFonts.bebasNeue(
                 fontSize: 15,
                 fontWeight: FontWeight.w300,
@@ -94,6 +107,7 @@ class _MyLoginState extends State<LoginPage> {
             },
           ),
           TextFormField(
+            controller: passwordController,
             style: GoogleFonts.bebasNeue(
                 fontSize: 15,
                 fontWeight: FontWeight.w300,
@@ -106,6 +120,7 @@ class _MyLoginState extends State<LoginPage> {
               ),
               hintText: 'password',
             ),
+            obscureText: true, //Hide input text
             validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter some text';
@@ -157,7 +172,7 @@ class _MyLoginState extends State<LoginPage> {
             height: 20,
           ),
           ElevatedButton(
-            onPressed: () => onItemPressed(context, index: 0),
+            onPressed: signIn,
             style: ElevatedButton.styleFrom(
               fixedSize: const Size(20, 50),
               primary: Color.fromRGBO(0, 181, 107, 1), // Background color
@@ -190,6 +205,22 @@ class _MyLoginState extends State<LoginPage> {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const AllRoutes()));
         break;
+    }
+  }
+
+  //Sign in Method and open the All routes page
+  Future signIn() async {
+    debugPrint(emailController.text.trim());
+    debugPrint(passwordController.text.trim());
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+      onItemPressed(context, index: 0);
+    } on FirebaseAuthException catch (e) {
+      debugPrint(e.message);
+      print(e);
     }
   }
 }
