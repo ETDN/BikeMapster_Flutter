@@ -20,17 +20,7 @@ class AllRoutes extends StatefulWidget {
 class _AllRouteState extends State<AllRoutes> {
   bool _isFavorited = false;
 
-  void _toggleFavorite() {
-    /* setState(() {
-      if (_isFavorited) {
-        _isFavorited = false;
-      } else {
-        _isFavorited = true;
-      }
-    });*/
-    //not set state, change a value in the database
-    //setState will reload from the database, try avoid it
-  }
+  void _toggleFavorite() {}
 
   @override
   Widget build(BuildContext context) {
