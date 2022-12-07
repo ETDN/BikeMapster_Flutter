@@ -20,13 +20,12 @@ class NetworkHelper {
   final double endLat;
 
   Future getData() async {
-    print("Do I pass here ??");
     http.Response response = await http.get(Uri.parse(
         '$url$pathParam?api_key=$apiKey&start=$startLng,$startLat&end=$endLng,$endLat'));
     // Response response = await HttpRequests.get(
     //     '$url$pathParam?api_key=$apiKey&start=$startLng,$startLat&end=$endLng,$endLat');
-    print("HI there");
-    print(response.body);
+    // print("HI from networkHelper_map.dart");
+    // print(response.body);
     if (response.statusCode == 200) {
       var data = response.body;
       return jsonDecode(data);

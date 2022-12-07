@@ -49,6 +49,9 @@ dependencies:
   routing_client_dart: ^0.3.1
   http: ^0.13.5
   http_requests: ^2.6.0
+  flutter_speed_dial: ^6.2.0
+  fluttertoast: ^8.1.1
+  sliding_up_panel2: ^3.2.2
 
 dev_dependencies:
   flutter_test:
