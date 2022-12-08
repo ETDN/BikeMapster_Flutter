@@ -53,84 +53,58 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
         backgroundColor: Colors.white,
         centerTitle: true,
       ),
-      body: SlidingUpPanel(
-        controller:
-            panelController, //used for managing onTap method to control sliding up
-        maxHeight: panelHeightOpen,
-        minHeight: panelHeightClosed,
-        //for making the map following (moving) when sliding up or down
-        parallaxEnabled: true,
-        parallaxOffset: 0.2,
-        panelBuilder: () => PanelWidget(
-          panelController: panelController,
-          roadInfo: roadInfo,
-        ),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
-        body: Center(
-          child: Container(
-            child: FlutterMap(
-              options: MapOptions(
-                center: mapCenterPosition,
-                zoom: 10.0,
-                onTap: (tapPosition, point) => _handleTap(point),
+      body: Stack(alignment: Alignment.topCenter, children: <Widget>[
+        SlidingUpPanel(
+          controller:
+              panelController, //used for managing onTap method to control sliding up
+          maxHeight: panelHeightOpen,
+          minHeight: panelHeightClosed,
+          //for making the map following (moving) when sliding up or down
+          parallaxEnabled: true,
+          parallaxOffset: 0.4,
+          panelBuilder: () => PanelWidget(
+            panelController: panelController,
+            roadInfo: roadInfo,
+          ),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+          body: Center(
+            child: Container(
+              child: FlutterMap(
+                options: MapOptions(
+                  center: mapCenterPosition,
+                  zoom: 10.0,
+                  onTap: (tapPosition, point) => _handleTap(point),
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        "https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg",
+                  ),
+                  MarkerLayer(
+                    markers: myMarkers,
+                  ),
+                  PolylineLayer(
+                    polylineCulling: false,
+                    polylines: [
+                      Polyline(
+                          points: polyPoints,
+                          color: Colors.grey,
+                          borderColor: Colors.deepPurpleAccent,
+                          borderStrokeWidth: 4.0,
+                          strokeCap: StrokeCap.round),
+                    ], //polylines
+                  ),
+                ],
               ),
-              children: [
-                TileLayer(
-                  urlTemplate:
-                      "https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg",
-                ),
-                MarkerLayer(
-                  markers: myMarkers,
-                ),
-                PolylineLayer(
-                  polylineCulling: false,
-                  polylines: [
-                    Polyline(
-                        points: polyPoints,
-                        color: Colors.grey,
-                        borderColor: Colors.deepPurpleAccent,
-                        borderStrokeWidth: 4.0,
-                        strokeCap: StrokeCap.round),
-                  ], //polylines
-                ),
-              ],
             ),
           ),
         ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
-      floatingActionButton: SpeedDial(
-        overlayOpacity: 0.5,
-        renderOverlay: false,
-        // animatedIcon: AnimatedIcons.menu_close,
-        icon: Icons.location_on,
-        activeIcon: Icons.close_rounded,
-        backgroundColor: Color.fromRGBO(0, 181, 107, 1),
-        direction: SpeedDialDirection.down,
-        buttonSize: Size(60.0, 60.0),
-        closeManually: true,
-        onClose: () {
-          currentIndex = null;
-        },
-        children: [
-          SpeedDialChild(
-            child: Icon(Icons.location_pin),
-            label: 'Starting point',
-            backgroundColor: Color.fromRGBO(0, 181, 107, 1),
-            onTap: () {
-              currentIndex = 0;
-            },
-          ),
-          SpeedDialChild(
-            child: Icon(Icons.my_location_sharp),
-            label: 'Destination',
-            backgroundColor: Colors.redAccent,
-            onTap: () {
-              currentIndex = 1;
-            },
-          ),
-        ],
-      ),
+        Positioned(
+          right: 10,
+          top: 10,
+          child: buildStartDestButton(),
+        )
+      ]),
     );
   }
 
@@ -142,6 +116,9 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
 
   _handleTap(LatLng tappedPoint) {
     if (currentIndex == null) {
+      if (panelController.isPanelOpen) {
+        panelController.close();
+      }
       return;
     }
     setState(() {
@@ -211,7 +188,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
         steps: true,
         languageCode: "en");
 
-    // print("${roadInfo.distance}km");
+    print(roadInfo.toString());
   }
 
   /*largely inspired by Arafat Rohan's method, founded here: 
@@ -253,6 +230,39 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
       print(e);
     }
   }
+
+  buildStartDestButton() => SpeedDial(
+        overlayOpacity: 0.5,
+        renderOverlay: false,
+        // animatedIcon: AnimatedIcons.menu_close,
+        icon: Icons.location_on,
+        activeIcon: Icons.close_rounded,
+        backgroundColor: Color.fromRGBO(0, 181, 107, 1),
+        direction: SpeedDialDirection.down,
+        buttonSize: Size(50.0, 50.0),
+        closeManually: true,
+        onClose: () {
+          currentIndex = null;
+        },
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.location_pin),
+            label: 'Starting point',
+            backgroundColor: Color.fromRGBO(0, 181, 107, 1),
+            onTap: () {
+              currentIndex = 0;
+            },
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.my_location_sharp),
+            label: 'Destination',
+            backgroundColor: Colors.redAccent,
+            onTap: () {
+              currentIndex = 1;
+            },
+          ),
+        ],
+      );
 }
 
 //Create a new class to hold the Co-ordinates we have received from the response data

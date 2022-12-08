@@ -12,8 +12,8 @@ class PanelWidget extends StatelessWidget {
   final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
     foregroundColor: Colors.black87, backgroundColor: Colors.green[300],
     // minimumSize: Size(88, 36),
-    maximumSize: Size(65, 40),
-    padding: EdgeInsets.symmetric(horizontal: 16),
+    maximumSize: Size(90, 40),
+    padding: EdgeInsets.symmetric(horizontal: 10),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(7)),
     ),
@@ -36,14 +36,7 @@ class PanelWidget extends StatelessWidget {
             ),
           ),
           SizedBox(height: 36),
-          roadInfo != null
-              ? showwidget(roadInfo.distance, roadInfo.duration)
-              : noData(),
-          ElevatedButton(
-            onPressed: () {},
-            child: Text("Save the route"),
-            style: raisedButtonStyle,
-          )
+          roadInfo != null ? showwidget(roadInfo) : noData(),
         ],
       );
 
@@ -54,18 +47,23 @@ class PanelWidget extends StatelessWidget {
         ),
       );
 
-  Widget showwidget(double dist, double dura) => Container(
+  Widget showwidget(dynamic roadInfo) => Container(
       padding: EdgeInsets.symmetric(horizontal: 30),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            "Distance : ${dist} km",
+            "Distance : ${roadInfo.distance} km",
           ),
           SizedBox(height: 10),
           Text(
-            "Estimated duration : ${dura / 60} min",
+            "Estimated duration : ${roadInfo.duration / 60} min",
           ),
+          ElevatedButton(
+            onPressed: () => saveRoute(roadInfo),
+            child: Text("Save the route", textAlign: TextAlign.center),
+            style: raisedButtonStyle,
+          )
         ],
       ));
 
@@ -86,5 +84,11 @@ class PanelWidget extends StatelessWidget {
     panelController.isPanelOpen
         ? panelController.close()
         : panelController.open();
+  }
+
+  saveRoute(dynamic roadInfo) {
+    var road = roadInfo;
+
+    print(roadInfo.location);
   }
 }
