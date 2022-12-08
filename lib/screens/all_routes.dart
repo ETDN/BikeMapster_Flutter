@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,15 +19,55 @@ class AllRoutes extends StatefulWidget {
 }
 
 class _AllRouteState extends State<AllRoutes> {
-  bool _isFavorited = false;
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
-  void _toggleFavorite() {}
+  //add the route to the favorites of the Biker
+  void _toggleFavorite(String routeID) {
+    //get the biker currently logged in
+    final User user = auth.currentUser!;
+    final uid = user.uid;
+
+    //get the user from firebase with id
+    DocumentReference biker_ref =
+        FirebaseFirestore.instance.collection("Bikers").doc(uid);
+
+    //check if the route is already in the favorites and if favorites does exist
+    biker_ref.get().then((value) {
+      try {
+        if (value.get('favorites').contains(routeID)) {
+          //remove the route from the favorites
+          biker_ref.update({
+            'favorites': FieldValue.arrayRemove([routeID])
+          });
+        } else {
+          //add the route to the favorites
+          biker_ref.update({
+            'favorites': FieldValue.arrayUnion([routeID])
+          });
+        }
+      } catch (e) {
+        //create the favorites array and add the route to it
+        biker_ref.update({
+          'favorites': FieldValue.arrayUnion([routeID])
+        });
+      }
+      //get firestore notification that changes have been made
+      biker_ref.snapshots().listen((event) {
+        setState(() {});
+      });
+    });
+  }
 
   @override
-  Widget build(BuildContext context) {
+  build(BuildContext context) {
     //get data from firestore
     CollectionReference routes =
         FirebaseFirestore.instance.collection('Routes');
+
+    final User user = auth.currentUser!;
+    final uid = user.uid;
+    DocumentReference biker_ref =
+        FirebaseFirestore.instance.collection("Bikers").doc(uid);
 
     return Scaffold(
       drawer: const DrawerNav(),
@@ -101,6 +142,18 @@ class _AllRouteState extends State<AllRoutes> {
                 return new ListView(
                   children:
                       snapshot.data!.docs.map((DocumentSnapshot document) {
+                    //check if the route is in the favorites of the Biker and wait for the result
+                    bool _isFavorited = false;
+                    biker_ref.get().then((value) {
+                      try {
+                        if (value.get('favorites').contains(document.id)) {
+                          _isFavorited = true;
+                        }
+                      } catch (e) {
+                        _isFavorited = false;
+                      }
+                    });
+
                     Map<String, dynamic> data =
                         document.data()! as Map<String, dynamic>;
                     return new ListTile(
@@ -118,16 +171,27 @@ class _AllRouteState extends State<AllRoutes> {
                             fontSize: 15,
                             color: Color.fromRGBO(152, 158, 177, 1)),
                       ),
-                      //--------------------------------------
-                      //To rework with data from user, so favorite routes are correctly marked
-                      trailing: IconButton(
-                        icon: (_isFavorited
-                            ? const Icon(Icons.favorite)
-                            : const Icon(Icons.favorite_border)),
-                        color: Color.fromRGBO(0, 181, 107, 1),
-                        onPressed: (_toggleFavorite),
-                        //--------------------------------------
+                      //change color of the icon when the route is in the favorites
+                      trailing:
+                          //wait for _isFavorited to be set
+                          FutureBuilder(
+                        future: biker_ref.get(),
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          if (snapshot.hasData) {
+                            return IconButton(
+                              icon: (_isFavorited
+                                  ? const Icon(Icons.favorite)
+                                  : const Icon(Icons.favorite_border)),
+                              color: Color.fromRGBO(0, 181, 107, 1),
+                              onPressed: () => _toggleFavorite(document.id),
+                            );
+                          } else {
+                            return const CircularProgressIndicator();
+                          }
+                        },
                       ),
+
                       leading: CircleAvatar(
                           backgroundImage: NetworkImage(
                               "https://images.unsplash.com/photo-1609605988071-0d1cfd25044e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1935&q=80")),
