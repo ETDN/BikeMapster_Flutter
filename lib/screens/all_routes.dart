@@ -204,7 +204,7 @@ class _AllRouteState extends State<AllRoutes> {
           //button to add new route
           //SHOULD ONLY BE ACCESSIBLE TO ADMINS
           //if(user is admin) {
-          CircleAvatar(
+          /*CircleAvatar(
             radius: 30,
             backgroundColor: Color.fromRGBO(0, 181, 107, 1),
             child: IconButton(
@@ -218,7 +218,7 @@ class _AllRouteState extends State<AllRoutes> {
                     MaterialPageRoute(builder: (context) => const RouteForm()));
               },
             ),
-          ),
+          ),*/
           //},
           Padding(padding: EdgeInsets.only(bottom: 20))
         ],

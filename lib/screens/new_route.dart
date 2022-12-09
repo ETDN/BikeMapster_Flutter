@@ -1,5 +1,5 @@
 import 'dart:developer';
-
+import 'package:latlong2/latlong.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -12,25 +12,44 @@ import 'package:flutter/material.dart';
 
 // Define a custom Form widget.
 class RouteForm extends StatefulWidget {
-  const RouteForm({super.key});
+  RouteForm(double distance, double duration, LatLng start, LatLng end,
+      {Key? key}) {
+    this.distance = distance;
+    this.duration = duration;
+    this.start = start;
+    this.end = end;
+  }
+
+  double duration = 0.0;
+  double distance = 0.0;
+  LatLng start = LatLng(0, 0);
+  LatLng end = LatLng(0, 0);
 
   @override
-  State<RouteForm> createState() => _RouteForm();
+  State<RouteForm> createState() => _RouteForm(distance, duration, start, end);
 }
 
 // Define a corresponding State class.
 // This class holds the data related to the Form.
 class _RouteForm extends State<RouteForm> {
   final nameController = TextEditingController();
-  final lenghtController = TextEditingController();
-  final durationController = TextEditingController();
+
+  _RouteForm(double distance, double duration, LatLng start, LatLng end) {
+    this.lenght = distance;
+    this.duration = duration;
+    this.start = start;
+    this.end = end;
+  }
+
+  double lenght = 0.0;
+  double duration = 0.0;
+  LatLng start = LatLng(0, 0);
+  LatLng end = LatLng(0, 0);
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
     nameController.dispose();
-    lenghtController.dispose();
-    durationController.dispose();
     super.dispose();
   }
 
@@ -63,35 +82,23 @@ class _RouteForm extends State<RouteForm> {
                 hintText: 'Route Name',
               ),
             ),
-            //Route Lenght
-            TextFormField(
-              controller: lenghtController,
-              decoration: const InputDecoration(
-                hintText: 'Route Length in kilometers',
-              ),
-            ),
-            //Route Duration
-            TextField(
-              controller: durationController,
-              decoration: const InputDecoration(
-                hintText: 'Route Duration in minutes',
-              ),
-            ),
             //Submit Button
             Container(
               padding: const EdgeInsets.only(top: 16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  if (nameController.text != '' &&
-                      lenghtController.text != '' &&
-                      durationController.text != '') {
+                  if (nameController.text != '') {
                     //add route to database
                     CollectionReference routes =
                         FirebaseFirestore.instance.collection('Routes');
                     routes.add({
                       'name': nameController.text,
-                      'length': int.parse(lenghtController.text),
-                      'duration': int.parse(durationController.text),
+                      'length': lenght.toInt(),
+                      'duration': duration.toInt(),
+                      'startLat': start.latitude,
+                      'startLong': start.longitude,
+                      'endLat': end.latitude,
+                      'endLong': end.longitude,
                     });
                     //show success message
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -101,8 +108,6 @@ class _RouteForm extends State<RouteForm> {
                     );
                     //clear text fields
                     nameController.clear();
-                    lenghtController.clear();
-                    durationController.clear();
                   }
                 },
                 child: const Text('Submit'),
