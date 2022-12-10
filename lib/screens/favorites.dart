@@ -1,7 +1,13 @@
+import 'dart:js_util';
+
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_crashcourse/screens/new_route.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'navbar/drawer_nav.dart';
 
@@ -13,195 +19,202 @@ class Favorites extends StatefulWidget {
 }
 
 class _FavoritesState extends State<Favorites> {
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
   bool _isDeleted = false;
 
-  void _toggleDelete() {
-    //do something...
+  void _toggleDelete(String routeID) {
+    final User user = auth.currentUser!;
+    final uid = user.uid;
+
+    //get the user from firebase with id
+    DocumentReference biker_ref =
+        FirebaseFirestore.instance.collection("Bikers").doc(uid);
+
+    biker_ref.update({
+      'favorites': FieldValue.arrayRemove([routeID])
+    });
+
+    biker_ref.snapshots().listen((event) {
+      setState(() {});
+    });
+
     setState(() {
-      if (_isDeleted) {
-        _isDeleted = false;
-        showAlertDialog(context);
-      } else {
-        _isDeleted = true;
-        showAlertDialog(context);
-      }
+      //do something
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    CollectionReference favorites =
+        FirebaseFirestore.instance.collection('Bikers');
+
+    CollectionReference routeCol =
+        FirebaseFirestore.instance.collection('Routes');
+
+    final User user = auth.currentUser!;
+    final uid = user.uid;
+    DocumentReference biker_ref =
+        FirebaseFirestore.instance.collection("Bikers").doc(uid);
+
     return Scaffold(
-        drawer: const DrawerNav(),
-        appBar: AppBar(
-          centerTitle: true,
-          iconTheme: IconThemeData(color: Color.fromRGBO(53, 66, 74, 1)),
-          backgroundColor: Colors.white,
-          title: Text(
-            'Favorites',
-            style: GoogleFonts.bebasNeue(
-                fontSize: 22,
-                fontWeight: FontWeight.w300,
-                color: Color.fromRGBO(53, 66, 74, 1)),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                // method to show the search bar
-                showSearch(
-                    context: context,
-                    // delegate to customize the search bar
-                    delegate: CustomSearchDelegate());
-              },
-              icon: const Icon(Icons.search),
-            ),
-            Padding(
-              padding: EdgeInsets.only(right: 10),
-
-              //Dropdown filter
-              child: PopupMenuButton(
-                  itemBuilder: (context) => [
-                        PopupMenuItem(
-                            child: Row(children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: 10),
-                            child: Text('Distance'),
-                          ),
-                        ])),
-                        PopupMenuItem(
-                            child: Row(children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: 10),
-                            child: Text('Duration'),
-                          ),
-                        ])),
-                        PopupMenuItem(
-                            child: Row(children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: 10),
-                            child: Text('Elevation'),
-                          ),
-                        ]))
-                      ]),
-            )
-          ],
+      drawer: const DrawerNav(),
+      appBar: AppBar(
+        centerTitle: true,
+        iconTheme: IconThemeData(color: Color.fromRGBO(53, 66, 74, 1)),
+        backgroundColor: Colors.white,
+        title: Text(
+          'Favorites',
+          style: GoogleFonts.bebasNeue(
+              fontSize: 22,
+              fontWeight: FontWeight.w300,
+              color: Color.fromRGBO(53, 66, 74, 1)),
         ),
-        //List of routes
-        body: ListView(
-          padding: const EdgeInsets.all(8),
-          children: <Widget>[
-            ListTile(
-                title: Text(
-                  "Sion - Visp",
-                  style: GoogleFonts.bebasNeue(
-                    fontSize: 17,
-                    color: Color.fromRGBO(53, 66, 74, 1),
-                  ),
-                ),
-                subtitle: Text(
-                  "DISTANCE 35 KM | DURATION : 1H50",
-                  style: GoogleFonts.bebasNeue(
-                      fontSize: 15, color: Color.fromRGBO(152, 158, 177, 1)),
-                ),
-                leading: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                        "https://images.unsplash.com/photo-1609605988071-0d1cfd25044e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1935&q=80")),
-                trailing: IconButton(
-                  icon: (_isDeleted
-                      ? const Icon(Icons.delete_forever)
-                      : const Icon(Icons.delete_forever_outlined)),
-                  color: Color.fromRGBO(183, 15, 10, 1),
-                  onPressed: (_toggleDelete),
-                )),
-            ListTile(
-                title: Text(
-                  "Sion - Visp",
-                  style: GoogleFonts.bebasNeue(
-                    fontSize: 17,
-                    color: Color.fromRGBO(53, 66, 74, 1),
-                  ),
-                ),
-                subtitle: Text(
-                  "DISTANCE 35 KM | DURATION : 1H50",
-                  style: GoogleFonts.bebasNeue(
-                      fontSize: 15, color: Color.fromRGBO(152, 158, 177, 1)),
-                ),
-                leading: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                        "https://images.unsplash.com/photo-1609605988071-0d1cfd25044e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1935&q=80")),
-                trailing: IconButton(
-                  icon: (_isDeleted
-                      ? const Icon(Icons.delete_forever)
-                      : const Icon(Icons.delete_forever_outlined)),
-                  color: Color.fromRGBO(183, 15, 10, 1),
-                  onPressed: (_toggleDelete),
-                )),
-            ListTile(
-                title: Text(
-                  "Sion - Visp",
-                  style: GoogleFonts.bebasNeue(
-                    fontSize: 17,
-                    color: Color.fromRGBO(53, 66, 74, 1),
-                  ),
-                ),
-                subtitle: Text(
-                  "DISTANCE 35 KM | DURATION : 1H50",
-                  style: GoogleFonts.bebasNeue(
-                      fontSize: 15, color: Color.fromRGBO(152, 158, 177, 1)),
-                ),
-                leading: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                        "https://images.unsplash.com/photo-1609605988071-0d1cfd25044e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1935&q=80")),
-                trailing: IconButton(
-                  icon: (_isDeleted
-                      ? const Icon(Icons.delete_forever)
-                      : const Icon(Icons.delete_forever_outlined)),
-                  color: Color.fromRGBO(183, 15, 10, 1),
-                  onPressed: (_toggleDelete),
-                )),
-            ListTile(
-                title: Text(
-                  "Sion - Visp",
-                  style: GoogleFonts.bebasNeue(
-                    fontSize: 17,
-                    color: Color.fromRGBO(53, 66, 74, 1),
-                  ),
-                ),
-                subtitle: Text(
-                  "DISTANCE 35 KM | DURATION : 1H50",
-                  style: GoogleFonts.bebasNeue(
-                      fontSize: 15, color: Color.fromRGBO(152, 158, 177, 1)),
-                ),
-                leading: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                        "https://images.unsplash.com/photo-1609605988071-0d1cfd25044e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1935&q=80")),
-                trailing: IconButton(
-                  icon: (_isDeleted
-                      ? const Icon(Icons.delete_forever)
-                      : const Icon(Icons.delete_forever_outlined)),
-                  color: Color.fromRGBO(183, 15, 10, 1),
-                  onPressed: (_toggleDelete),
-                )),
-            Padding(padding: EdgeInsets.all(60)),
+        actions: [
+          IconButton(
+            onPressed: () {
+              // method to show the search bar
+              showSearch(
+                  context: context,
+                  // delegate to customize the search bar
+                  delegate: CustomSearchDelegate());
+            },
+            icon: const Icon(Icons.search),
+          ),
+          Padding(
+            padding: EdgeInsets.only(right: 10),
 
-            //Add a new route button
+            //Dropdown filter
+            child: PopupMenuButton(
+                itemBuilder: (context) => [
+                      PopupMenuItem(
+                          child: Row(children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 10),
+                          child: Text('Distance'),
+                        ),
+                      ])),
+                      PopupMenuItem(
+                          child: Row(children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 10),
+                          child: Text('Duration'),
+                        ),
+                      ])),
+                      PopupMenuItem(
+                          child: Row(children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 10),
+                          child: Text('Elevation'),
+                        ),
+                      ]))
+                    ]),
+          )
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: favorites.snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return Text('Something went wrong');
+                }
 
-            CircleAvatar(
-              radius: 30,
-              backgroundColor: Color.fromRGBO(0, 181, 107, 1),
-              child: IconButton(
-                icon: Icon(
-                  Icons.add,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  //do something...
-                },
-              ),
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Text("Loading");
+                }
+
+                return new ListView(
+                  children:
+                      snapshot.data!.docs.map((DocumentSnapshot document) {
+                    //check if the route is in the favorites of the Biker and wait for the result
+                    ;
+
+                    Map<String, dynamic> data =
+                        document.data()! as Map<String, dynamic>;
+                    return new ListTile(
+                      title: new Text(data['name'],
+                          style: GoogleFonts.bebasNeue(
+                            fontSize: 17,
+                            color: Color.fromRGBO(53, 66, 74, 1),
+                          )),
+                      subtitle: Text(
+                        data['length'].toString() +
+                            ' km | ' +
+                            data['duration'].toString() +
+                            ' minutes',
+                        style: GoogleFonts.bebasNeue(
+                            fontSize: 15,
+                            color: Color.fromRGBO(152, 158, 177, 1)),
+                      ),
+                      //change color of the icon when the route is in the favorites
+                      trailing:
+                          //wait for _isFavorited to be set
+                          FutureBuilder(
+                        future: biker_ref.get(),
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          if (snapshot.hasData) {
+                            return IconButton(
+                              icon: (_isDeleted
+                                  ? const Icon(Icons.delete_forever)
+                                  : const Icon(Icons.delete_forever_outlined)),
+                              color: Color.fromRGBO(139, 0, 0, 1),
+                              onPressed: () => _toggleDelete(document.id),
+                            );
+                          } else {
+                            return const CircularProgressIndicator();
+                          }
+                        },
+                      ),
+
+                      leading: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                              "https://images.unsplash.com/photo-1609605988071-0d1cfd25044e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1935&q=80")),
+                    );
+                  }).toList(),
+                );
+              },
             ),
-          ],
-        ));
+          ),
+          // CircleAvatar(
+          //   radius: 30,
+          //   backgroundColor: Color.fromRGBO(0, 181, 107, 1),
+          //   child: IconButton(
+          //     icon: Icon(
+          //       Icons.add,
+          //       color: Colors.white,
+          //     ),
+          //     onPressed: () {
+          //       //open widget from new_route.dart
+          //       Navigator.push(context,
+          //           MaterialPageRoute(builder: (context) => const RouteForm()));
+          //     },
+          //   ),
+          // ),
+          //},
+          Padding(padding: EdgeInsets.only(bottom: 20))
+        ],
+      ),
+    );
   }
 }
+
+// Stream<List<Route>> getFavRoutes(Route route) {
+//   CollectionReference routeCol =
+//       FirebaseFirestore.instance.collection('Routes');
+//   final user = FirebaseAuth.instance.currentUser;
+
+//   return routeCol
+//       .where("favorites", arrayContains: user.uid)
+//       .snapshots()
+//       .map((route) {
+//     return route.docs.map((e) => Route.fromJson(e.data(), id: e.id)).toList();
+//   });
+// }
 
 showAlertDialog(BuildContext context) {
   //set up buttons
