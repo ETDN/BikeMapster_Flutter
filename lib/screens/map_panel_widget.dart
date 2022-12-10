@@ -1,13 +1,17 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_crashcourse/screens/networkHelper_map.dart';
+import 'package:flutter_crashcourse/screens/new_route.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:routing_client_dart/routing_client_dart.dart';
 import 'package:sliding_up_panel2/sliding_up_panel2.dart';
 
 class PanelWidget extends StatelessWidget {
   var roadInfo;
   final PanelController panelController;
+  final List<LatLng> polyPoints;
 
   final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
     foregroundColor: Colors.black87, backgroundColor: Colors.green[300],
@@ -19,7 +23,11 @@ class PanelWidget extends StatelessWidget {
     ),
   );
 
-  PanelWidget({Key? key, required this.roadInfo, required this.panelController})
+  PanelWidget(
+      {Key? key,
+      required this.roadInfo,
+      required this.panelController,
+      required this.polyPoints})
       : super(key: key);
 
   @override
@@ -36,7 +44,7 @@ class PanelWidget extends StatelessWidget {
             ),
           ),
           SizedBox(height: 36),
-          roadInfo != null ? showwidget(roadInfo) : noData(),
+          roadInfo != null ? showwidget(roadInfo, context) : noData(),
         ],
       );
 
@@ -47,7 +55,7 @@ class PanelWidget extends StatelessWidget {
         ),
       );
 
-  Widget showwidget(dynamic roadInfo) => Container(
+  Widget showwidget(dynamic roadInfo, BuildContext context) => Container(
       padding: EdgeInsets.symmetric(horizontal: 30),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,7 +68,7 @@ class PanelWidget extends StatelessWidget {
             "Estimated duration : ${roadInfo.duration / 60} min",
           ),
           ElevatedButton(
-            onPressed: () => saveRoute(roadInfo),
+            onPressed: () => saveRoute(roadInfo, context),
             child: Text("Save the route", textAlign: TextAlign.center),
             style: raisedButtonStyle,
           )
@@ -86,9 +94,11 @@ class PanelWidget extends StatelessWidget {
         : panelController.open();
   }
 
-  saveRoute(dynamic roadInfo) {
-    var road = roadInfo;
-
-    print(roadInfo.location);
+  saveRoute(dynamic roadInfo, BuildContext context) {
+    //navigate to the new route page
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return RouteForm(roadInfo.distance, roadInfo.duration, polyPoints[0],
+          polyPoints[polyPoints.length - 1]);
+    }));
   }
 }

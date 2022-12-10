@@ -65,6 +65,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
           panelBuilder: () => PanelWidget(
             panelController: panelController,
             roadInfo: roadInfo,
+            polyPoints: polyPoints,
           ),
           borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
           body: Center(
