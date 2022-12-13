@@ -1,4 +1,4 @@
-import 'dart:js_util';
+import 'dart:convert';
 
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -23,39 +23,72 @@ class _FavoritesState extends State<Favorites> {
 
   bool _isDeleted = false;
 
-  void _toggleDelete(String routeID) {
+  // void _toggleDelete(String routeID) {
+  //   //get the user from firebase with id
+  //   DocumentReference biker_ref =
+  //       FirebaseFirestore.instance.collection("Bikers").doc(uid);
+
+  //   biker_ref.update({
+  //     'favorites': FieldValue.arrayRemove([routeID])
+  //   });
+
+  //   biker_ref.snapshots().listen((event) {
+  //     setState(() {});
+  //   });
+
+  //   setState(() {
+  //     //do something
+  //   });
+  // }
+  dynamic favoritesList;
+
+  @override
+  void initState() {
     final User user = auth.currentUser!;
     final uid = user.uid;
 
-    //get the user from firebase with id
-    DocumentReference biker_ref =
-        FirebaseFirestore.instance.collection("Bikers").doc(uid);
-
-    biker_ref.update({
-      'favorites': FieldValue.arrayRemove([routeID])
-    });
-
-    biker_ref.snapshots().listen((event) {
-      setState(() {});
-    });
-
-    setState(() {
-      //do something
+    FirebaseFirestore.instance
+        .collection('Bikers')
+        .doc(uid)
+        .get()
+        .then((DocumentSnapshot userData) {
+      if (userData.exists) {
+        try {
+          favoritesList = userData.get('favorites');
+        } on StateError catch (e) {
+          print('ntm');
+        }
+        print('stp fonctionne bonjour ${userData.data()}' +
+            favoritesList.toString());
+      }
+      ;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    CollectionReference favorites =
-        FirebaseFirestore.instance.collection('Bikers');
-
-    CollectionReference routeCol =
-        FirebaseFirestore.instance.collection('Routes');
+    CollectionReference? favorites;
 
     final User user = auth.currentUser!;
     final uid = user.uid;
     DocumentReference biker_ref =
         FirebaseFirestore.instance.collection("Bikers").doc(uid);
+
+    CollectionReference routes =
+        FirebaseFirestore.instance.collection('Routes');
+
+    FirebaseFirestore.instance
+        .collection('Bikers')
+        .doc(uid)
+        .get()
+        .then((DocumentSnapshot userData) {
+      if (userData.exists) {
+        jsonDecode(userData.toString());
+        print('Document data: ${userData.toString()}');
+      } else {
+        print('Document does not exist on the database');
+      }
+    });
 
     return Scaffold(
       drawer: const DrawerNav(),
@@ -116,7 +149,7 @@ class _FavoritesState extends State<Favorites> {
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: favorites.snapshots(),
+              stream: routes.snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {
@@ -129,12 +162,12 @@ class _FavoritesState extends State<Favorites> {
 
                 return new ListView(
                   children:
+                      //    snapshot.data!.docs.where((element) => element.id =favoritesList[0]).map((DocumentSnapshot document) {
                       snapshot.data!.docs.map((DocumentSnapshot document) {
                     //check if the route is in the favorites of the Biker and wait for the result
-                    ;
-
                     Map<String, dynamic> data =
                         document.data()! as Map<String, dynamic>;
+                    print(favoritesList);
                     return new ListTile(
                       title: new Text(data['name'],
                           style: GoogleFonts.bebasNeue(
@@ -152,7 +185,7 @@ class _FavoritesState extends State<Favorites> {
                       ),
                       //change color of the icon when the route is in the favorites
                       trailing:
-                          //wait for _isFavorited to be set
+                          // use with delete button
                           FutureBuilder(
                         future: biker_ref.get(),
                         builder:
@@ -163,7 +196,7 @@ class _FavoritesState extends State<Favorites> {
                                   ? const Icon(Icons.delete_forever)
                                   : const Icon(Icons.delete_forever_outlined)),
                               color: Color.fromRGBO(139, 0, 0, 1),
-                              onPressed: () => _toggleDelete(document.id),
+                              onPressed: () => {},
                             );
                           } else {
                             return const CircularProgressIndicator();
@@ -180,41 +213,12 @@ class _FavoritesState extends State<Favorites> {
               },
             ),
           ),
-          // CircleAvatar(
-          //   radius: 30,
-          //   backgroundColor: Color.fromRGBO(0, 181, 107, 1),
-          //   child: IconButton(
-          //     icon: Icon(
-          //       Icons.add,
-          //       color: Colors.white,
-          //     ),
-          //     onPressed: () {
-          //       //open widget from new_route.dart
-          //       Navigator.push(context,
-          //           MaterialPageRoute(builder: (context) => const RouteForm()));
-          //     },
-          //   ),
-          // ),
-          //},
           Padding(padding: EdgeInsets.only(bottom: 20))
         ],
       ),
     );
   }
 }
-
-// Stream<List<Route>> getFavRoutes(Route route) {
-//   CollectionReference routeCol =
-//       FirebaseFirestore.instance.collection('Routes');
-//   final user = FirebaseAuth.instance.currentUser;
-
-//   return routeCol
-//       .where("favorites", arrayContains: user.uid)
-//       .snapshots()
-//       .map((route) {
-//     return route.docs.map((e) => Route.fromJson(e.data(), id: e.id)).toList();
-//   });
-// }
 
 showAlertDialog(BuildContext context) {
   //set up buttons
