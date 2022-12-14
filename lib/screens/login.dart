@@ -62,7 +62,7 @@ class _MyLoginState extends State<LoginPage> {
                   top: 5.0,
                   right: 20.0,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Image.asset(
                         'assets/images/pin_logo.png',
@@ -85,49 +85,116 @@ class _MyLoginState extends State<LoginPage> {
             ),
           ),
           SizedBox(height: 25.0),
-          TextFormField(
-            controller: emailController,
-            style: GoogleFonts.bebasNeue(
-                fontSize: 15,
-                fontWeight: FontWeight.w300,
-                color: Color.fromRGBO(53, 66, 74, 1)),
-            decoration: const InputDecoration(
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color.fromRGBO(0, 181, 107, 1),
+          Padding(
+            padding: const EdgeInsets.only(left: 5.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                border: Border.all(color: Colors.white),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: TextFormField(
+                  controller: emailController,
+                  style: GoogleFonts.bebasNeue(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w300,
+                      color: Color.fromRGBO(53, 66, 74, 1)),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Email',
+                  ),
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text';
+                    }
+                    return null;
+                  },
                 ),
               ),
-              hintText: 'email',
             ),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter some text';
-              }
-              return null;
-            },
           ),
-          TextFormField(
-            controller: passwordController,
-            style: GoogleFonts.bebasNeue(
-                fontSize: 15,
-                fontWeight: FontWeight.w300,
-                color: Color.fromRGBO(53, 66, 74, 1)),
-            decoration: const InputDecoration(
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color.fromRGBO(0, 181, 107, 1),
+          // Material(
+          //   elevation: 20.0,
+          //   shadowColor: Colors.blue,
+          //   child: TextFormField(
+          //     controller: emailController,
+          //     style: GoogleFonts.bebasNeue(
+          //         fontSize: 15,
+          //         fontWeight: FontWeight.w300,
+          //         color: Color.fromRGBO(53, 66, 74, 1)),
+          //     decoration: const InputDecoration(
+          //       focusedBorder: UnderlineInputBorder(
+          //         borderSide: BorderSide(
+          //           color: Color.fromRGBO(0, 181, 107, 1),
+          //         ),
+          //       ),
+          //       hintText: 'email',
+          //     ),
+          //     validator: (String? value) {
+          //       if (value == null || value.isEmpty) {
+          //         return 'Please enter some text';
+          //       }
+          //       return null;
+          //     },
+          //   ),
+          // ),
+
+          Padding(
+            padding: const EdgeInsets.only(left: 5.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                border: Border.all(color: Colors.white),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: TextFormField(
+                  obscureText: true,
+                  controller: passwordController,
+                  style: GoogleFonts.bebasNeue(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w300,
+                      color: Color.fromRGBO(53, 66, 74, 1)),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Password',
+                  ),
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text';
+                    }
+                    return null;
+                  },
                 ),
               ),
-              hintText: 'password',
             ),
-            obscureText: true, //Hide input text
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter some text';
-              }
-              return null;
-            },
           ),
+
+          // TextFormField(
+          //   controller: passwordController,
+          //   style: GoogleFonts.bebasNeue(
+          //       fontSize: 15,
+          //       fontWeight: FontWeight.w300,
+          //       color: Color.fromRGBO(53, 66, 74, 1)),
+          //   decoration: const InputDecoration(
+          //     focusedBorder: UnderlineInputBorder(
+          //       borderSide: BorderSide(
+          //         color: Color.fromRGBO(0, 181, 107, 1),
+          //       ),
+          //     ),
+          //     hintText: 'password',
+          //   ),
+          //   obscureText: true, //Hide input text
+          //   validator: (String? value) {
+          //     if (value == null || value.isEmpty) {
+          //       return 'Please enter some text';
+          //     }
+          //     return null;
+          //   },
+          // ),
           SizedBox(height: 5.0),
           // GestureDetector(
           //   onTap: () {

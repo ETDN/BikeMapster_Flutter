@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_crashcourse/screens/networkHelper_map.dart';
 import 'package:flutter_crashcourse/screens/new_route.dart';
@@ -34,16 +34,16 @@ class PanelWidget extends StatelessWidget {
   Widget build(BuildContext context) => ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          SizedBox(height: 12),
+          SizedBox(height: 10),
           buildDragHandle(),
           SizedBox(height: 7),
           Center(
             child: Text(
-              "Your road's information",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              "Your road",
+              style: GoogleFonts.bebasNeue(fontSize: 20),
             ),
           ),
-          SizedBox(height: 36),
+          SizedBox(height: 20),
           roadInfo != null ? showwidget(roadInfo, context) : noData(),
         ],
       );
@@ -56,22 +56,108 @@ class PanelWidget extends StatelessWidget {
       );
 
   Widget showwidget(dynamic roadInfo, BuildContext context) => Container(
-      padding: EdgeInsets.symmetric(horizontal: 30),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            "Distance : ${roadInfo.distance} km",
+          child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Expanded(
+                child: ListTile(
+                  dense: true,
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 15.0, vertical: 0.0),
+                  visualDensity: VisualDensity(horizontal: 0, vertical: -4),
+                  title: Text("Sierre",
+                      style: GoogleFonts.bebasNeue(
+                          fontSize: 18, color: Color.fromRGBO(53, 66, 74, 1))),
+                  subtitle: Text(
+                    "Technopole 2",
+                    style: GoogleFonts.bebasNeue(fontSize: 14),
+                  ),
+                ),
+              ),
+              Expanded(
+                  child: Icon(
+                Icons.arrow_forward,
+                size: 25,
+              )),
+              Expanded(
+                  child: ListTile(
+                      dense: true,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 15.0, vertical: 0.0),
+                      visualDensity: VisualDensity(horizontal: 0, vertical: -4),
+                      title: Text("Sion",
+                          style: GoogleFonts.bebasNeue(
+                              fontSize: 18,
+                              color: Color.fromRGBO(53, 66, 74, 1))),
+                      subtitle: Text("Avenue de France 15",
+                          style: GoogleFonts.bebasNeue(fontSize: 14))))
+            ],
           ),
-          SizedBox(height: 10),
-          Text(
-            "Estimated duration : ${roadInfo.duration / 60} min",
+
+          ListTile(
+            dense: true,
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: 15.0, vertical: 0.0),
+            visualDensity: VisualDensity(horizontal: 0, vertical: -4),
+            title: Transform.translate(
+              offset: Offset(-25, 0),
+              child: Text("Distance : ${roadInfo.distance} km",
+                  style: GoogleFonts.bebasNeue(
+                      fontSize: 15, color: Color.fromRGBO(53, 66, 74, 1))),
+            ),
+            leading: Icon(Icons.straighten),
           ),
+
+          ListTile(
+            dense: true,
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: 15.0, vertical: 0.0),
+            visualDensity: VisualDensity(horizontal: 0, vertical: -4),
+            title: Transform.translate(
+              offset: Offset(-25, 0),
+              child: Text("Duration : ${roadInfo.duration / 60} min",
+                  style: GoogleFonts.bebasNeue(
+                      fontSize: 15, color: Color.fromRGBO(53, 66, 74, 1))),
+            ),
+            leading: Icon(Icons.timer),
+          ),
+
+          ListTile(
+            dense: true,
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: 15.0, vertical: 0.0),
+            visualDensity: VisualDensity(horizontal: 0, vertical: -4),
+            title: Transform.translate(
+              offset: Offset(-25, 0),
+              child: Text("Elevation : Not available yet",
+                  style: GoogleFonts.bebasNeue(
+                      fontSize: 15, color: Color.fromRGBO(53, 66, 74, 1))),
+            ),
+            leading: Icon(Icons.trending_up),
+          ),
+          Padding(padding: EdgeInsets.only(bottom: 10)),
+          // Text(
+          //   style: GoogleFonts.bebasNeue(
+          //     fontSize: 13,
+          //     color: Color.fromRGBO(53, 66, 74, 1),
+          //   ),
+          //   "Estimated duration : ${roadInfo.duration / 60} min",
+          // ),
           ElevatedButton(
-            onPressed: () => saveRoute(roadInfo, context),
-            child: Text("Save the route", textAlign: TextAlign.center),
-            style: raisedButtonStyle,
-          )
+              onPressed: () => saveRoute(roadInfo, context),
+              child: Text(
+                "Save",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.bebasNeue(fontSize: 18),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromRGBO(0, 181, 107, 1),
+                fixedSize: const Size(80, 40),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50)),
+              ))
         ],
       ));
 
