@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_crashcourse/screens/new_route.dart';
@@ -83,7 +81,6 @@ class _FavoritesState extends State<Favorites> {
         .get()
         .then((DocumentSnapshot userData) {
       if (userData.exists) {
-        jsonDecode(userData.toString());
         print('Document data: ${userData.toString()}');
       } else {
         print('Document does not exist on the database');
@@ -213,12 +210,41 @@ class _FavoritesState extends State<Favorites> {
               },
             ),
           ),
+          // CircleAvatar(
+          //   radius: 30,
+          //   backgroundColor: Color.fromRGBO(0, 181, 107, 1),
+          //   child: IconButton(
+          //     icon: Icon(
+          //       Icons.add,
+          //       color: Colors.white,
+          //     ),
+          //     onPressed: () {
+          //       //open widget from new_route.dart
+          //       Navigator.push(context,
+          //           MaterialPageRoute(builder: (context) => const RouteForm()));
+          //     },
+          //   ),
+          // ),
+          //},
           Padding(padding: EdgeInsets.only(bottom: 20))
         ],
       ),
     );
   }
 }
+
+// Stream<List<Route>> getFavRoutes(Route route) {
+//   CollectionReference routeCol =
+//       FirebaseFirestore.instance.collection('Routes');
+//   final user = FirebaseAuth.instance.currentUser;
+
+//   return routeCol
+//       .where("favorites", arrayContains: user.uid)
+//       .snapshots()
+//       .map((route) {
+//     return route.docs.map((e) => Route.fromJson(e.data(), id: e.id)).toList();
+//   });
+// }
 
 showAlertDialog(BuildContext context) {
   //set up buttons
