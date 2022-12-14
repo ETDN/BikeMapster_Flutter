@@ -56,8 +56,7 @@ class _FavoritesState extends State<Favorites> {
         } on StateError catch (e) {
           print('ntm');
         }
-        print('stp fonctionne bonjour ${userData.data()}' +
-            favoritesList.toString());
+        print('stp fonctionne ${userData.data()}' + favoritesList.toString());
       }
       ;
     });
@@ -65,8 +64,6 @@ class _FavoritesState extends State<Favorites> {
 
   @override
   Widget build(BuildContext context) {
-    CollectionReference? favorites;
-
     final User user = auth.currentUser!;
     final uid = user.uid;
     DocumentReference biker_ref =
@@ -81,7 +78,7 @@ class _FavoritesState extends State<Favorites> {
         .get()
         .then((DocumentSnapshot userData) {
       if (userData.exists) {
-        print('Document data: ${userData.toString()}');
+        print('Document favorites: ${userData['favorites']}');
       } else {
         print('Document does not exist on the database');
       }
@@ -159,12 +156,16 @@ class _FavoritesState extends State<Favorites> {
 
                 return new ListView(
                   children:
-                      //    snapshot.data!.docs.where((element) => element.id =favoritesList[0]).map((DocumentSnapshot document) {
-                      snapshot.data!.docs.map((DocumentSnapshot document) {
-                    //check if the route is in the favorites of the Biker and wait for the result
+
+                      //check if the route is in the favorites of the Biker and display the result
+                      snapshot.data!.docs
+                          .where((element) => favoritesList
+                              .any((field) => field.toString() == element.id))
+                          .map((DocumentSnapshot document) {
+                    //Declaring a Map to receive the snapshot data
                     Map<String, dynamic> data =
                         document.data()! as Map<String, dynamic>;
-                    print(favoritesList);
+
                     return new ListTile(
                       title: new Text(data['name'],
                           style: GoogleFonts.bebasNeue(
