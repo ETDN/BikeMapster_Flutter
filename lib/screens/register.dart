@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_crashcourse/screens/login.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_crashcourse/screens/all_routes.dart';
 
@@ -124,6 +126,24 @@ class _MyRegisterState extends State<Register> {
                 : null,
           ),
           SizedBox(height: 5.0),
+          RichText(
+              textAlign: TextAlign.right,
+              text: TextSpan(children: [
+                TextSpan(
+                    style: GoogleFonts.bebasNeue(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w300,
+                        color: Color.fromRGBO(117, 169, 249, 1),
+                        decoration: TextDecoration.underline),
+                    text: "Already have an account ? Log in",
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()));
+                      }),
+              ])),
           SizedBox(
             height: 20,
           ),
