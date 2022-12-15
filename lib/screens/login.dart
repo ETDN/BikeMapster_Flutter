@@ -7,6 +7,7 @@ import 'package:flutter_crashcourse/screens/all_routes.dart';
 import 'package:flutter_crashcourse/screens/register.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatefulWidget {
@@ -265,12 +266,16 @@ class _MyLoginState extends State<LoginPage> {
   }
 
   void onItemPressed(BuildContext context, {required int index}) {
-    Navigator.pop(context);
-
+    Navigator.pop(
+        context,
+        PageTransition(
+            type: PageTransitionType.leftToRight, child: AllRoutes()));
     switch (index) {
       case 0:
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const AllRoutes()));
+        Navigator.push(
+            context,
+            PageTransition(
+                type: PageTransitionType.leftToRight, child: AllRoutes()));
         break;
     }
   }
