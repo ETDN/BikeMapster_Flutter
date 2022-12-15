@@ -20,6 +20,7 @@ class AllRoutes extends StatefulWidget {
 
 class _AllRouteState extends State<AllRoutes> {
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final _db = FirebaseFirestore.instance;
 
   //add the route to the favorites of the Biker
   void _toggleFavorite(String routeID) {
@@ -72,6 +73,34 @@ class _AllRouteState extends State<AllRoutes> {
 
   _editRoute(String id) {}
 
+  // _sortRouteByDuration() {
+  //   _db.collection("Routes").orderBy('duration').get();
+  //   print("ntm");
+  //   ;
+  // }
+
+  void sortByDuration() async {
+    QuerySnapshot querySnapshot = await _db
+        .collection('Routes')
+        .orderBy('duration', descending: false)
+        .get();
+    final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
+    print(allData);
+  }
+
+  void sortByDistance() async {
+    QuerySnapshot querySnapshot = await _db
+        .collection('Routes')
+        .orderBy('length', descending: false)
+        .get();
+    final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
+    print(allData);
+  }
+
+  void sortByFavorite() async {
+    // sort routes to display only user's favorites
+  }
+
   @override
   build(BuildContext context) {
     //get data from firestore
@@ -99,17 +128,12 @@ class _AllRouteState extends State<AllRoutes> {
         actions: [
           IconButton(
             onPressed: () {
-              // method to show the search bar
-              showSearch(
-                  context: context,
-                  // delegate to customize the search bar
-                  delegate: CustomSearchDelegate());
+              //method to filter elements
             },
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.filter_alt),
           ),
           Padding(
             padding: EdgeInsets.only(right: 10),
-
             //Dropdown filter
             child: PopupMenuButton(
                 itemBuilder: (context) => [
@@ -117,29 +141,65 @@ class _AllRouteState extends State<AllRoutes> {
                           child: Row(children: [
                         Padding(
                           padding: EdgeInsets.only(left: 10),
-                          child: Text('Distance'),
+                          child: TextButton(
+                            onPressed: sortByDuration,
+                            child: Text(
+                              'Favorites',
+                              style: GoogleFonts.bebasNeue(
+                                  fontSize: 15, color: Colors.black),
+                            ),
+                          ),
                         ),
                       ])),
                       PopupMenuItem(
                           child: Row(children: [
                         Padding(
                           padding: EdgeInsets.only(left: 10),
-                          child: Text('Duration'),
+                          child: TextButton(
+                            onPressed: sortByDuration,
+                            child: Text(
+                              'Duration',
+                              style: GoogleFonts.bebasNeue(
+                                  fontSize: 15, color: Colors.black),
+                            ),
+                          ),
                         ),
                       ])),
                       PopupMenuItem(
                           child: Row(children: [
                         Padding(
                           padding: EdgeInsets.only(left: 10),
-                          child: Text('Elevation'),
+                          child: TextButton(
+                            onPressed: sortByDistance,
+                            child: Text(
+                              'Distance',
+                              style: GoogleFonts.bebasNeue(
+                                  fontSize: 15, color: Colors.black),
+                            ),
+                          ),
                         ),
-                      ]))
+                      ])),
                     ]),
           )
         ],
       ),
       body: Column(
         children: [
+          Padding(padding: EdgeInsets.only(top: 20)),
+          SizedBox(
+            height: 55,
+            width: 300,
+            child: TextField(
+              textAlignVertical: TextAlignVertical.center,
+              //add a controller
+              decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search),
+                  hintText: 'Search a road',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: const BorderSide(color: Colors.blue))),
+            ),
+          ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: routes.snapshots(),
@@ -153,7 +213,7 @@ class _AllRouteState extends State<AllRoutes> {
                   return Text("Loading");
                 }
 
-                return new ListView(
+                return ListView(
                   children:
                       snapshot.data!.docs.map((DocumentSnapshot document) {
                     //check if the route is in the favorites of the Biker and wait for the result
@@ -204,7 +264,7 @@ class _AllRouteState extends State<AllRoutes> {
                                     onPressed: () => _editRoute(document.id),
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.delete),
+                                    icon: const Icon(Icons.delete_forever),
                                     color: Color.fromARGB(255, 198, 0, 0),
                                     onPressed: () => _deleteRoute(document.id),
                                   ),
