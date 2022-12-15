@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_crashcourse/screens/all_routes.dart';
+import 'package:flutter_crashcourse/screens/forgotPassword.dart';
 import 'package:flutter_crashcourse/screens/register.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -237,8 +238,26 @@ class _MyLoginState extends State<LoginPage> {
               ])),
 
           SizedBox(
-            height: 20,
+            height: 5.0,
           ),
+          RichText(
+              textAlign: TextAlign.right,
+              text: TextSpan(children: [
+                TextSpan(
+                    style: GoogleFonts.bebasNeue(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w300,
+                        color: Color.fromRGBO(117, 169, 249, 1),
+                        decoration: TextDecoration.underline),
+                    text: "Forgot password",
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ForgotPassword()));
+                      }),
+              ])),
           ElevatedButton(
             onPressed: signIn,
             style: ElevatedButton.styleFrom(
@@ -256,6 +275,8 @@ class _MyLoginState extends State<LoginPage> {
           SizedBox(
             height: 20,
           ),
+
+          SizedBox(height: 16),
           Image.asset(
             'assets/images/cyclists.png',
             height: 200,
