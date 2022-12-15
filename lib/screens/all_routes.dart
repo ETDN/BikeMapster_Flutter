@@ -70,6 +70,8 @@ class _AllRouteState extends State<AllRoutes> {
     setState(() {});
   }
 
+  _editRoute(String id) {}
+
   @override
   build(BuildContext context) {
     //get data from firestore
@@ -193,10 +195,20 @@ class _AllRouteState extends State<AllRoutes> {
                             (BuildContext context, AsyncSnapshot snapshot) {
                           if (snapshot.hasData) {
                             if (snapshot.data.get('isAdmin') == true) {
-                              return IconButton(
-                                icon: const Icon(Icons.delete),
-                                color: Color.fromRGBO(0, 181, 107, 1),
-                                onPressed: () => _deleteRoute(document.id),
+                              return Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  IconButton(
+                                    icon: const Icon(Icons.edit),
+                                    color: Color.fromRGBO(0, 181, 107, 1),
+                                    onPressed: () => _editRoute(document.id),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    color: Color.fromARGB(255, 198, 0, 0),
+                                    onPressed: () => _deleteRoute(document.id),
+                                  ),
+                                ],
                               );
                             } else {
                               return IconButton(
