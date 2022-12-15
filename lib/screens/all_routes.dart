@@ -59,8 +59,23 @@ class _AllRouteState extends State<AllRoutes> {
   }
 
   _deleteRoute(String id) {
+    //delete the route from the favorites of the bikers
+    FirebaseFirestore.instance
+        .collection('Bikers')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        if (doc.get('favorites').contains(id)) {
+          doc.reference.update({
+            'favorites': FieldValue.arrayRemove([id])
+          });
+        }
+      });
+    });
+
     //delete the route from the database
     FirebaseFirestore.instance.collection('Routes').doc(id).delete();
+
     //add comfirmation message
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text('Route deleted'),
