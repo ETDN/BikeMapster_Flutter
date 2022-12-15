@@ -58,6 +58,18 @@ class _AllRouteState extends State<AllRoutes> {
     });
   }
 
+  _deleteRoute(String id) {
+    //delete the route from the database
+    FirebaseFirestore.instance.collection('Routes').doc(id).delete();
+    //add comfirmation message
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Route deleted'),
+      duration: Duration(seconds: 2),
+    ));
+    //update the state of the widget
+    setState(() {});
+  }
+
   @override
   build(BuildContext context) {
     //get data from firestore
@@ -173,8 +185,36 @@ class _AllRouteState extends State<AllRoutes> {
                       ),
                       //change color of the icon when the route is in the favorites
                       trailing:
-                          //wait for _isFavorited to be set
+
+                          //Check if the biker is admin
                           FutureBuilder(
+                        future: biker_ref.get(),
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          if (snapshot.hasData) {
+                            if (snapshot.data.get('isAdmin') == true) {
+                              return IconButton(
+                                icon: const Icon(Icons.delete),
+                                color: Color.fromRGBO(0, 181, 107, 1),
+                                onPressed: () => _deleteRoute(document.id),
+                              );
+                            } else {
+                              return IconButton(
+                                icon: (_isFavorited
+                                    ? const Icon(Icons.favorite)
+                                    : const Icon(Icons.favorite_border)),
+                                color: Color.fromRGBO(0, 181, 107, 1),
+                                onPressed: () => _toggleFavorite(document.id),
+                              );
+                            }
+                          } else {
+                            return const CircularProgressIndicator();
+                          }
+                        },
+                      ),
+
+                      //wait for _isFavorited to be set
+                      /*FutureBuilder(
                         future: biker_ref.get(),
                         builder:
                             (BuildContext context, AsyncSnapshot snapshot) {
@@ -190,8 +230,7 @@ class _AllRouteState extends State<AllRoutes> {
                             return const CircularProgressIndicator();
                           }
                         },
-                      ),
-
+                      ),*/
                       leading: CircleAvatar(
                           backgroundImage: NetworkImage(
                               "https://images.unsplash.com/photo-1609605988071-0d1cfd25044e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1935&q=80")),
@@ -201,25 +240,6 @@ class _AllRouteState extends State<AllRoutes> {
               },
             ),
           ),
-          //button to add new route
-          //SHOULD ONLY BE ACCESSIBLE TO ADMINS
-          //if(user is admin) {
-          /*CircleAvatar(
-            radius: 30,
-            backgroundColor: Color.fromRGBO(0, 181, 107, 1),
-            child: IconButton(
-              icon: Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                //open widget from new_route.dart
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const RouteForm()));
-              },
-            ),
-          ),*/
-          //},
           Padding(padding: EdgeInsets.only(bottom: 20))
         ],
       ),
