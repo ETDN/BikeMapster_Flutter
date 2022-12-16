@@ -10,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'navbar/drawer_nav.dart';
 import 'new_route.dart';
+import 'route_editing.dart';
 
 class AllRoutes extends StatefulWidget {
   const AllRoutes({Key? key}) : super(key: key);
@@ -85,7 +86,15 @@ class _AllRouteState extends State<AllRoutes> {
     setState(() {});
   }
 
-  _editRoute(String id) {}
+  _editRoute(String id) {
+    //navigate to the edit route page
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EditRoute(
+                  routeID: id,
+                )));
+  }
 
   @override
   build(BuildContext context) {
