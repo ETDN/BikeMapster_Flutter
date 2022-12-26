@@ -1,18 +1,19 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_crashcourse/screens/Map/map.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sliding_up_panel2/sliding_up_panel2.dart';
-import 'map_panel_widget.dart';
-import 'navbar/drawer_nav.dart';
+import '../map_panel_widget.dart';
+import '../navbar/drawer_nav.dart';
 import 'package:routing_client_dart/routing_client_dart.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import 'networkHelper_map.dart';
+import '../networkHelper_map.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -30,8 +31,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   var currentIndex = null;
   var data;
   var roadInfo;
-  //position of map when open it. May be modified according to customer settings (future improvement)
-  LatLng mapCenterPosition = LatLng(46.2293518, 7.3620487);
+
   //for managing onTap method on grey bar to up the sliding panel
   final panelController = PanelController();
 
@@ -70,7 +70,11 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
           borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
           body: Center(
             child: Container(
-              child: FlutterMap(
+              child: map(
+                  myMarkers: myMarkers,
+                  polyPoints: polyPoints,
+                  handleTap: _handleTap),
+              /*child: FlutterMap(
                 options: MapOptions(
                   center: mapCenterPosition,
                   zoom: 10.0,
@@ -96,7 +100,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
                     ], //polylines
                   ),
                 ],
-              ),
+              ),*/
             ),
           ),
         ),

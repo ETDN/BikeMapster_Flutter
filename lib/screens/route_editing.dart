@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_crashcourse/screens/map.dart';
+import 'package:flutter_crashcourse/screens/Map/map_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -61,15 +61,6 @@ class _EditRouteState extends State<EditRoute> {
                 ),
               ),
 
-              /* new MapPage(
-                      editing: true,
-                      callback: (double distance, double duration,
-                          List<LatLng> polypoints) {
-                        this.lenght = distance;
-                        this.duration = duration;
-                        this.polypoints = polypoints;
-                      }),*/
-
               //Submit button
               Container(
                   padding: const EdgeInsets.only(top: 16.0),
@@ -91,7 +82,21 @@ class _EditRouteState extends State<EditRoute> {
                         print("No name entered");
                     },
                     child: const Text('Submit'),
-                  ))
+                  )),
+              Container(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MapPage(),
+                      ),
+                    );
+                  },
+                  child: const Text('Edit Route'),
+                ),
+              )
             ])));
   }
 }
