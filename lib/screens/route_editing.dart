@@ -28,7 +28,7 @@ class EditRoute extends StatefulWidget {
 
 class _EditRouteState extends State<EditRoute> {
   final nameController = TextEditingController();
-  int lenght = 0;
+  int length = 0;
   int duration = 0;
   String routeID = "";
   var routeName = "";
@@ -84,7 +84,7 @@ class _EditRouteState extends State<EditRoute> {
                 endLat = data['endLat'];
                 endLong = data['endLong'];
                 //get route lenght and duration
-                lenght = data['lenght'];
+                length = data['length'];
                 duration = data['duration'];
                 //set starting and destination points
                 //start = LatLng(startLat, startLong);
@@ -114,18 +114,32 @@ class _EditRouteState extends State<EditRoute> {
                   //padding: const EdgeInsets.only(top: 10.0),
                   child: ElevatedButton(
                 onPressed: () {
-                  if (nameController.text != '') {
+                  if (nameController.text != '' &&
+                      polyPoints != null &&
+                      roadInfo != null) {
                     //Get instance of the route from firebase and update it
-                    /*FirebaseFirestore.instance
-                            .collection('Routes')
-                            .doc(routeID)
-                            .update({
-                          'name': nameController.text,
-                        });*/
-                    print("Route name updated");
-                    print("Route lenght: " + lenght.toString());
-                    print("Route duration: " + duration.toString());
-                    print("Route polypoints: " + polyPoints.toString());
+                    startLat = myMarkers[0].point.latitude;
+                    startLong = myMarkers[0].point.longitude;
+                    endLat = myMarkers[1].point.latitude;
+                    endLong = myMarkers[1].point.longitude;
+                    FirebaseFirestore.instance
+                        .collection('Routes')
+                        .doc(routeID)
+                        .update({
+                      'name': nameController.text,
+                      'startLat': polyPoints[0].latitude,
+                      'startLong': polyPoints[0].longitude,
+                      'endLat': polyPoints[polyPoints.length - 1].latitude,
+                      'endLong': polyPoints[polyPoints.length - 1].longitude,
+                      'length': roadInfo.distance.toInt(),
+                      'duration': roadInfo.duration.toInt(),
+
+                      //comfirmation message
+                    }).then((value) => {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Route updated'))),
+                              Navigator.pop(context)
+                            });
                   } else
                     print("No name entered");
                 },
