@@ -10,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'navbar/drawer_nav.dart';
 import 'new_route.dart';
+import 'route_editing.dart';
 
 class AllRoutes extends StatefulWidget {
   const AllRoutes({Key? key}) : super(key: key);
@@ -60,8 +61,23 @@ class _AllRouteState extends State<AllRoutes> {
   }
 
   _deleteRoute(String id) {
+    //delete the route from the favorites of the bikers
+    FirebaseFirestore.instance
+        .collection('Bikers')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        if (doc.get('favorites').contains(id)) {
+          doc.reference.update({
+            'favorites': FieldValue.arrayRemove([id])
+          });
+        }
+      });
+    });
+
     //delete the route from the database
     FirebaseFirestore.instance.collection('Routes').doc(id).delete();
+
     //add comfirmation message
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text('Route deleted'),
@@ -71,7 +87,15 @@ class _AllRouteState extends State<AllRoutes> {
     setState(() {});
   }
 
-  _editRoute(String id) {}
+  _editRoute(String id) {
+    //navigate to the edit route page
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EditRoute(
+                  routeID: id,
+                )));
+  }
 
   // _sortRouteByDuration() {
   //   _db.collection("Routes").orderBy('duration').get();
