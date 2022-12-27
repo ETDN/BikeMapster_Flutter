@@ -21,6 +21,7 @@ class AllRoutes extends StatefulWidget {
 
 class _AllRouteState extends State<AllRoutes> {
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final _db = FirebaseFirestore.instance;
 
   //add the route to the favorites of the Biker
   void _toggleFavorite(String routeID) {
@@ -96,6 +97,57 @@ class _AllRouteState extends State<AllRoutes> {
                 )));
   }
 
+  // _sortRouteByDuration() {
+  //   _db.collection("Routes").orderBy('duration').get();
+  //   print("ntm");
+  //   ;
+  // }
+
+  //used for search method maybe
+  String value = "";
+  TextEditingController controller_search = TextEditingController();
+
+  _printSearchValue() {
+    print("You searched for : ${controller_search.text}");
+  }
+
+  //sort method
+  void sortByDuration() async {
+    QuerySnapshot querySnapshot = await _db
+        .collection('Routes')
+        .orderBy('duration', descending: false)
+        .get();
+    final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
+    print(allData);
+  }
+
+  void sortByDistance() async {
+    QuerySnapshot querySnapshot = await _db
+        .collection('Routes')
+        .orderBy('length', descending: false)
+        .get();
+    final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
+    print(allData);
+  }
+
+  // filter method
+  void filterByFavorite() async {
+    final User user = auth.currentUser!;
+    final uid = user.uid;
+    // sort routes to display only user's favorites
+    FirebaseFirestore.instance
+        .collection('Bikers')
+        .doc(uid)
+        .get()
+        .then((DocumentSnapshot userData) {
+      if (userData.exists) {
+        print('Document favorites: ${userData['favorites']}');
+      } else {
+        print('Document does not exist on the database');
+      }
+    });
+  }
+
   @override
   build(BuildContext context) {
     //get data from firestore
@@ -121,49 +173,124 @@ class _AllRouteState extends State<AllRoutes> {
         centerTitle: true,
         backgroundColor: Colors.white,
         actions: [
-          IconButton(
-            onPressed: () {
-              // method to show the search bar
-              showSearch(
-                  context: context,
-                  // delegate to customize the search bar
-                  delegate: CustomSearchDelegate());
-            },
-            icon: const Icon(Icons.search),
-          ),
+          PopupMenuButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              icon: Icon(Icons.filter_alt),
+              itemBuilder: (context) => [
+                    PopupMenuItem(
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.favorite,
+                          color: Color.fromARGB(255, 198, 0, 0),
+                        ),
+                        title: Transform.translate(
+                          offset: Offset(-20, 0),
+                          child: Text(
+                            'Favorites',
+                            style: GoogleFonts.bebasNeue(fontSize: 15),
+                          ),
+                        ),
+                      ),
+                      onTap: () => filterByFavorite(),
+                    ),
+                    PopupMenuItem(
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.timelapse,
+                          color: Color.fromRGBO(53, 66, 74, 1),
+                        ),
+                        title: Transform.translate(
+                          offset: Offset(-20, 0),
+                          child: Text(
+                            'Less than 1 hour',
+                            style: GoogleFonts.bebasNeue(fontSize: 15),
+                          ),
+                        ),
+                      ),
+                      onTap: () => print("Salut"),
+                    ),
+                    PopupMenuItem(
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.timelapse,
+                          color: Color.fromRGBO(53, 66, 74, 1),
+                        ),
+                        title: Transform.translate(
+                          offset: Offset(-20, 0),
+                          child: Text(
+                            'More than 1 hour',
+                            style: GoogleFonts.bebasNeue(fontSize: 15),
+                          ),
+                        ),
+                      ),
+                      onTap: () => print("Salut"),
+                    ),
+                  ]),
           Padding(
             padding: EdgeInsets.only(right: 10),
-
             //Dropdown filter
             child: PopupMenuButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+                icon: Icon(Icons.sort),
                 itemBuilder: (context) => [
                       PopupMenuItem(
-                          child: Row(children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Text('Distance'),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.timer,
+                            color: Color.fromRGBO(53, 66, 74, 1),
+                          ),
+                          title: Transform.translate(
+                            offset: Offset(-20, 0),
+                            child: Text(
+                              'Duration',
+                              style: GoogleFonts.bebasNeue(fontSize: 15),
+                            ),
+                          ),
                         ),
-                      ])),
+                        onTap: () => sortByDuration(),
+                      ),
                       PopupMenuItem(
-                          child: Row(children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Text('Duration'),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.straighten,
+                            color: Color.fromRGBO(53, 66, 74, 1),
+                          ),
+                          title: Transform.translate(
+                            offset: Offset(-20, 0),
+                            child: Text(
+                              'Distance',
+                              style: GoogleFonts.bebasNeue(fontSize: 15),
+                            ),
+                          ),
                         ),
-                      ])),
-                      PopupMenuItem(
-                          child: Row(children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Text('Elevation'),
-                        ),
-                      ]))
+                        onTap: () => sortByDistance(),
+                      ),
                     ]),
           )
         ],
       ),
       body: Column(
         children: [
+          Padding(padding: EdgeInsets.only(top: 20)),
+          SizedBox(
+            height: 55,
+            width: 300,
+            child: TextField(
+              onChanged: (text) {
+                value = text;
+                print(value);
+              },
+              textAlignVertical: TextAlignVertical.center,
+              decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search),
+                  hintText: 'Search a road',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: const BorderSide(color: Colors.blue))),
+            ),
+          ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: routes.snapshots(),
@@ -177,7 +304,7 @@ class _AllRouteState extends State<AllRoutes> {
                   return Text("Loading");
                 }
 
-                return new ListView(
+                return ListView(
                   children:
                       snapshot.data!.docs.map((DocumentSnapshot document) {
                     //check if the route is in the favorites of the Biker and wait for the result
@@ -228,7 +355,7 @@ class _AllRouteState extends State<AllRoutes> {
                                     onPressed: () => _editRoute(document.id),
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.delete),
+                                    icon: const Icon(Icons.delete_forever),
                                     color: Color.fromARGB(255, 198, 0, 0),
                                     onPressed: () => _deleteRoute(document.id),
                                   ),
@@ -239,7 +366,7 @@ class _AllRouteState extends State<AllRoutes> {
                                 icon: (_isFavorited
                                     ? const Icon(Icons.favorite)
                                     : const Icon(Icons.favorite_border)),
-                                color: Color.fromRGBO(0, 181, 107, 1),
+                                color: Color.fromARGB(255, 198, 0, 0),
                                 onPressed: () => _toggleFavorite(document.id),
                               );
                             }

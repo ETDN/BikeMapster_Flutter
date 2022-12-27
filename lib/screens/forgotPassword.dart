@@ -8,24 +8,21 @@ import 'package:flutter_crashcourse/screens/login.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_crashcourse/screens/all_routes.dart';
 
-import 'Utils.dart';
-
-class Register extends StatefulWidget {
+class ForgotPassword extends StatefulWidget {
   @override
-  _MyRegisterState createState() => new _MyRegisterState();
+  _ForgotPasswordState createState() => new _ForgotPasswordState();
 }
 
-class _MyRegisterState extends State<Register> {
+class _ForgotPasswordState extends State<ForgotPassword> {
   final formKey = new GlobalKey<FormState>();
   final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  late String email, password;
+
+  late String email;
 
   @override
   void dispose() {
     super.dispose();
     emailController.dispose();
-    passwordController.dispose();
   }
 
   @override
@@ -35,13 +32,13 @@ class _MyRegisterState extends State<Register> {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: Form(
-          child: _buildRegisterForm(),
+          child: _buildforgotPasswordForm(),
         ),
       ),
     );
   }
 
-  _buildRegisterForm() {
+  _buildforgotPasswordForm() {
     return Padding(
       padding: const EdgeInsets.only(left: 25.0, right: 25.0),
       child: ListView(
@@ -53,7 +50,7 @@ class _MyRegisterState extends State<Register> {
             child: Stack(
               children: [
                 Text(
-                  'Registration',
+                  'Forgot password',
                   style: GoogleFonts.bebasNeue(
                       fontSize: 25,
                       fontWeight: FontWeight.w300,
@@ -75,7 +72,7 @@ class _MyRegisterState extends State<Register> {
                 Positioned(
                   top: 30.0,
                   child: Text(
-                    'Welcome to bikeMapster',
+                    'Write your email and reset your password',
                     style: GoogleFonts.bebasNeue(
                         fontSize: 17,
                         fontWeight: FontWeight.w300,
@@ -102,30 +99,10 @@ class _MyRegisterState extends State<Register> {
             ),
             validator: (String? value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter some text';
+                return 'Please enter your email adress';
               }
               return null;
             },
-          ),
-          TextFormField(
-            controller: passwordController,
-            style: GoogleFonts.bebasNeue(
-                fontSize: 15,
-                fontWeight: FontWeight.w300,
-                color: Color.fromRGBO(98, 156, 68, 1)),
-            decoration: const InputDecoration(
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color.fromRGBO(0, 181, 107, 1),
-                ),
-              ),
-              hintText: 'password',
-            ),
-            obscureText: true, //Hide input text
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            validator: (value) => value != null && value.length < 6
-                ? 'Password must have min. 6 characters'
-                : null,
           ),
           SizedBox(height: 5.0),
           RichText(
@@ -137,7 +114,7 @@ class _MyRegisterState extends State<Register> {
                         fontWeight: FontWeight.w300,
                         color: Color.fromRGBO(117, 169, 249, 1),
                         decoration: TextDecoration.underline),
-                    text: "Already have an account ? Log in",
+                    text: "Remember your password?  Log in",
                     recognizer: TapGestureRecognizer()
                       ..onTap = () async {
                         Navigator.pushReplacement(
@@ -151,13 +128,13 @@ class _MyRegisterState extends State<Register> {
           ),
           GestureDetector(
             child: ElevatedButton(
-              onPressed: signUp,
+              onPressed: resetPassword,
               style: ElevatedButton.styleFrom(
                 fixedSize: const Size(20, 50),
                 primary: Color.fromRGBO(0, 181, 107, 1), // Background color
               ),
               child: Text(
-                'Register',
+                'Reset password',
                 style: GoogleFonts.bebasNeue(
                     fontSize: 20,
                     fontWeight: FontWeight.w300,
@@ -182,36 +159,29 @@ class _MyRegisterState extends State<Register> {
 
     switch (index) {
       case 0:
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const AllRoutes()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => LoginPage()));
         break;
     }
   }
 
-  Future signUp() async {
-    debugPrint(emailController.text.trim());
-    debugPrint(passwordController.text.trim());
+  void message() {}
+
+  Future resetPassword() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(child: CircularProgressIndicator()),
+    );
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-      onItemPressed(context, index: 0);
+      await FirebaseAuth.instance
+          .sendPasswordResetEmail(email: emailController.text.trim());
 
-      //Store it in firebase
-      final docUser = FirebaseFirestore.instance
-          .collection("Bikers")
-          .doc(FirebaseAuth.instance.currentUser?.uid);
-      final json = {
-        "email": emailController.text.trim(),
-        "isAdmin": false,
-      };
+      //Utils.showSnackBar('Password Reset Email sent');
 
-      await docUser.set(json);
+      onItemPressed(context, index: 4);
     } on FirebaseAuthException catch (e) {
-      debugPrint(e.message);
       print(e);
-      Utils.showSnackBar(context, e.message);
     }
   }
 }

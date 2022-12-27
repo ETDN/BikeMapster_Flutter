@@ -36,7 +36,6 @@ class Home extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.white,
       ),
-
       body: Container(
           color: Colors.white,
           child: Stack(
@@ -49,11 +48,6 @@ class Home extends StatelessWidget {
               )
             ],
           )),
-
-      // backgroundColor: Color.fromRGBO(23, 23, 23, 1),
-      // body: Center(
-      //     child: Container(
-      //   child: Image(image: AssetImage('images/logo.png'), fit: BoxFit.fill),
     );
   }
 }
