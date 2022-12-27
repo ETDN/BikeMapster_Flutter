@@ -28,12 +28,19 @@ class EditRoute extends StatefulWidget {
 
 class _EditRouteState extends State<EditRoute> {
   final nameController = TextEditingController();
-  double lenght = 0.0;
-  double duration = 0.0;
+  int lenght = 0;
+  int duration = 0;
   String routeID = "";
+  var routeName = "";
   var currentIndex = null;
   var data;
   var roadInfo;
+  var startLat;
+  var startLong;
+  LatLng start = LatLng(0, 0);
+  LatLng end = LatLng(0, 0);
+  var endLat;
+  var endLong;
   //for holding starting and destination points
   List<Marker> myMarkers = [];
   //for holding all points needed to draw the route
@@ -45,7 +52,6 @@ class _EditRouteState extends State<EditRoute> {
 
   @override
   Widget build(BuildContext context) {
-    getRoute();
     return Scaffold(
         drawer: const DrawerNav(),
         appBar: AppBar(
@@ -60,15 +66,46 @@ class _EditRouteState extends State<EditRoute> {
           centerTitle: true,
           backgroundColor: Colors.white,
         ),
-        body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        body: FutureBuilder(
+            future: FirebaseFirestore.instance
+                .collection('Routes')
+                .doc(routeID)
+                .get(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData) {
+                Map<String, dynamic> data =
+                    snapshot.data.data() as Map<String, dynamic>;
+                //set route name
+                routeName = data['name'];
+                //get starting and destination points
+                startLat = data['startLat'];
+                startLong = data['startLong'];
+                endLat = data['endLat'];
+                endLong = data['endLong'];
+                //get route lenght and duration
+                lenght = data['lenght'];
+                duration = data['duration'];
+                //set starting and destination points
+                start = LatLng(startLat, startLong);
+                end = LatLng(endLat, endLong);
+                return buildBody();
+              } else {
+                return Center(child: CircularProgressIndicator());
+              }
+            }));
+  }
+
+  Padding buildBody() {
+    return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
               //Edit the name of the route
               TextFormField(
                 controller: nameController,
-                decoration: const InputDecoration(
-                  hintText: 'Route Name',
+                decoration: InputDecoration(
+                  hintText: routeName,
                 ),
               ),
 
@@ -94,47 +131,26 @@ class _EditRouteState extends State<EditRoute> {
                     },
                     child: const Text('Submit'),
                   )),
-              /*Container(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MapPage(),
-                      ),
-                    );
-                  },
-                  child: const Text('Edit Route'),
-                ),
-              ),*/
-              Container(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  //limit height of the map
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  child: map(
-                      myMarkers: myMarkers,
-                      polyPoints: polyPoints,
-                      handleTap: handleTap))
-            ])));
-  }
-
-  //get the route from firebase and set polypoints and markers
-  void getRoute() async {
-    await FirebaseFirestore.instance
-        .collection('Routes')
-        .doc(routeID)
-        .get()
-        .then((DocumentSnapshot documentSnapshot) {
-      if (documentSnapshot.exists) {
-        Map<String, dynamic> data =
-            documentSnapshot.data()! as Map<String, dynamic>;
-        //set polyline points
-        polyPoints = data['polyPoints'];
-      } else {
-        print('Document does not exist on the database');
-      }
-    });
+              Stack(
+                //Stack for the map
+                children: <Widget>[
+                  Container(
+                      //padding: const EdgeInsets.only(bottom: 16.0),
+                      //limit height of the map
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: map(
+                          myMarkers: myMarkers,
+                          polyPoints: polyPoints,
+                          handleTap: handleTap)),
+                  //Buttons for adding starting and destination points
+                  Positioned(
+                    right: 10,
+                    top: 10,
+                    child: buildStartDestButton(),
+                  )
+                ],
+              )
+            ]));
   }
 
   handleTap(LatLng tappedPoint) {
