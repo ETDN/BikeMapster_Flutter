@@ -74,33 +74,6 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
                   myMarkers: myMarkers,
                   polyPoints: polyPoints,
                   handleTap: _handleTap),
-              /*child: FlutterMap(
-                options: MapOptions(
-                  center: mapCenterPosition,
-                  zoom: 10.0,
-                  onTap: (tapPosition, point) => _handleTap(point),
-                ),
-                children: [
-                  TileLayer(
-                    urlTemplate:
-                        "https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg",
-                  ),
-                  MarkerLayer(
-                    markers: myMarkers,
-                  ),
-                  PolylineLayer(
-                    polylineCulling: false,
-                    polylines: [
-                      Polyline(
-                          points: polyPoints,
-                          color: Colors.grey,
-                          borderColor: Colors.deepPurpleAccent,
-                          borderStrokeWidth: 4.0,
-                          strokeCap: StrokeCap.round),
-                    ], //polylines
-                  ),
-                ],
-              ),*/
             ),
           ),
         ),

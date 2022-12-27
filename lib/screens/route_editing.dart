@@ -37,8 +37,8 @@ class _EditRouteState extends State<EditRoute> {
   var roadInfo;
   var startLat;
   var startLong;
-  LatLng start = LatLng(0, 0);
-  LatLng end = LatLng(0, 0);
+  //LatLng start = LatLng(0, 0);
+  //LatLng end = LatLng(0, 0);
   var endLat;
   var endLong;
   //for holding starting and destination points
@@ -53,6 +53,7 @@ class _EditRouteState extends State<EditRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         drawer: const DrawerNav(),
         appBar: AppBar(
           title: Text(
@@ -86,8 +87,8 @@ class _EditRouteState extends State<EditRoute> {
                 lenght = data['lenght'];
                 duration = data['duration'];
                 //set starting and destination points
-                start = LatLng(startLat, startLong);
-                end = LatLng(endLat, endLong);
+                //start = LatLng(startLat, startLong);
+                //end = LatLng(endLat, endLong);
                 return buildBody();
               } else {
                 return Center(child: CircularProgressIndicator());
@@ -97,7 +98,7 @@ class _EditRouteState extends State<EditRoute> {
 
   Padding buildBody() {
     return Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(10.0),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -108,29 +109,28 @@ class _EditRouteState extends State<EditRoute> {
                   hintText: routeName,
                 ),
               ),
-
               //Submit button
               Container(
-                  padding: const EdgeInsets.only(top: 16.0),
+                  //padding: const EdgeInsets.only(top: 10.0),
                   child: ElevatedButton(
-                    onPressed: () {
-                      if (nameController.text != '') {
-                        //Get instance of the route from firebase and update it
-                        /*FirebaseFirestore.instance
+                onPressed: () {
+                  if (nameController.text != '') {
+                    //Get instance of the route from firebase and update it
+                    /*FirebaseFirestore.instance
                             .collection('Routes')
                             .doc(routeID)
                             .update({
                           'name': nameController.text,
                         });*/
-                        print("Route name updated");
-                        print("Route lenght: " + lenght.toString());
-                        print("Route duration: " + duration.toString());
-                        print("Route polypoints: " + polyPoints.toString());
-                      } else
-                        print("No name entered");
-                    },
-                    child: const Text('Submit'),
-                  )),
+                    print("Route name updated");
+                    print("Route lenght: " + lenght.toString());
+                    print("Route duration: " + duration.toString());
+                    print("Route polypoints: " + polyPoints.toString());
+                  } else
+                    print("No name entered");
+                },
+                child: const Text('Submit'),
+              )),
               Stack(
                 //Stack for the map
                 children: <Widget>[

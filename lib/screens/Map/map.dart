@@ -45,18 +45,22 @@ class map extends StatelessWidget {
         MarkerLayer(
           markers: myMarkers,
         ),
-        PolylineLayer(
-          polylineCulling: false,
-          polylines: [
-            Polyline(
-                points: polyPoints,
-                color: Colors.grey,
-                borderColor: Colors.deepPurpleAccent,
-                borderStrokeWidth: 4.0,
-                strokeCap: StrokeCap.round),
-          ], //polylines
-        ),
+        if (polyPoints != null) BuildPolylineLayer(),
       ],
     ));
+  }
+
+  PolylineLayer BuildPolylineLayer() {
+    return PolylineLayer(
+      polylineCulling: false,
+      polylines: [
+        Polyline(
+            points: polyPoints,
+            color: Colors.grey,
+            borderColor: Colors.deepPurpleAccent,
+            borderStrokeWidth: 4.0,
+            strokeCap: StrokeCap.round),
+      ], //polylines
+    );
   }
 }
