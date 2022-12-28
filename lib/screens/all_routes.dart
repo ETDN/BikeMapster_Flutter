@@ -10,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'navbar/drawer_nav.dart';
 import 'new_route.dart';
+import 'route_editing.dart';
 
 enum SortMode {
   normal,
@@ -71,8 +72,23 @@ class _AllRouteState extends State<AllRoutes> {
   // DELETE METHOD //
 
   _deleteRoute(String id) {
+    //delete the route from the favorites of the bikers
+    FirebaseFirestore.instance
+        .collection('Bikers')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        if (doc.get('favorites').contains(id)) {
+          doc.reference.update({
+            'favorites': FieldValue.arrayRemove([id])
+          });
+        }
+      });
+    });
+
     //delete the route from the database
     FirebaseFirestore.instance.collection('Routes').doc(id).delete();
+
     //add comfirmation message
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text('Route deleted'),
@@ -82,10 +98,14 @@ class _AllRouteState extends State<AllRoutes> {
     setState(() {});
   }
 
-  // EDIT METHOD //
-
   _editRoute(String id) {
-    //method to edit a route
+    //navigate to the edit route page
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EditRoute(
+                  routeID: id,
+                )));
   }
 
   // SEARCH METHOD //

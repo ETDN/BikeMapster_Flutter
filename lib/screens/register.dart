@@ -8,6 +8,8 @@ import 'package:flutter_crashcourse/screens/login.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_crashcourse/screens/all_routes.dart';
 
+import 'Utils.dart';
+
 class Register extends StatefulWidget {
   @override
   _MyRegisterState createState() => new _MyRegisterState();
@@ -209,6 +211,7 @@ class _MyRegisterState extends State<Register> {
     } on FirebaseAuthException catch (e) {
       debugPrint(e.message);
       print(e);
+      Utils.showSnackBar(context, e.message);
     }
   }
 }

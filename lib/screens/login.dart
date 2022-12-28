@@ -11,6 +11,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'Utils.dart';
+
 class LoginPage extends StatefulWidget {
   @override
   _MyLoginState createState() => new _MyLoginState();
@@ -314,6 +316,7 @@ class _MyLoginState extends State<LoginPage> {
     } on FirebaseAuthException catch (e) {
       debugPrint(e.message);
       print(e);
+      Utils.showSnackBar(context, e.message);
     }
   }
 }
