@@ -180,8 +180,8 @@ class _MyRegisterState extends State<Register> {
 
     switch (index) {
       case 0:
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const AllRoutes()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => AllRoutes()));
         break;
     }
   }

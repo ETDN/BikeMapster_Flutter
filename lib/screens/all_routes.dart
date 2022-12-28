@@ -11,6 +11,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'navbar/drawer_nav.dart';
 import 'new_route.dart';
 
+enum SortMode {
+  normal,
+  distance,
+  duration,
+}
+
 class AllRoutes extends StatefulWidget {
   const AllRoutes({Key? key}) : super(key: key);
 
@@ -19,8 +25,11 @@ class AllRoutes extends StatefulWidget {
 }
 
 class _AllRouteState extends State<AllRoutes> {
+  SortMode _sortMode = SortMode.normal;
   final FirebaseAuth auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
+
+  // FAVORITE METHOD //
 
   //add the route to the favorites of the Biker
   void _toggleFavorite(String routeID) {
@@ -59,6 +68,8 @@ class _AllRouteState extends State<AllRoutes> {
     });
   }
 
+  // DELETE METHOD //
+
   _deleteRoute(String id) {
     //delete the route from the database
     FirebaseFirestore.instance.collection('Routes').doc(id).delete();
@@ -71,15 +82,14 @@ class _AllRouteState extends State<AllRoutes> {
     setState(() {});
   }
 
-  _editRoute(String id) {}
+  // EDIT METHOD //
 
-  // _sortRouteByDuration() {
-  //   _db.collection("Routes").orderBy('duration').get();
-  //   print("ntm");
-  //   ;
-  // }
+  _editRoute(String id) {
+    //method to edit a route
+  }
 
-  //used for search method maybe
+  // SEARCH METHOD //
+
   String value = "";
   TextEditingController controller_search = TextEditingController();
 
@@ -87,7 +97,8 @@ class _AllRouteState extends State<AllRoutes> {
     print("You searched for : ${controller_search.text}");
   }
 
-  //sort method
+  // SORT METHODS //
+
   void sortByDuration() async {
     QuerySnapshot querySnapshot = await _db
         .collection('Routes')
@@ -106,7 +117,23 @@ class _AllRouteState extends State<AllRoutes> {
     print(allData);
   }
 
-  // filter method
+  void _fetchRoutes() async {
+    QuerySnapshot querySnapshot = await _db.collection('Routes').get();
+    final List<Map<String, dynamic>> allData = querySnapshot.docs
+        .map((doc) => doc.data())
+        .where((data) => data is Map<String, dynamic>)
+        .toList() as List<Map<String, dynamic>>;
+  }
+
+  void _resetSort() {
+    setState(() {
+      _sortMode = SortMode.normal;
+      _fetchRoutes();
+    });
+  }
+
+  // FILTER METHOD //
+
   void filterByFavorite() async {
     final User user = auth.currentUser!;
     final uid = user.uid;
