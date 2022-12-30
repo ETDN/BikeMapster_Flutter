@@ -120,21 +120,13 @@ class _AllRouteState extends State<AllRoutes> {
   // SORT METHODS //
 
   void sortByDuration() async {
-    QuerySnapshot querySnapshot = await _db
-        .collection('Routes')
-        .orderBy('duration', descending: false)
-        .get();
-    final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
-    print(allData);
+    _sortMode = SortMode.duration;
+    setState(() {});
   }
 
   void sortByDistance() async {
-    QuerySnapshot querySnapshot = await _db
-        .collection('Routes')
-        .orderBy('length', descending: false)
-        .get();
-    final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
-    print(allData);
+    _sortMode = SortMode.distance;
+    setState(() {});
   }
 
   void _fetchRoutes() async {
@@ -174,8 +166,18 @@ class _AllRouteState extends State<AllRoutes> {
   @override
   build(BuildContext context) {
     //get data from firestore
-    CollectionReference routes =
+    Query<Map<String, dynamic>> routes =
         FirebaseFirestore.instance.collection('Routes');
+
+    //order the routes by duration
+    if (_sortMode == SortMode.duration) {
+      routes = routes.orderBy('duration', descending: false);
+    }
+
+    //order the routes by distance
+    if (_sortMode == SortMode.distance) {
+      routes = routes.orderBy('length', descending: false);
+    }
 
     final User user = auth.currentUser!;
     final uid = user.uid;
@@ -328,13 +330,12 @@ class _AllRouteState extends State<AllRoutes> {
                 }
 
                 return ListView(
-                  children:
-                      snapshot.data!.docs.map((DocumentSnapshot document) {
+                  children: snapshot.data!.docs.map((roadTomap) {
                     //check if the route is in the favorites of the Biker and wait for the result
                     bool _isFavorited = false;
                     biker_ref.get().then((value) {
                       try {
-                        if (value.get('favorites').contains(document.id)) {
+                        if (value.get('favorites').contains(roadTomap.id)) {
                           _isFavorited = true;
                         }
                       } catch (e) {
@@ -343,7 +344,7 @@ class _AllRouteState extends State<AllRoutes> {
                     });
 
                     Map<String, dynamic> data =
-                        document.data()! as Map<String, dynamic>;
+                        roadTomap.data()! as Map<String, dynamic>;
                     return new ListTile(
                       title: new Text(data['name'],
                           style: GoogleFonts.bebasNeue(
@@ -375,12 +376,12 @@ class _AllRouteState extends State<AllRoutes> {
                                   IconButton(
                                     icon: const Icon(Icons.edit),
                                     color: Color.fromRGBO(0, 181, 107, 1),
-                                    onPressed: () => _editRoute(document.id),
+                                    onPressed: () => _editRoute(roadTomap.id),
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.delete_forever),
                                     color: Color.fromARGB(255, 198, 0, 0),
-                                    onPressed: () => _deleteRoute(document.id),
+                                    onPressed: () => _deleteRoute(roadTomap.id),
                                   ),
                                 ],
                               );
@@ -390,7 +391,7 @@ class _AllRouteState extends State<AllRoutes> {
                                     ? const Icon(Icons.favorite)
                                     : const Icon(Icons.favorite_border)),
                                 color: Color.fromARGB(255, 198, 0, 0),
-                                onPressed: () => _toggleFavorite(document.id),
+                                onPressed: () => _toggleFavorite(roadTomap.id),
                               );
                             }
                           } else {
