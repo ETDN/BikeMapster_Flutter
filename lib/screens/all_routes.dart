@@ -18,6 +18,15 @@ enum SortMode {
   duration,
 }
 
+enum FilterMode {
+  normal,
+  favorite,
+  distance,
+  duration,
+  starpoint,
+  endpoint,
+}
+
 class AllRoutes extends StatefulWidget {
   const AllRoutes({Key? key}) : super(key: key);
 
@@ -27,6 +36,7 @@ class AllRoutes extends StatefulWidget {
 
 class _AllRouteState extends State<AllRoutes> {
   SortMode _sortMode = SortMode.normal;
+  FilterMode _filterMode = FilterMode.normal;
   final FirebaseAuth auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
 
@@ -110,11 +120,20 @@ class _AllRouteState extends State<AllRoutes> {
 
   // SEARCH METHOD //
 
-  String value = "";
-  TextEditingController controller_search = TextEditingController();
+  Future<QuerySnapshot>? postDocumentsList;
+  String userNameText = '';
 
-  _printSearchValue() {
-    print("You searched for : ${controller_search.text}");
+  initSearchingPost(String textInput) {
+    postDocumentsList = FirebaseFirestore.instance
+        .collection('Routes')
+        .where('name', isGreaterThanOrEqualTo: textInput)
+        .get();
+
+    print(textInput);
+
+    setState(() {
+      postDocumentsList;
+    });
   }
 
   // SORT METHODS //
@@ -129,24 +148,19 @@ class _AllRouteState extends State<AllRoutes> {
     setState(() {});
   }
 
-  void _fetchRoutes() async {
-    QuerySnapshot querySnapshot = await _db.collection('Routes').get();
-    final List<Map<String, dynamic>> allData = querySnapshot.docs
-        .map((doc) => doc.data())
-        .where((data) => data is Map<String, dynamic>)
-        .toList() as List<Map<String, dynamic>>;
-  }
-
   void _resetSort() {
     setState(() {
       _sortMode = SortMode.normal;
-      _fetchRoutes();
+      // _fetchRoutes();
     });
   }
 
   // FILTER METHOD //
 
   void filterByFavorite() async {
+    setState(() {
+      _filterMode = FilterMode.favorite;
+    });
     final User user = auth.currentUser!;
     final uid = user.uid;
     // sort routes to display only user's favorites
@@ -165,9 +179,16 @@ class _AllRouteState extends State<AllRoutes> {
 
   @override
   build(BuildContext context) {
+    final User user = auth.currentUser!;
+    final uid = user.uid;
     //get data from firestore
     Query<Map<String, dynamic>> routes =
         FirebaseFirestore.instance.collection('Routes');
+
+    DocumentReference biker_ref =
+        FirebaseFirestore.instance.collection("Bikers").doc(uid);
+
+    // Query query = Query(biker_ref).orderBy('favorites');
 
     //order the routes by duration
     if (_sortMode == SortMode.duration) {
@@ -179,10 +200,27 @@ class _AllRouteState extends State<AllRoutes> {
       routes = routes.orderBy('length', descending: false);
     }
 
-    final User user = auth.currentUser!;
-    final uid = user.uid;
-    DocumentReference biker_ref =
-        FirebaseFirestore.instance.collection("Bikers").doc(uid);
+    // reset the routes into the db order
+    if (_sortMode == SortMode.normal) {
+      routes = routes;
+    }
+
+    if (_filterMode == FilterMode.favorite) {
+      final User user = auth.currentUser!;
+      final uid = user.uid;
+      // sort routes to display only user's favorites
+      FirebaseFirestore.instance
+          .collection('Bikers')
+          .doc(uid)
+          .get()
+          .then((DocumentSnapshot userData) {
+        if (userData.exists) {
+          print('Document favorites: ${userData['favorites']}');
+        } else {
+          print('Document does not exist on the database');
+        }
+      });
+    }
 
     return Scaffold(
       drawer: const DrawerNav(),
@@ -263,6 +301,22 @@ class _AllRouteState extends State<AllRoutes> {
                       PopupMenuItem(
                         child: ListTile(
                           leading: Icon(
+                            Icons.restore,
+                            color: Color.fromRGBO(53, 66, 74, 1),
+                          ),
+                          title: Transform.translate(
+                            offset: Offset(-20, 0),
+                            child: Text(
+                              'Reset',
+                              style: GoogleFonts.bebasNeue(fontSize: 15),
+                            ),
+                          ),
+                        ),
+                        onTap: () => _resetSort(),
+                      ),
+                      PopupMenuItem(
+                        child: ListTile(
+                          leading: Icon(
                             Icons.timer,
                             color: Color.fromRGBO(53, 66, 74, 1),
                           ),
@@ -303,13 +357,19 @@ class _AllRouteState extends State<AllRoutes> {
             height: 55,
             width: 300,
             child: TextField(
-              onChanged: (text) {
-                value = text;
-                print(value);
+              onChanged: (textInput) {
+                setState(() {
+                  userNameText = textInput;
+                });
+                initSearchingPost(textInput);
               },
               textAlignVertical: TextAlignVertical.center,
               decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: IconButton(
+                      icon: const Icon(Icons.search, color: Colors.black),
+                      onPressed: () {
+                        initSearchingPost(userNameText);
+                      }),
                   hintText: 'Search a road',
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -434,74 +494,74 @@ class _AllRouteState extends State<AllRoutes> {
   }
 }
 
-//Search by city method empty
+// //Search by city method empty
 
-class CustomSearchDelegate extends SearchDelegate {
-  List<String> nameCity = [];
-  // Names of the city stored in the Database ?
-  //Or hardcoded ?
+// class CustomSearchDelegate extends SearchDelegate {
+//   List<String> nameCity = [];
+//   // Names of the city stored in the Database ?
+//   //Or hardcoded ?
 
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [
-      IconButton(
-        onPressed: () {
-          query = '';
-        },
-        icon: Icon(Icons.clear),
-      ),
-    ];
-  }
+//   @override
+//   List<Widget>? buildActions(BuildContext context) {
+//     return [
+//       IconButton(
+//         onPressed: () {
+//           query = '';
+//         },
+//         icon: Icon(Icons.clear),
+//       ),
+//     ];
+//   }
 
-  // second overwrite to pop out of search menu
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-      onPressed: () {
-        close(context, null);
-      },
-      icon: Icon(Icons.arrow_back),
-    );
-  }
+//   // second overwrite to pop out of search menu
+//   @override
+//   Widget? buildLeading(BuildContext context) {
+//     return IconButton(
+//       onPressed: () {
+//         close(context, null);
+//       },
+//       icon: Icon(Icons.arrow_back),
+//     );
+//   }
 
-  // third overwrite to show query result
-  @override
-  Widget buildResults(BuildContext context) {
-    List<String> matchQuery = [];
-    for (var city in nameCity) {
-      if (city.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(city);
-      }
-    }
-    return ListView.builder(
-      itemCount: matchQuery.length,
-      itemBuilder: (context, index) {
-        var result = matchQuery[index];
-        return ListTile(
-          title: Text(result),
-        );
-      },
-    );
-  }
+//   // third overwrite to show query result
+//   @override
+//   Widget buildResults(BuildContext context) {
+//     List<String> matchQuery = [];
+//     for (var city in nameCity) {
+//       if (city.toLowerCase().contains(query.toLowerCase())) {
+//         matchQuery.add(city);
+//       }
+//     }
+//     return ListView.builder(
+//       itemCount: matchQuery.length,
+//       itemBuilder: (context, index) {
+//         var result = matchQuery[index];
+//         return ListTile(
+//           title: Text(result),
+//         );
+//       },
+//     );
+//   }
 
-  // last overwrite to show the
-  // querying process at the runtime
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    List<String> matchQuery = [];
-    for (var city in nameCity) {
-      if (city.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(city);
-      }
-    }
-    return ListView.builder(
-      itemCount: matchQuery.length,
-      itemBuilder: (context, index) {
-        var result = matchQuery[index];
-        return ListTile(
-          title: Text(result),
-        );
-      },
-    );
-  }
-}
+//   // last overwrite to show the
+//   // querying process at the runtime
+//   @override
+//   Widget buildSuggestions(BuildContext context) {
+//     List<String> matchQuery = [];
+//     for (var city in nameCity) {
+//       if (city.toLowerCase().contains(query.toLowerCase())) {
+//         matchQuery.add(city);
+//       }
+//     }
+//     return ListView.builder(
+//       itemCount: matchQuery.length,
+//       itemBuilder: (context, index) {
+//         var result = matchQuery[index];
+//         return ListTile(
+//           title: Text(result),
+//         );
+//       },
+//     );
+//   }
+// }
