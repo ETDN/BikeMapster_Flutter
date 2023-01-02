@@ -224,6 +224,13 @@ class _AllRouteState extends State<AllRoutes> {
       routes = routes.where('duration', isGreaterThan: 60);
     }
 
+    //search the routes by name
+    if (userNameText != '') {
+      routes = routes
+          .where('name', isGreaterThanOrEqualTo: userNameText)
+          .where('name', isLessThan: userNameText + 'z');
+    }
+
     //filter out the routes that are not in the favorites of the biker
     /*if (_filterMode == FilterMode.favorite) {
       biker_ref.get().then((bikerValue) {
