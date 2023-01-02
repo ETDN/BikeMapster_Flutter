@@ -183,7 +183,7 @@ class PanelWidget extends StatelessWidget {
   saveRoute(dynamic roadInfo, BuildContext context) {
     //navigate to the new route page
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return RouteForm(roadInfo.distance, roadInfo.duration, polyPoints[0],
+      return RouteForm(roadInfo.distance, roadInfo.duration / 60, polyPoints[0],
           polyPoints[polyPoints.length - 1]);
     }));
   }
