@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -22,7 +21,8 @@ enum FilterMode {
   normal,
   favorite,
   distance,
-  duration,
+  durationLess,
+  durationMore,
   starpoint,
   endpoint,
 }
@@ -140,17 +140,20 @@ class _AllRouteState extends State<AllRoutes> {
 
   void sortByDuration() async {
     _sortMode = SortMode.duration;
+    _filterMode = FilterMode.normal;
     setState(() {});
   }
 
   void sortByDistance() async {
     _sortMode = SortMode.distance;
+    _filterMode = FilterMode.normal;
     setState(() {});
   }
 
   void _resetSort() {
     setState(() {
       _sortMode = SortMode.normal;
+      _filterMode = FilterMode.normal;
       // _fetchRoutes();
     });
   }
@@ -160,8 +163,9 @@ class _AllRouteState extends State<AllRoutes> {
   void filterByFavorite() async {
     setState(() {
       _filterMode = FilterMode.favorite;
+      _sortMode = SortMode.normal;
     });
-    final User user = auth.currentUser!;
+    /*final User user = auth.currentUser!;
     final uid = user.uid;
     // sort routes to display only user's favorites
     FirebaseFirestore.instance
@@ -174,20 +178,27 @@ class _AllRouteState extends State<AllRoutes> {
       } else {
         print('Document does not exist on the database');
       }
-    });
+    });*/
   }
 
   @override
   build(BuildContext context) {
     final User user = auth.currentUser!;
     final uid = user.uid;
-    //get data from firestore
-    Query<Map<String, dynamic>> routes =
-        FirebaseFirestore.instance.collection('Routes');
 
     DocumentReference biker_ref =
         FirebaseFirestore.instance.collection("Bikers").doc(uid);
 
+    //get data from firestore
+    /*Query<Map<String, dynamic>> routes =
+        FirebaseFirestore.instance.collection('Routes');*/
+
+    Query<Map<String, dynamic>> routes;
+    if (_filterMode == FilterMode.favorite) {
+      routes = FirebaseFirestore.instance.collection('Routes');
+    } else {
+      routes = FirebaseFirestore.instance.collection('Routes');
+    }
     // Query query = Query(biker_ref).orderBy('favorites');
 
     //order the routes by duration
@@ -205,6 +216,46 @@ class _AllRouteState extends State<AllRoutes> {
       routes = routes;
     }
 
+    if (_filterMode == FilterMode.durationLess) {
+      routes = routes.where('duration', isLessThan: 60);
+    }
+
+    if (_filterMode == FilterMode.durationMore) {
+      routes = routes.where('duration', isGreaterThan: 60);
+    }
+
+    //search the routes by name
+    if (userNameText != '') {
+      routes = routes
+          .where('name', isGreaterThanOrEqualTo: userNameText)
+          .where('name', isLessThan: userNameText + 'z');
+    }
+
+    //filter out the routes that are not in the favorites of the biker
+    /*if (_filterMode == FilterMode.favorite) {
+      biker_ref.get().then((bikerValue) {
+        try {
+          print(bikerValue.get("favorites"));
+          //get the favorites of the biker
+          List favorites = bikerValue.get("favorites");
+          //filter the routes to display only the favorites
+
+          routes.get().then((value) {
+            value.docs.forEach((element) {
+              if (favorites.contains(element.id)) {
+                print(element.id);
+              }
+            });
+          });         
+        } catch (e) {
+          print("no favorites");
+        }
+      });
+      //value.get("favorites")
+      //routes = routes.where('favorites', arrayContains: uid);
+    }*/
+
+/*
     if (_filterMode == FilterMode.favorite) {
       final User user = auth.currentUser!;
       final uid = user.uid;
@@ -216,11 +267,12 @@ class _AllRouteState extends State<AllRoutes> {
           .then((DocumentSnapshot userData) {
         if (userData.exists) {
           print('Document favorites: ${userData['favorites']}');
+          routes = routes.where(userData['favorites'], arrayContains: "id");
         } else {
           print('Document does not exist on the database');
         }
       });
-    }
+    }*/
 
     return Scaffold(
       drawer: const DrawerNav(),
@@ -271,7 +323,10 @@ class _AllRouteState extends State<AllRoutes> {
                           ),
                         ),
                       ),
-                      onTap: () => print("Salut"),
+                      onTap: () => setState(() {
+                        _filterMode = FilterMode.durationLess;
+                        _sortMode = SortMode.normal;
+                      }),
                     ),
                     PopupMenuItem(
                       child: ListTile(
@@ -287,7 +342,10 @@ class _AllRouteState extends State<AllRoutes> {
                           ),
                         ),
                       ),
-                      onTap: () => print("Salut"),
+                      onTap: () => setState(() {
+                        _filterMode = FilterMode.durationMore;
+                        _sortMode = SortMode.normal;
+                      }),
                     ),
                   ]),
           Padding(
@@ -389,6 +447,44 @@ class _AllRouteState extends State<AllRoutes> {
                   return Text("Loading");
                 }
 
+                //filter out the routes that are not in the favorites of the Biker
+                /*Future.delayed(Duration.zero, () async {
+                  await biker_ref.get().then((bikerValue) {
+                    try {
+                      snapshot.data!.docs.forEach((element) {
+                        if (_filterMode == FilterMode.favorite) {
+                          if (!bikerValue
+                              .get('favorites')
+                              .contains(element.id)) {
+                            snapshot.data!.docs.remove(element);
+                            print("removed " + element.id);
+                          }
+                        }
+                      });
+                    } catch (e) {
+                      print("something went wrong");
+                    }
+                  });
+                });*/
+
+                /*snapshot.data!.docs.forEach((element) {
+                  biker_ref.get().then((bikerValue) {
+                    try {
+                      if (!bikerValue.get('favorites').contains(element.id)) {
+                        snapshot.data!.docs.remove(element);
+                        print("removed " + element.id);
+                      }
+                    } catch (e) {
+                      print("something went wrong");
+                    }
+                  });
+                  /* if (_filterMode == FilterMode.favorite) {
+                    if (!biker.get('favorites').contains(element.id)) {
+                      snapshot.data!.docs.remove(element);
+                    }
+                  }*/
+                });*/
+
                 return ListView(
                   children: snapshot.data!.docs.map((roadTomap) {
                     //check if the route is in the favorites of the Biker and wait for the result
@@ -460,24 +556,6 @@ class _AllRouteState extends State<AllRoutes> {
                         },
                       ),
 
-                      //wait for _isFavorited to be set
-                      /*FutureBuilder(
-                        future: biker_ref.get(),
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
-                          if (snapshot.hasData) {
-                            return IconButton(
-                              icon: (_isFavorited
-                                  ? const Icon(Icons.favorite)
-                                  : const Icon(Icons.favorite_border)),
-                              color: Color.fromRGBO(0, 181, 107, 1),
-                              onPressed: () => _toggleFavorite(document.id),
-                            );
-                          } else {
-                            return const CircularProgressIndicator();
-                          }
-                        },
-                      ),*/
                       leading: CircleAvatar(
                           backgroundImage: NetworkImage(
                               "https://images.unsplash.com/photo-1609605988071-0d1cfd25044e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1935&q=80")),
