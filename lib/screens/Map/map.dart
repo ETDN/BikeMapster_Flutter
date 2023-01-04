@@ -11,7 +11,7 @@ class map extends StatelessWidget {
   //Constructor
   map({
     super.key,
-    required List<Marker> myMarkers,
+    required Map<String, Marker> myMarkers,
     required List<LatLng> polyPoints,
     required Function(LatLng tappedPoint) handleTap,
   }) {
@@ -22,7 +22,7 @@ class map extends StatelessWidget {
 
   Function _handleTap = (LatLng tappedPoint) {};
   //for holding starting and destination points
-  List<Marker> myMarkers = [];
+  Map<String, Marker> myMarkers = {};
   //for holding all points needed to draw the route
   List<LatLng> polyPoints = [];
   //position of map when open it. May be modified according to customer settings (future improvement)
@@ -43,7 +43,7 @@ class map extends StatelessWidget {
               "https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg",
         ),
         MarkerLayer(
-          markers: myMarkers,
+          markers: myMarkers.values.toList(),
         ),
         if (polyPoints != null) BuildPolylineLayer(),
       ],

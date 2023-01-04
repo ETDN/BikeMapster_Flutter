@@ -28,6 +28,7 @@ class NetworkHelper {
     // print(response.body);
     if (response.statusCode == 200) {
       var data = response.body;
+      print(jsonDecode(data));
       return jsonDecode(data);
     } else {
       print("ERROR founded : ");

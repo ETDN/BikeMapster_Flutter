@@ -42,7 +42,7 @@ class _EditRouteState extends State<EditRoute> {
   var endLat;
   var endLong;
   //for holding starting and destination points
-  List<Marker> myMarkers = [];
+  Map<String, Marker> myMarkers = {};
   //for holding all points needed to draw the route
   List<LatLng> polyPoints = [];
 
@@ -118,10 +118,10 @@ class _EditRouteState extends State<EditRoute> {
                       polyPoints != null &&
                       roadInfo != null) {
                     //Get instance of the route from firebase and update it
-                    startLat = myMarkers[0].point.latitude;
-                    startLong = myMarkers[0].point.longitude;
-                    endLat = myMarkers[1].point.latitude;
-                    endLong = myMarkers[1].point.longitude;
+                    startLat = myMarkers["start"]!.point.latitude;
+                    startLong = myMarkers["start"]!.point.longitude;
+                    endLat = myMarkers["end"]!.point.latitude;
+                    endLong = myMarkers["end"]!.point.longitude;
                     FirebaseFirestore.instance
                         .collection('Routes')
                         .doc(routeID)
@@ -178,39 +178,37 @@ class _EditRouteState extends State<EditRoute> {
       // myMarkers = [];
       if (currentIndex == 0) {
         if (myMarkers.length > 0) {
-          myMarkers.removeAt(currentIndex);
+          myMarkers.remove("start");
         }
-        myMarkers.insert(
-          currentIndex,
-          Marker(
-            point: tappedPoint,
-            builder: (context) => Icon(
-              FontAwesomeIcons.locationDot,
-              color: Color.fromRGBO(0, 181, 107, 1),
-              size: 35,
-            ),
-            key: Key("start"),
-            anchorPos: AnchorPos.align(AnchorAlign.top),
+        myMarkers["start"] = (
+            // currentIndex,
+            Marker(
+          point: tappedPoint,
+          builder: (context) => Icon(
+            FontAwesomeIcons.locationDot,
+            color: Color.fromRGBO(0, 181, 107, 1),
+            size: 35,
           ),
-        );
+          // key: Key("start"),
+          anchorPos: AnchorPos.align(AnchorAlign.top),
+        ));
         print(tappedPoint.toString());
       }
       if (currentIndex == 1) {
         if (myMarkers.length > 1) {
-          myMarkers.removeAt(currentIndex);
+          myMarkers.remove("end");
         }
-        myMarkers.insert(
-          currentIndex,
-          Marker(
-            point: tappedPoint,
-            builder: (context) => Icon(
-              FontAwesomeIcons.crosshairs,
-              color: Colors.redAccent,
-              size: 30,
-            ),
-            key: Key("end"),
+        myMarkers["end"] = (
+            // currentIndex,
+            Marker(
+          point: tappedPoint,
+          builder: (context) => Icon(
+            FontAwesomeIcons.crosshairs,
+            color: Colors.redAccent,
+            size: 30,
           ),
-        );
+          key: Key("end"),
+        ));
       }
       getJsonData();
       _getTripInformation();
@@ -222,10 +220,10 @@ class _EditRouteState extends State<EditRoute> {
     if (myMarkers.length != 2) {
       return;
     }
-    var latStart = myMarkers.first.point.latitude;
-    var lngStart = myMarkers.first.point.longitude;
-    var latEnd = myMarkers.last.point.latitude;
-    var lngEnd = myMarkers.last.point.longitude;
+    var latStart = myMarkers["start"]!.point.latitude;
+    var lngStart = myMarkers["start"]!.point.longitude;
+    var latEnd = myMarkers["end"]!.point.latitude;
+    var lngEnd = myMarkers["end"]!.point.longitude;
 
     List<LngLat> waypoints = [
       LngLat(lng: lngStart, lat: latStart),
@@ -261,10 +259,10 @@ class _EditRouteState extends State<EditRoute> {
     // Create an instance of Class NetworkHelper which uses http package
     // for requesting data to the server and receiving response as JSON format
     NetworkHelper network = NetworkHelper(
-      startLat: myMarkers.first.point.latitude,
-      startLng: myMarkers.first.point.longitude,
-      endLat: myMarkers.last.point.latitude,
-      endLng: myMarkers.last.point.longitude,
+      startLat: myMarkers["start"]!.point.latitude,
+      startLng: myMarkers["start"]!.point.longitude,
+      endLat: myMarkers["start"]!.point.latitude,
+      endLng: myMarkers["start"]!.point.longitude,
     );
 
     try {
