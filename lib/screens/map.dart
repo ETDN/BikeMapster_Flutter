@@ -11,6 +11,7 @@ import 'map_panel_widget.dart';
 import 'navbar/drawer_nav.dart';
 import 'package:routing_client_dart/routing_client_dart.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
 
 import 'networkHelper_map.dart';
 
@@ -34,6 +35,12 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   LatLng mapCenterPosition = LatLng(46.2293518, 7.3620487);
   //for managing onTap method on grey bar to up the sliding panel
   final panelController = PanelController();
+  //variables to store user location data
+  var _latitude = "";
+  var _longitude = "";
+  var _altitude = "";
+  var _speed = "";
+  var _address = "";
 
   @override
   Widget build(BuildContext context) {
@@ -228,7 +235,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
       }
       setState(() {});
     } catch (e) {
-      print(e);
+      print("Error on map page, from method 'getJsonData()' : " + e.toString());
     }
   }
 
@@ -264,6 +271,65 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
           ),
         ],
       );
+
+// ===================================
+// update user's live-position
+// ===================================
+  Future<void> _updatePosition() async {
+    Position pos = await _determinePosition();
+    // List pm = await placemarkFromCoordinates(pos.latitude, pos.longitude);
+    setState(() {
+      _latitude = pos.latitude.toString();
+      _longitude = pos.longitude.toString();
+      _altitude = pos.altitude.toString();
+      _speed = pos.speed.toString();
+
+      // _address = pm[0].toString();
+    });
+  }
+
+//GPS - user location - code from https://pub.dev/packages/geolocator
+  /// Determine the current position of the device.
+  ///
+  /// When the location services are not enabled or permissions
+  /// are denied the `Future` will return an error.
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time user could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // the App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator
+        .getCurrentPosition(); //.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  }
 }
 
 //Create a new class to hold the Co-ordinates we have received from the response data
