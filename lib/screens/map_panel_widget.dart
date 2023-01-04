@@ -7,6 +7,7 @@ import 'package:flutter_crashcourse/screens/new_route.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:routing_client_dart/routing_client_dart.dart';
 import 'package:sliding_up_panel2/sliding_up_panel2.dart';
+import 'Utils.dart';
 
 class PanelWidget extends StatelessWidget {
   var roadInfo;
@@ -145,19 +146,21 @@ class PanelWidget extends StatelessWidget {
           //   ),
           //   "Estimated duration : ${roadInfo.duration / 60} min",
           // ),
-          ElevatedButton(
-              onPressed: () => saveRoute(roadInfo, context),
-              child: Text(
-                "Save",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.bebasNeue(fontSize: 18),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromRGBO(0, 181, 107, 1),
-                fixedSize: const Size(80, 40),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50)),
-              ))
+          adminRights
+              ? ElevatedButton(
+                  onPressed: () => saveRoute(roadInfo, context),
+                  child: Text(
+                    "Save",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.bebasNeue(fontSize: 18),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromRGBO(0, 181, 107, 1),
+                    fixedSize: const Size(80, 40),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50)),
+                  ))
+              : const Text(""),
         ],
       ));
 
