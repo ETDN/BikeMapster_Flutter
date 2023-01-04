@@ -1,13 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_crashcourse/screens/all_routes.dart';
+import 'package:flutter_crashcourse/screens/forgotPassword.dart';
 import 'package:flutter_crashcourse/screens/register.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'Utils.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -236,8 +241,26 @@ class _MyLoginState extends State<LoginPage> {
               ])),
 
           SizedBox(
-            height: 20,
+            height: 5.0,
           ),
+          RichText(
+              textAlign: TextAlign.right,
+              text: TextSpan(children: [
+                TextSpan(
+                    style: GoogleFonts.bebasNeue(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w300,
+                        color: Color.fromRGBO(117, 169, 249, 1),
+                        decoration: TextDecoration.underline),
+                    text: "Forgot password",
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ForgotPassword()));
+                      }),
+              ])),
           ElevatedButton(
             onPressed: signIn,
             style: ElevatedButton.styleFrom(
@@ -255,6 +278,8 @@ class _MyLoginState extends State<LoginPage> {
           SizedBox(
             height: 20,
           ),
+
+          SizedBox(height: 16),
           Image.asset(
             'assets/images/cyclists.png',
             height: 200,
@@ -265,12 +290,16 @@ class _MyLoginState extends State<LoginPage> {
   }
 
   void onItemPressed(BuildContext context, {required int index}) {
-    Navigator.pop(context);
-
+    Navigator.pop(
+        context,
+        PageTransition(
+            type: PageTransitionType.leftToRight, child: AllRoutes()));
     switch (index) {
       case 0:
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const AllRoutes()));
+        Navigator.push(
+            context,
+            PageTransition(
+                type: PageTransitionType.leftToRight, child: AllRoutes()));
         break;
     }
   }
@@ -284,10 +313,22 @@ class _MyLoginState extends State<LoginPage> {
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
+
+      final docUser = FirebaseFirestore.instance
+          .collection("Bikers")
+          .doc(FirebaseAuth.instance.currentUser?.uid);
+
+      final isAdminChecked = await docUser.get().then(((value) {
+        return value.data()!['isAdmin'];
+      }));
+
+      isAdmin = isAdminChecked;
+
       onItemPressed(context, index: 0);
     } on FirebaseAuthException catch (e) {
       debugPrint(e.message);
       print(e);
+      Utils.showSnackBar(context, e.message);
     }
   }
 }

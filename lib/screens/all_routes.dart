@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -10,6 +9,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'navbar/drawer_nav.dart';
 import 'new_route.dart';
+import 'route_editing.dart';
+
+enum SortMode {
+  normal,
+  distance,
+  duration,
+}
+
+enum FilterMode {
+  normal,
+  favorite,
+  distance,
+  durationLess,
+  durationMore,
+  starpoint,
+  endpoint,
+}
 
 class AllRoutes extends StatefulWidget {
   const AllRoutes({Key? key}) : super(key: key);
@@ -19,7 +35,12 @@ class AllRoutes extends StatefulWidget {
 }
 
 class _AllRouteState extends State<AllRoutes> {
+  SortMode _sortMode = SortMode.normal;
+  FilterMode _filterMode = FilterMode.normal;
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final _db = FirebaseFirestore.instance;
+
+  // FAVORITE METHOD //
 
   //add the route to the favorites of the Biker
   void _toggleFavorite(String routeID) {
@@ -58,16 +79,200 @@ class _AllRouteState extends State<AllRoutes> {
     });
   }
 
+  // DELETE METHOD //
+
+  _deleteRoute(String id) {
+    //delete the route from the favorites of the bikers
+    FirebaseFirestore.instance
+        .collection('Bikers')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        if (doc.get('favorites').contains(id)) {
+          doc.reference.update({
+            'favorites': FieldValue.arrayRemove([id])
+          });
+        }
+      });
+    });
+
+    //delete the route from the database
+    FirebaseFirestore.instance.collection('Routes').doc(id).delete();
+
+    //add comfirmation message
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Route deleted'),
+      duration: Duration(seconds: 2),
+    ));
+    //update the state of the widget
+    setState(() {});
+  }
+
+  _editRoute(String id) {
+    //navigate to the edit route page
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EditRoute(
+                  routeID: id,
+                )));
+  }
+
+  // SEARCH METHOD //
+
+  Future<QuerySnapshot>? postDocumentsList;
+  String userNameText = '';
+
+  initSearchingPost(String textInput) {
+    postDocumentsList = FirebaseFirestore.instance
+        .collection('Routes')
+        .where('name', isGreaterThanOrEqualTo: textInput)
+        .get();
+
+    print(textInput);
+
+    setState(() {
+      postDocumentsList;
+    });
+  }
+
+  // SORT METHODS //
+
+  void sortByDuration() async {
+    _sortMode = SortMode.duration;
+    _filterMode = FilterMode.normal;
+    setState(() {});
+  }
+
+  void sortByDistance() async {
+    _sortMode = SortMode.distance;
+    _filterMode = FilterMode.normal;
+    setState(() {});
+  }
+
+  void _resetSort() {
+    setState(() {
+      _sortMode = SortMode.normal;
+      _filterMode = FilterMode.normal;
+      // _fetchRoutes();
+    });
+  }
+
+  // FILTER METHOD //
+
+  void filterByFavorite() async {
+    setState(() {
+      _filterMode = FilterMode.favorite;
+      _sortMode = SortMode.normal;
+    });
+    /*final User user = auth.currentUser!;
+    final uid = user.uid;
+    // sort routes to display only user's favorites
+    FirebaseFirestore.instance
+        .collection('Bikers')
+        .doc(uid)
+        .get()
+        .then((DocumentSnapshot userData) {
+      if (userData.exists) {
+        print('Document favorites: ${userData['favorites']}');
+      } else {
+        print('Document does not exist on the database');
+      }
+    });*/
+  }
+
   @override
   build(BuildContext context) {
-    //get data from firestore
-    CollectionReference routes =
-        FirebaseFirestore.instance.collection('Routes');
-
     final User user = auth.currentUser!;
     final uid = user.uid;
+
     DocumentReference biker_ref =
         FirebaseFirestore.instance.collection("Bikers").doc(uid);
+
+    //get data from firestore
+    /*Query<Map<String, dynamic>> routes =
+        FirebaseFirestore.instance.collection('Routes');*/
+
+    Query<Map<String, dynamic>> routes;
+    if (_filterMode == FilterMode.favorite) {
+      routes = FirebaseFirestore.instance.collection('Routes');
+    } else {
+      routes = FirebaseFirestore.instance.collection('Routes');
+    }
+    // Query query = Query(biker_ref).orderBy('favorites');
+
+    //order the routes by duration
+    if (_sortMode == SortMode.duration) {
+      routes = routes.orderBy('duration', descending: false);
+    }
+
+    //order the routes by distance
+    if (_sortMode == SortMode.distance) {
+      routes = routes.orderBy('length', descending: false);
+    }
+
+    // reset the routes into the db order
+    if (_sortMode == SortMode.normal) {
+      routes = routes;
+    }
+
+    if (_filterMode == FilterMode.durationLess) {
+      routes = routes.where('duration', isLessThan: 60);
+    }
+
+    if (_filterMode == FilterMode.durationMore) {
+      routes = routes.where('duration', isGreaterThan: 60);
+    }
+
+    //search the routes by name
+    if (userNameText != '') {
+      routes = routes
+          .where('name', isGreaterThanOrEqualTo: userNameText)
+          .where('name', isLessThan: userNameText + 'z');
+    }
+
+    //filter out the routes that are not in the favorites of the biker
+    /*if (_filterMode == FilterMode.favorite) {
+      biker_ref.get().then((bikerValue) {
+        try {
+          print(bikerValue.get("favorites"));
+          //get the favorites of the biker
+          List favorites = bikerValue.get("favorites");
+          //filter the routes to display only the favorites
+
+          routes.get().then((value) {
+            value.docs.forEach((element) {
+              if (favorites.contains(element.id)) {
+                print(element.id);
+              }
+            });
+          });         
+        } catch (e) {
+          print("no favorites");
+        }
+      });
+      //value.get("favorites")
+      //routes = routes.where('favorites', arrayContains: uid);
+    }*/
+
+/*
+    if (_filterMode == FilterMode.favorite) {
+      final User user = auth.currentUser!;
+      final uid = user.uid;
+      // sort routes to display only user's favorites
+      FirebaseFirestore.instance
+          .collection('Bikers')
+          .doc(uid)
+          .get()
+          .then((DocumentSnapshot userData) {
+        if (userData.exists) {
+          print('Document favorites: ${userData['favorites']}');
+          routes = routes.where(userData['favorites'], arrayContains: "id");
+        } else {
+          print('Document does not exist on the database');
+        }
+      });
+    }*/
 
     return Scaffold(
       drawer: const DrawerNav(),
@@ -83,49 +288,152 @@ class _AllRouteState extends State<AllRoutes> {
         centerTitle: true,
         backgroundColor: Colors.white,
         actions: [
-          IconButton(
-            onPressed: () {
-              // method to show the search bar
-              showSearch(
-                  context: context,
-                  // delegate to customize the search bar
-                  delegate: CustomSearchDelegate());
-            },
-            icon: const Icon(Icons.search),
-          ),
+          PopupMenuButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              icon: Icon(Icons.filter_alt),
+              itemBuilder: (context) => [
+                    PopupMenuItem(
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.favorite,
+                          color: Color.fromARGB(255, 198, 0, 0),
+                        ),
+                        title: Transform.translate(
+                          offset: Offset(-20, 0),
+                          child: Text(
+                            'Favorites',
+                            style: GoogleFonts.bebasNeue(fontSize: 15),
+                          ),
+                        ),
+                      ),
+                      onTap: () => filterByFavorite(),
+                    ),
+                    PopupMenuItem(
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.timelapse,
+                          color: Color.fromRGBO(53, 66, 74, 1),
+                        ),
+                        title: Transform.translate(
+                          offset: Offset(-20, 0),
+                          child: Text(
+                            'Less than 1 hour',
+                            style: GoogleFonts.bebasNeue(fontSize: 15),
+                          ),
+                        ),
+                      ),
+                      onTap: () => setState(() {
+                        _filterMode = FilterMode.durationLess;
+                        _sortMode = SortMode.normal;
+                      }),
+                    ),
+                    PopupMenuItem(
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.timelapse,
+                          color: Color.fromRGBO(53, 66, 74, 1),
+                        ),
+                        title: Transform.translate(
+                          offset: Offset(-20, 0),
+                          child: Text(
+                            'More than 1 hour',
+                            style: GoogleFonts.bebasNeue(fontSize: 15),
+                          ),
+                        ),
+                      ),
+                      onTap: () => setState(() {
+                        _filterMode = FilterMode.durationMore;
+                        _sortMode = SortMode.normal;
+                      }),
+                    ),
+                  ]),
           Padding(
             padding: EdgeInsets.only(right: 10),
-
             //Dropdown filter
             child: PopupMenuButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+                icon: Icon(Icons.sort),
                 itemBuilder: (context) => [
                       PopupMenuItem(
-                          child: Row(children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Text('Distance'),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.restore,
+                            color: Color.fromRGBO(53, 66, 74, 1),
+                          ),
+                          title: Transform.translate(
+                            offset: Offset(-20, 0),
+                            child: Text(
+                              'Reset',
+                              style: GoogleFonts.bebasNeue(fontSize: 15),
+                            ),
+                          ),
                         ),
-                      ])),
+                        onTap: () => _resetSort(),
+                      ),
                       PopupMenuItem(
-                          child: Row(children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Text('Duration'),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.timer,
+                            color: Color.fromRGBO(53, 66, 74, 1),
+                          ),
+                          title: Transform.translate(
+                            offset: Offset(-20, 0),
+                            child: Text(
+                              'Duration',
+                              style: GoogleFonts.bebasNeue(fontSize: 15),
+                            ),
+                          ),
                         ),
-                      ])),
+                        onTap: () => sortByDuration(),
+                      ),
                       PopupMenuItem(
-                          child: Row(children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Text('Elevation'),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.straighten,
+                            color: Color.fromRGBO(53, 66, 74, 1),
+                          ),
+                          title: Transform.translate(
+                            offset: Offset(-20, 0),
+                            child: Text(
+                              'Distance',
+                              style: GoogleFonts.bebasNeue(fontSize: 15),
+                            ),
+                          ),
                         ),
-                      ]))
+                        onTap: () => sortByDistance(),
+                      ),
                     ]),
           )
         ],
       ),
       body: Column(
         children: [
+          Padding(padding: EdgeInsets.only(top: 20)),
+          SizedBox(
+            height: 55,
+            width: 300,
+            child: TextField(
+              onChanged: (textInput) {
+                setState(() {
+                  userNameText = textInput;
+                });
+                initSearchingPost(textInput);
+              },
+              textAlignVertical: TextAlignVertical.center,
+              decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                      icon: const Icon(Icons.search, color: Colors.black),
+                      onPressed: () {
+                        initSearchingPost(userNameText);
+                      }),
+                  hintText: 'Search a road',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: const BorderSide(color: Colors.blue))),
+            ),
+          ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: routes.snapshots(),
@@ -139,14 +447,51 @@ class _AllRouteState extends State<AllRoutes> {
                   return Text("Loading");
                 }
 
-                return new ListView(
-                  children:
-                      snapshot.data!.docs.map((DocumentSnapshot document) {
+                //filter out the routes that are not in the favorites of the Biker
+                /*Future.delayed(Duration.zero, () async {
+                  await biker_ref.get().then((bikerValue) {
+                    try {
+                      snapshot.data!.docs.forEach((element) {
+                        if (_filterMode == FilterMode.favorite) {
+                          if (!bikerValue
+                              .get('favorites')
+                              .contains(element.id)) {
+                            snapshot.data!.docs.remove(element);
+                            print("removed " + element.id);
+                          }
+                        }
+                      });
+                    } catch (e) {
+                      print("something went wrong");
+                    }
+                  });
+                });*/
+
+                /*snapshot.data!.docs.forEach((element) {
+                  biker_ref.get().then((bikerValue) {
+                    try {
+                      if (!bikerValue.get('favorites').contains(element.id)) {
+                        snapshot.data!.docs.remove(element);
+                        print("removed " + element.id);
+                      }
+                    } catch (e) {
+                      print("something went wrong");
+                    }
+                  });
+                  /* if (_filterMode == FilterMode.favorite) {
+                    if (!biker.get('favorites').contains(element.id)) {
+                      snapshot.data!.docs.remove(element);
+                    }
+                  }*/
+                });*/
+
+                return ListView(
+                  children: snapshot.data!.docs.map((roadTomap) {
                     //check if the route is in the favorites of the Biker and wait for the result
                     bool _isFavorited = false;
                     biker_ref.get().then((value) {
                       try {
-                        if (value.get('favorites').contains(document.id)) {
+                        if (value.get('favorites').contains(roadTomap.id)) {
                           _isFavorited = true;
                         }
                       } catch (e) {
@@ -155,7 +500,7 @@ class _AllRouteState extends State<AllRoutes> {
                     });
 
                     Map<String, dynamic> data =
-                        document.data()! as Map<String, dynamic>;
+                        roadTomap.data()! as Map<String, dynamic>;
                     return new ListTile(
                       title: new Text(data['name'],
                           style: GoogleFonts.bebasNeue(
@@ -173,19 +518,38 @@ class _AllRouteState extends State<AllRoutes> {
                       ),
                       //change color of the icon when the route is in the favorites
                       trailing:
-                          //wait for _isFavorited to be set
+
+                          //Check if the biker is admin
                           FutureBuilder(
                         future: biker_ref.get(),
                         builder:
                             (BuildContext context, AsyncSnapshot snapshot) {
                           if (snapshot.hasData) {
-                            return IconButton(
-                              icon: (_isFavorited
-                                  ? const Icon(Icons.favorite)
-                                  : const Icon(Icons.favorite_border)),
-                              color: Color.fromRGBO(0, 181, 107, 1),
-                              onPressed: () => _toggleFavorite(document.id),
-                            );
+                            if (snapshot.data.get('isAdmin') == true) {
+                              return Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  IconButton(
+                                    icon: const Icon(Icons.edit),
+                                    color: Color.fromRGBO(0, 181, 107, 1),
+                                    onPressed: () => _editRoute(roadTomap.id),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete_forever),
+                                    color: Color.fromARGB(255, 198, 0, 0),
+                                    onPressed: () => _deleteRoute(roadTomap.id),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return IconButton(
+                                icon: (_isFavorited
+                                    ? const Icon(Icons.favorite)
+                                    : const Icon(Icons.favorite_border)),
+                                color: Color.fromARGB(255, 198, 0, 0),
+                                onPressed: () => _toggleFavorite(roadTomap.id),
+                              );
+                            }
                           } else {
                             return const CircularProgressIndicator();
                           }
@@ -201,25 +565,6 @@ class _AllRouteState extends State<AllRoutes> {
               },
             ),
           ),
-          //button to add new route
-          //SHOULD ONLY BE ACCESSIBLE TO ADMINS
-          //if(user is admin) {
-          /*CircleAvatar(
-            radius: 30,
-            backgroundColor: Color.fromRGBO(0, 181, 107, 1),
-            child: IconButton(
-              icon: Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                //open widget from new_route.dart
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const RouteForm()));
-              },
-            ),
-          ),*/
-          //},
           Padding(padding: EdgeInsets.only(bottom: 20))
         ],
       ),
@@ -227,74 +572,74 @@ class _AllRouteState extends State<AllRoutes> {
   }
 }
 
-//Search by city method empty
+// //Search by city method empty
 
-class CustomSearchDelegate extends SearchDelegate {
-  List<String> nameCity = [];
-  // Names of the city stored in the Database ?
-  //Or hardcoded ?
+// class CustomSearchDelegate extends SearchDelegate {
+//   List<String> nameCity = [];
+//   // Names of the city stored in the Database ?
+//   //Or hardcoded ?
 
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [
-      IconButton(
-        onPressed: () {
-          query = '';
-        },
-        icon: Icon(Icons.clear),
-      ),
-    ];
-  }
+//   @override
+//   List<Widget>? buildActions(BuildContext context) {
+//     return [
+//       IconButton(
+//         onPressed: () {
+//           query = '';
+//         },
+//         icon: Icon(Icons.clear),
+//       ),
+//     ];
+//   }
 
-  // second overwrite to pop out of search menu
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-      onPressed: () {
-        close(context, null);
-      },
-      icon: Icon(Icons.arrow_back),
-    );
-  }
+//   // second overwrite to pop out of search menu
+//   @override
+//   Widget? buildLeading(BuildContext context) {
+//     return IconButton(
+//       onPressed: () {
+//         close(context, null);
+//       },
+//       icon: Icon(Icons.arrow_back),
+//     );
+//   }
 
-  // third overwrite to show query result
-  @override
-  Widget buildResults(BuildContext context) {
-    List<String> matchQuery = [];
-    for (var city in nameCity) {
-      if (city.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(city);
-      }
-    }
-    return ListView.builder(
-      itemCount: matchQuery.length,
-      itemBuilder: (context, index) {
-        var result = matchQuery[index];
-        return ListTile(
-          title: Text(result),
-        );
-      },
-    );
-  }
+//   // third overwrite to show query result
+//   @override
+//   Widget buildResults(BuildContext context) {
+//     List<String> matchQuery = [];
+//     for (var city in nameCity) {
+//       if (city.toLowerCase().contains(query.toLowerCase())) {
+//         matchQuery.add(city);
+//       }
+//     }
+//     return ListView.builder(
+//       itemCount: matchQuery.length,
+//       itemBuilder: (context, index) {
+//         var result = matchQuery[index];
+//         return ListTile(
+//           title: Text(result),
+//         );
+//       },
+//     );
+//   }
 
-  // last overwrite to show the
-  // querying process at the runtime
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    List<String> matchQuery = [];
-    for (var city in nameCity) {
-      if (city.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(city);
-      }
-    }
-    return ListView.builder(
-      itemCount: matchQuery.length,
-      itemBuilder: (context, index) {
-        var result = matchQuery[index];
-        return ListTile(
-          title: Text(result),
-        );
-      },
-    );
-  }
-}
+//   // last overwrite to show the
+//   // querying process at the runtime
+//   @override
+//   Widget buildSuggestions(BuildContext context) {
+//     List<String> matchQuery = [];
+//     for (var city in nameCity) {
+//       if (city.toLowerCase().contains(query.toLowerCase())) {
+//         matchQuery.add(city);
+//       }
+//     }
+//     return ListView.builder(
+//       itemCount: matchQuery.length,
+//       itemBuilder: (context, index) {
+//         var result = matchQuery[index];
+//         return ListTile(
+//           title: Text(result),
+//         );
+//       },
+//     );
+//   }
+// }

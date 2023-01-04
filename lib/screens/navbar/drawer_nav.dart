@@ -4,7 +4,7 @@ import 'package:flutter_crashcourse/screens/all_routes.dart';
 import 'package:flutter_crashcourse/screens/navbar/drawer_item.dart';
 import 'package:flutter_crashcourse/screens/favorites.dart';
 import 'package:flutter_crashcourse/screens/login.dart';
-import 'package:flutter_crashcourse/screens/map.dart';
+import 'package:flutter_crashcourse/screens/Map/map_page.dart';
 import 'package:flutter_crashcourse/screens/register.dart';
 import 'package:flutter_crashcourse/screens/settings.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -43,7 +43,7 @@ class DrawerNav extends StatelessWidget {
                     fontSize: 17, color: Color.fromRGBO(53, 66, 74, 1)),
               ),
               leading: Icon(Icons.electric_bike,
-                  color: Color.fromRGBO(0, 181, 107, 1)),
+                  color: Color.fromARGB(160, 82, 45, 1)),
               onTap: () => onItemPressed(context, index: 1)),
           ListTile(
               title: Text(
@@ -52,17 +52,8 @@ class DrawerNav extends StatelessWidget {
                     fontSize: 17, color: Color.fromRGBO(53, 66, 74, 1)),
               ),
               leading:
-                  Icon(Icons.favorite, color: Color.fromRGBO(0, 181, 107, 1)),
+                  Icon(Icons.favorite, color: Color.fromARGB(255, 198, 0, 0)),
               onTap: () => onItemPressed(context, index: 2)),
-          ListTile(
-              title: Text(
-                'Settings',
-                style: GoogleFonts.bebasNeue(
-                    fontSize: 17, color: Color.fromRGBO(53, 66, 74, 1)),
-              ),
-              leading:
-                  Icon(Icons.settings, color: Color.fromRGBO(0, 181, 107, 1)),
-              onTap: () => onItemPressed(context, index: 3)),
           ListTile(
               title: Text(
                 'Logout',
@@ -71,7 +62,7 @@ class DrawerNav extends StatelessWidget {
               ),
               leading: Icon(
                 Icons.logout,
-                color: Color.fromRGBO(0, 181, 107, 1),
+                color: Color.fromRGBO(53, 66, 74, 1),
               ),
               onTap: () {
                 FirebaseAuth.instance.signOut();
