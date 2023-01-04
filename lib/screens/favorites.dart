@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_crashcourse/screens/new_route.dart';
@@ -18,7 +19,7 @@ class Favorites extends StatefulWidget {
 
 class _FavoritesState extends State<Favorites> {
   final FirebaseAuth auth = FirebaseAuth.instance;
-
+  dynamic favoritesList;
   bool _isDeleted = false;
 
   // void _toggleDelete(String routeID) {
@@ -38,51 +39,38 @@ class _FavoritesState extends State<Favorites> {
   //     //do something
   //   });
   // }
-  dynamic favoritesList;
 
   @override
   void initState() {
     final User user = auth.currentUser!;
     final uid = user.uid;
-
-    FirebaseFirestore.instance
-        .collection('Bikers')
-        .doc(uid)
-        .get()
-        .then((DocumentSnapshot userData) {
-      if (userData.exists) {
-        try {
-          favoritesList = userData.get('favorites');
-        } on StateError catch (e) {
-          print('ntm');
-        }
-        print('stp fonctionne ${userData.data()}' + favoritesList.toString());
-      }
-      ;
-    });
+    getFavRoutes(uid, favoritesList);
   }
 
   @override
   Widget build(BuildContext context) {
     final User user = auth.currentUser!;
     final uid = user.uid;
+    favoritesList = getFavRoutes(uid, favoritesList);
+    Map<String, dynamic> data;
     DocumentReference biker_ref =
         FirebaseFirestore.instance.collection("Bikers").doc(uid);
 
     CollectionReference routes =
         FirebaseFirestore.instance.collection('Routes');
 
-    FirebaseFirestore.instance
-        .collection('Bikers')
-        .doc(uid)
-        .get()
-        .then((DocumentSnapshot userData) {
-      if (userData.exists) {
-        print('Document favorites: ${userData['favorites']}');
-      } else {
-        print('Document does not exist on the database');
-      }
-    });
+    // FirebaseFirestore.instance
+    //     .collection('Bikers')
+    //     .doc(uid)
+    //     .get()
+    //     .then((DocumentSnapshot userData) {
+    //   if (userData.exists) {
+    //     favoritesList = userData.get('favorites');
+    //     print('Document favorites: ${userData['favorites']}');
+    //   } else {
+    //     print('Document does not exist on the database');
+    //   }
+    // });
 
     return Scaffold(
       drawer: const DrawerNav(),
@@ -153,7 +141,8 @@ class _FavoritesState extends State<Favorites> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Text("Loading");
                 }
-
+                // favoritesList = getFavRoutes(uid, favoritesList);
+                print(favoritesList);
                 return new ListView(
                   children:
 
@@ -163,8 +152,7 @@ class _FavoritesState extends State<Favorites> {
                               .any((field) => field.toString() == element.id))
                           .map((DocumentSnapshot document) {
                     //Declaring a Map to receive the snapshot data
-                    Map<String, dynamic> data =
-                        document.data()! as Map<String, dynamic>;
+                    data = document.data()! as Map<String, dynamic>;
 
                     return new ListTile(
                       title: new Text(data['name'],
@@ -234,18 +222,27 @@ class _FavoritesState extends State<Favorites> {
   }
 }
 
-// Stream<List<Route>> getFavRoutes(Route route) {
-//   CollectionReference routeCol =
-//       FirebaseFirestore.instance.collection('Routes');
-//   final user = FirebaseAuth.instance.currentUser;
+getFavRoutes(uid, favoritesList) {
+  dynamic favList = favoritesList;
 
-//   return routeCol
-//       .where("favorites", arrayContains: user.uid)
-//       .snapshots()
-//       .map((route) {
-//     return route.docs.map((e) => Route.fromJson(e.data(), id: e.id)).toList();
-//   });
-// }
+  FirebaseFirestore.instance
+      .collection('Bikers')
+      .doc(uid)
+      .get()
+      .then((DocumentSnapshot userData) {
+    if (userData.exists) {
+      try {
+        favList = userData.get('favorites');
+      } on StateError catch (e) {
+        print('ntm');
+      }
+      print('stp fonctionne ${userData.data()}' + favList.toString());
+    }
+    ;
+  });
+
+  return favList;
+}
 
 showAlertDialog(BuildContext context) {
   //set up buttons
