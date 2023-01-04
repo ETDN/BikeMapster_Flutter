@@ -7,6 +7,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_crashcourse/screens/login.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_crashcourse/screens/all_routes.dart';
+import 'Utils.dart';
 
 class ForgotPassword extends StatefulWidget {
   @override
@@ -168,20 +169,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   void message() {}
 
   Future resetPassword() async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Center(child: CircularProgressIndicator()),
-    );
     try {
       await FirebaseAuth.instance
           .sendPasswordResetEmail(email: emailController.text.trim());
 
-      //Utils.showSnackBar('Password Reset Email sent');
-
       onItemPressed(context, index: 4);
     } on FirebaseAuthException catch (e) {
       print(e);
+      Utils.showSnackBar(context, e.message);
     }
   }
 }

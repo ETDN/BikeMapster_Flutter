@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -312,6 +313,17 @@ class _MyLoginState extends State<LoginPage> {
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
+
+      final docUser = FirebaseFirestore.instance
+          .collection("Bikers")
+          .doc(FirebaseAuth.instance.currentUser?.uid);
+
+      final isAdminChecked = await docUser.get().then(((value) {
+        return value.data()!['isAdmin'];
+      }));
+
+      isAdmin = isAdminChecked;
+
       onItemPressed(context, index: 0);
     } on FirebaseAuthException catch (e) {
       debugPrint(e.message);
