@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_crashcourse/screens/favorites.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -160,26 +161,26 @@ class _AllRouteState extends State<AllRoutes> {
 
   // FILTER METHOD //
 
-  void filterByFavorite() async {
-    setState(() {
-      _filterMode = FilterMode.favorite;
-      _sortMode = SortMode.normal;
-    });
-    /*final User user = auth.currentUser!;
-    final uid = user.uid;
-    // sort routes to display only user's favorites
-    FirebaseFirestore.instance
-        .collection('Bikers')
-        .doc(uid)
-        .get()
-        .then((DocumentSnapshot userData) {
-      if (userData.exists) {
-        print('Document favorites: ${userData['favorites']}');
-      } else {
-        print('Document does not exist on the database');
-      }
-    });*/
-  }
+  // void filterByFavorite() async {
+  //   setState(() {
+  //     _filterMode = FilterMode.favorite;
+  //     _sortMode = SortMode.normal;
+  //   });
+  //   /*final User user = auth.currentUser!;
+  //   final uid = user.uid;
+  //   // sort routes to display only user's favorites
+  //   FirebaseFirestore.instance
+  //       .collection('Bikers')
+  //       .doc(uid)
+  //       .get()
+  //       .then((DocumentSnapshot userData) {
+  //     if (userData.exists) {
+  //       print('Document favorites: ${userData['favorites']}');
+  //     } else {
+  //       print('Document does not exist on the database');
+  //     }
+  //   });*/
+  // }
 
   @override
   build(BuildContext context) {
@@ -293,22 +294,27 @@ class _AllRouteState extends State<AllRoutes> {
                   borderRadius: BorderRadius.circular(16)),
               icon: Icon(Icons.filter_alt),
               itemBuilder: (context) => [
-                    PopupMenuItem(
-                      child: ListTile(
-                        leading: Icon(
-                          Icons.favorite,
-                          color: Color.fromARGB(255, 198, 0, 0),
-                        ),
-                        title: Transform.translate(
-                          offset: Offset(-20, 0),
-                          child: Text(
-                            'Favorites',
-                            style: GoogleFonts.bebasNeue(fontSize: 15),
-                          ),
-                        ),
-                      ),
-                      onTap: () => filterByFavorite(),
-                    ),
+                    // PopupMenuItem(
+                    //   child: ListTile(
+                    //     leading: Icon(
+                    //       Icons.favorite,
+                    //       color: Color.fromARGB(255, 198, 0, 0),
+                    //     ),
+                    //     title: Transform.translate(
+                    //       offset: Offset(-20, 0),
+                    //       child: Text(
+                    //         'Favorites',
+                    //         style: GoogleFonts.bebasNeue(fontSize: 15),
+                    //       ),
+                    //     ),
+                    //   ),
+                    //   onTap: () {
+                    //     Navigator.push(
+                    //         context,
+                    //         MaterialPageRoute(
+                    //             builder: (context) => const Favorites()));
+                    //   },
+                    // ),
                     PopupMenuItem(
                       child: ListTile(
                         leading: Icon(
