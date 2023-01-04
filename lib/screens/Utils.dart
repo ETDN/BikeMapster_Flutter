@@ -44,3 +44,9 @@ class Utils {
     );
   }
 }
+
+bool isAdmin = false;
+
+bool get adminRights {
+  return isAdmin;
+}
