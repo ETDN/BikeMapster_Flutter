@@ -86,16 +86,6 @@ class _FavoritesState extends State<Favorites> {
               color: Color.fromRGBO(53, 66, 74, 1)),
         ),
         actions: [
-          IconButton(
-            onPressed: () {
-              // method to show the search bar
-              showSearch(
-                  context: context,
-                  // delegate to customize the search bar
-                  delegate: CustomSearchDelegate());
-            },
-            icon: const Icon(Icons.search),
-          ),
           Padding(
             padding: EdgeInsets.only(right: 10),
 
