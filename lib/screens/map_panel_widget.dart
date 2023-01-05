@@ -11,6 +11,8 @@ import 'Utils.dart';
 
 class PanelWidget extends StatelessWidget {
   var roadInfo;
+  var startLocation;
+  var destination;
   final PanelController panelController;
   final List<LatLng> polyPoints;
 
@@ -27,6 +29,8 @@ class PanelWidget extends StatelessWidget {
   PanelWidget(
       {Key? key,
       required this.roadInfo,
+      required this.startLocation,
+      required this.destination,
       required this.panelController,
       required this.polyPoints})
       : super(key: key);
@@ -45,7 +49,7 @@ class PanelWidget extends StatelessWidget {
             ),
           ),
           SizedBox(height: 20),
-          roadInfo != null ? showwidget(roadInfo, context) : noData(),
+          roadInfo != null ? showWidget(roadInfo, context) : noData(),
         ],
       );
 
@@ -56,7 +60,7 @@ class PanelWidget extends StatelessWidget {
         ),
       );
 
-  Widget showwidget(dynamic roadInfo, BuildContext context) => Container(
+  Widget showWidget(dynamic roadInfo, BuildContext context) => Container(
           child: Column(
         children: [
           Row(
@@ -68,11 +72,11 @@ class PanelWidget extends StatelessWidget {
                   contentPadding:
                       EdgeInsets.symmetric(horizontal: 15.0, vertical: 0.0),
                   visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                  title: Text("Sierre",
+                  title: Text(startLocation.locality, // start locality
                       style: GoogleFonts.bebasNeue(
                           fontSize: 18, color: Color.fromRGBO(53, 66, 74, 1))),
                   subtitle: Text(
-                    "Technopole 2",
+                    startLocation.street, // start address
                     style: GoogleFonts.bebasNeue(fontSize: 14),
                   ),
                 ),
@@ -88,12 +92,13 @@ class PanelWidget extends StatelessWidget {
                       contentPadding:
                           EdgeInsets.symmetric(horizontal: 15.0, vertical: 0.0),
                       visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                      title: Text("Sion",
+                      title: Text(destination.locality, // destination's name
                           style: GoogleFonts.bebasNeue(
                               fontSize: 18,
                               color: Color.fromRGBO(53, 66, 74, 1))),
-                      subtitle: Text("Avenue de France 15",
-                          style: GoogleFonts.bebasNeue(fontSize: 14))))
+                      subtitle:
+                          Text(destination.street, // destination's address
+                              style: GoogleFonts.bebasNeue(fontSize: 14))))
             ],
           ),
 

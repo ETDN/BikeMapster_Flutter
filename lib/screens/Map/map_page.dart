@@ -12,6 +12,8 @@ import '../map_panel_widget.dart';
 import '../navbar/drawer_nav.dart';
 import 'package:routing_client_dart/routing_client_dart.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 import '../networkHelper_map.dart';
 
@@ -24,21 +26,37 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   //for holding starting and destination points
-  List<Marker> myMarkers = [];
+  Map<String, Marker> myMarkers = {};
   //for holding all points needed to draw the route
   List<LatLng> polyPoints = [];
   //for knowing if starting point or destination point is selected
   var currentIndex = null;
   var data;
   var roadInfo;
+  var userLocationAuthorized =
+      false; //to check if user authorizes to display his/her current location
+  var currentLocation;
+  var startingPointPlaced = false;
+  // var startCoordinates = null;
+  var startLocation;
+  var destinationPointPlaced = false;
+  // var destCoordinates = null;
+  var destination;
 
   //for managing onTap method on grey bar to up the sliding panel
   final panelController = PanelController();
+  //variables to store user location data
+  var _latitude = "";
+  var _longitude = "";
+  var _altitude = "";
+  var _speed = "";
+  var _address = "";
 
   @override
   Widget build(BuildContext context) {
     final panelHeightOpen = MediaQuery.of(context).size.height * 0.4;
     final panelHeightClosed = MediaQuery.of(context).size.height * 0.08;
+    _updatePosition();
     return Scaffold(
       drawer: const DrawerNav(),
       appBar: AppBar(
@@ -65,6 +83,8 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
           panelBuilder: () => PanelWidget(
             panelController: panelController,
             roadInfo: roadInfo,
+            startLocation: startLocation,
+            destination: destination,
             polyPoints: polyPoints,
           ),
           borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
@@ -86,12 +106,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
     );
   }
 
-  // _changeMapType() {
-  //   setState(() {
-  //     // _currentMapType = _currentMapType == MapType.
-  //   });
-  // }
-
+//managing the adding of start and end point of route when tapped on the map
   _handleTap(LatLng tappedPoint) {
     if (currentIndex == null) {
       if (panelController.isPanelOpen) {
@@ -99,43 +114,68 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
       }
       return;
     }
-    setState(() {
+    setState(() async {
       // myMarkers = [];
+      var markersSizeControl = 0;
+      // Adaptations required if currentLocation is activated (true)
+      if (userLocationAuthorized) {
+        markersSizeControl =
+            1; //adapt the sizeControl variable because myMarkers already contains the currentLocation's marker (at index 0)
+
+        //The "route editing" works with "myMarkers.first" as starting point and "myMarkers.last" as destination.
+        //Meaning the start point HAS TO BE AT INDEX 0 and the destination point HAS TO BE the LAST marker in myMarkers list
+      }
+
       if (currentIndex == 0) {
-        if (myMarkers.length > 0) {
-          myMarkers.removeAt(currentIndex);
+        //meaning we are adding a starter point
+        startingPointPlaced = true;
+        // extract the location from coordinates (geocoding API)
+        List<Placemark> startMarks = await placemarkFromCoordinates(
+            tappedPoint.latitude, tappedPoint.longitude);
+        startLocation = startMarks.first;
+
+        if (myMarkers.length > markersSizeControl) {
+          myMarkers.remove("start");
+          //.removeAt(currentIndex); //starting point is always at index 0
         }
-        myMarkers.insert(
-          currentIndex,
-          Marker(
-            point: tappedPoint,
-            builder: (context) => Icon(
-              FontAwesomeIcons.locationDot,
-              color: Color.fromRGBO(0, 181, 107, 1),
-              size: 35,
-            ),
-            key: Key("start"),
-            anchorPos: AnchorPos.align(AnchorAlign.top),
+
+        myMarkers["start"] = (
+            // currentIndex, //has to be inserted at index 0
+            Marker(
+          point: tappedPoint,
+          builder: (context) => Icon(
+            FontAwesomeIcons.locationDot,
+            color: Color.fromRGBO(0, 181, 107, 1),
+            size: 35,
           ),
-        );
+          // key: Key("start"),
+          anchorPos: AnchorPos.align(AnchorAlign.top),
+        ));
         print(tappedPoint.toString());
       }
+      //placing destination
       if (currentIndex == 1) {
-        if (myMarkers.length > 1) {
-          myMarkers.removeAt(currentIndex);
+        destinationPointPlaced = true;
+        //extract destination locality
+        List<Placemark> destinationMarks = await placemarkFromCoordinates(
+            tappedPoint.latitude, tappedPoint.longitude);
+        destination = destinationMarks.first;
+
+        if (myMarkers.length > markersSizeControl + 1) {
+          myMarkers.remove("end");
+          //.removeAt(pointIndex);
         }
-        myMarkers.insert(
-          currentIndex,
-          Marker(
-            point: tappedPoint,
-            builder: (context) => Icon(
-              FontAwesomeIcons.crosshairs,
-              color: Colors.redAccent,
-              size: 30,
-            ),
-            key: Key("end"),
+        myMarkers["end"] = (
+            //pointIndex, // has to be inserted either at index 1 or 2
+            Marker(
+          point: tappedPoint,
+          builder: (context) => Icon(
+            FontAwesomeIcons.crosshairs,
+            color: Colors.redAccent,
+            size: 30,
           ),
-        );
+          // key: Key("end"),
+        ));
       }
       getJsonData();
       _getTripInformation();
@@ -144,13 +184,13 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
 
   _getTripInformation() async {
     //drawing route using ORSM package
-    if (myMarkers.length != 2) {
+    if (myMarkers.length < 2) {
       return;
     }
-    var latStart = myMarkers.first.point.latitude;
-    var lngStart = myMarkers.first.point.longitude;
-    var latEnd = myMarkers.last.point.latitude;
-    var lngEnd = myMarkers.last.point.longitude;
+    var latStart = myMarkers["start"]!.point.latitude;
+    var lngStart = myMarkers["start"]!.point.longitude;
+    var latEnd = myMarkers["end"]!.point.latitude;
+    var lngEnd = myMarkers["end"]!.point.longitude;
 
     List<LngLat> waypoints = [
       LngLat(lng: lngStart, lat: latStart),
@@ -165,8 +205,6 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
         geometry: Geometries.geojson,
         steps: true,
         languageCode: "en");
-
-    print(roadInfo.toString());
   }
 
   /*largely inspired by Arafat Rohan's method, founded here: 
@@ -175,7 +213,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   */
   getJsonData() async {
     //check if both source and destination points are filled out. if not : return
-    if (myMarkers.length != 2) {
+    if (myMarkers.length < 2) {
       print("not enough pins on the map");
       return;
     }
@@ -186,10 +224,10 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
     // Create an instance of Class NetworkHelper which uses http package
     // for requesting data to the server and receiving response as JSON format
     NetworkHelper network = NetworkHelper(
-      startLat: myMarkers.first.point.latitude,
-      startLng: myMarkers.first.point.longitude,
-      endLat: myMarkers.last.point.latitude,
-      endLng: myMarkers.last.point.longitude,
+      startLat: myMarkers["start"]!.point.latitude,
+      startLng: myMarkers["start"]!.point.longitude,
+      endLat: myMarkers["end"]!.point.latitude,
+      endLng: myMarkers["end"]!.point.longitude,
     );
 
     try {
@@ -205,7 +243,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
       }
       setState(() {});
     } catch (e) {
-      print(e);
+      print("Error on map_page, from method 'getJsonData()' : " + e.toString());
     }
   }
 
@@ -241,9 +279,112 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
           ),
         ],
       );
+
+// ===================================
+// update user's live-position
+// ===================================
+  Future<void> _updatePosition() async {
+    Position pos = await _determinePosition();
+
+    setState(() {
+      _latitude = pos.latitude.toString();
+      _longitude = pos.longitude.toString();
+      _altitude = pos.altitude.toString();
+      _speed = pos.speed.toString();
+    });
+
+    if (userLocationAuthorized) {
+      currentLocation = pos;
+
+      Marker userLocationMarker = Marker(
+        width: 20.0,
+        height: 20.0,
+        point: LatLng(currentLocation.latitude, currentLocation.longitude),
+        builder: (ctx) => Container(
+          child: CircleAvatar(
+            backgroundColor: Colors.blue,
+            radius: 2.0,
+            child: Icon(
+              Icons.person,
+              color: Colors.white54,
+              size: 15.0,
+            ),
+          ),
+        ),
+      );
+
+      //adding the marker to list of markers
+      // /!\ /!\ /!\
+      // /!\ beware of repercussions on the indexes of the start and destination markers in handleTap method! /!\
+      // /!\ /!\ /!\
+      if (!startingPointPlaced) //meaning a starting point is saved
+      {
+        //   myMarkers.removeAt(1);
+        //   myMarkers.insert(1, userLocationMarker); //so insert at index 1
+        // } else {
+        //   myMarkers.remove(0);
+        //   myMarkers.insert(0, userLocationMarker);
+        List<Placemark> startMarks = await placemarkFromCoordinates(
+            currentLocation.latitude, currentLocation.longitude);
+        startLocation = startMarks.first;
+      }
+      if (!destinationPointPlaced) {
+        List<Placemark> startMarks = await placemarkFromCoordinates(
+            currentLocation.latitude, currentLocation.longitude);
+        destination = startMarks.first;
+      }
+
+      myMarkers["userLocation"] = userLocationMarker;
+    }
+  }
+
+//GPS - user location - code from https://pub.dev/packages/geolocator
+  /// Determine the current position of the device.
+  ///
+  /// When the location services are not enabled or permissions
+  /// are denied the `Future` will return an error.
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time user could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // the App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // Modify control boolean
+    userLocationAuthorized = true;
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator
+        .getCurrentPosition(); //.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  }
 }
 
-//Create a new class to hold the Co-ordinates we have received from the response data
+//Create a new class to hold the Coordinates we have received from the response data
 class LineString {
   LineString(this.lineString);
   List<dynamic> lineString;

@@ -173,7 +173,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       await FirebaseAuth.instance
           .sendPasswordResetEmail(email: emailController.text.trim());
 
-      onItemPressed(context, index: 4);
+      onItemPressed(context, index: 0);
     } on FirebaseAuthException catch (e) {
       print(e);
       Utils.showSnackBar(context, e.message);
