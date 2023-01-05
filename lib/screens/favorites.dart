@@ -19,74 +19,19 @@ class Favorites extends StatefulWidget {
 
 class _FavoritesState extends State<Favorites> {
   final FirebaseAuth auth = FirebaseAuth.instance;
-  dynamic favoritesList;
   bool _isDeleted = false;
-
-  // void _toggleDelete(String routeID) {
-  //   //get the user from firebase with id
-  //   DocumentReference biker_ref =
-  //       FirebaseFirestore.instance.collection("Bikers").doc(uid);
-
-  //   biker_ref.update({
-  //     'favorites': FieldValue.arrayRemove([routeID])
-  //   });
-
-  //   biker_ref.snapshots().listen((event) {
-  //     setState(() {});
-  //   });
-
-  //   setState(() {
-  //     //do something
-  //   });
-  // }
-
-  @override
-  void initState() {
-    final User user = auth.currentUser!;
-    final uid = user.uid;
-
-    FirebaseFirestore.instance
-        .collection('Bikers')
-        .doc(uid)
-        .get()
-        .then((DocumentSnapshot userData) {
-      if (userData.exists) {
-        try {
-          favoritesList = userData.get('favorites');
-        } on StateError catch (e) {
-          print('stp');
-        }
-        print('stp fonctionne ${userData.data()}' + favoritesList.toString());
-      }
-      ;
-    });
-    getFavRoutes(uid, favoritesList);
-  }
 
   @override
   Widget build(BuildContext context) {
     final User user = auth.currentUser!;
     final uid = user.uid;
-    favoritesList = getFavRoutes(uid, favoritesList);
+    //Future<List> favoritesList = getFavRoutes(uid);
     Map<String, dynamic> data;
     DocumentReference biker_ref =
         FirebaseFirestore.instance.collection("Bikers").doc(uid);
 
     CollectionReference routes =
         FirebaseFirestore.instance.collection('Routes');
-
-    // FirebaseFirestore.instance
-    //     .collection('Bikers')
-    //     .doc(uid)
-    //     .get()
-    //     .then((DocumentSnapshot userData) {
-    //   if (userData.exists) {
-    //     favoritesList = userData.get('favorites');
-    //     print('Document favorites: ${userData['favorites']}');
-    //   } else {
-    //     print('Document does not exist on the database');
-    //   }
-    // });
 
     return Scaffold(
       drawer: const DrawerNav(),
@@ -146,118 +91,91 @@ class _FavoritesState extends State<Favorites> {
       body: Column(
         children: [
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: routes.snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.hasError) {
-                  return Text('Something went wrong');
-                }
-
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Text("Loading");
-                }
-                // favoritesList = getFavRoutes(uid, favoritesList);
-                print(favoritesList);
-                return new ListView(
-                  children:
-
-                      //check if the route is in the favorites of the Biker and display the result
-                      snapshot.data!.docs
-                          .where((element) => favoritesList
-                              .any((field) => field.toString() == element.id))
-                          .map((DocumentSnapshot document) {
-                    //Declaring a Map to receive the snapshot data
-                    data = document.data()! as Map<String, dynamic>;
-
-                    return new ListTile(
-                      title: new Text(data['name'],
-                          style: GoogleFonts.bebasNeue(
-                            fontSize: 17,
-                            color: Color.fromRGBO(53, 66, 74, 1),
-                          )),
-                      subtitle: Text(
-                        data['length'].toString() +
-                            ' km | ' +
-                            data['duration'].toString() +
-                            ' minutes',
-                        style: GoogleFonts.bebasNeue(
-                            fontSize: 15,
-                            color: Color.fromRGBO(152, 158, 177, 1)),
-                      ),
-                      //change color of the icon when the route is in the favorites
-                      trailing:
-                          // use with delete button
-                          FutureBuilder(
-                        future: biker_ref.get(),
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
-                          if (snapshot.hasData) {
-                            return IconButton(
-                              icon: (_isDeleted
-                                  ? const Icon(Icons.delete_forever)
-                                  : const Icon(Icons.delete_forever_outlined)),
-                              color: Color.fromRGBO(139, 0, 0, 1),
-                              onPressed: () => {},
-                            );
-                          } else {
-                            return const CircularProgressIndicator();
+            child: FutureBuilder(
+                future: FirebaseFirestore.instance
+                    .collection("Bikers")
+                    .doc(uid)
+                    .get(),
+                builder: (context, favsnapshot) {
+                  if (favsnapshot.hasData) {
+                    return StreamBuilder<QuerySnapshot>(
+                        stream: routes.snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Something went wrong');
                           }
-                        },
-                      ),
 
-                      leading: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              "https://images.unsplash.com/photo-1609605988071-0d1cfd25044e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1935&q=80")),
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text("Loading");
+                          }
+
+                          print("Mabite " + favsnapshot.data.toString());
+
+                          return new ListView(
+                            children:
+                                //check if the route is in the favorites of the Biker and display the result
+                                snapshot.data!.docs
+                                    .where((element) => favsnapshot.data!
+                                        .data()!['favorites']
+                                        .contains(element.id))
+                                    .map((DocumentSnapshot document) {
+                              //Declaring a Map to receive the snapshot data
+                              data = document.data()! as Map<String, dynamic>;
+
+                              return new ListTile(
+                                  title: new Text(data['name'],
+                                      style: GoogleFonts.bebasNeue(
+                                        fontSize: 17,
+                                        color: Color.fromRGBO(53, 66, 74, 1),
+                                      )),
+                                  subtitle: Text(
+                                    data['length'].toString() +
+                                        ' km | ' +
+                                        data['duration'].toString() +
+                                        ' minutes',
+                                    style: GoogleFonts.bebasNeue(
+                                        fontSize: 15,
+                                        color:
+                                            Color.fromRGBO(152, 158, 177, 1)),
+                                  ),
+                                  //change color of the icon when the route is in the favorites
+                                  trailing:
+                                      // use with delete button
+                                      FutureBuilder(
+                                    future: biker_ref.get(),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot snapshot) {
+                                      if (snapshot.hasData) {
+                                        return IconButton(
+                                          icon: (_isDeleted
+                                              ? const Icon(Icons.delete_forever)
+                                              : const Icon(Icons
+                                                  .delete_forever_outlined)),
+                                          color: Color.fromRGBO(139, 0, 0, 1),
+                                          onPressed: () => {},
+                                        );
+                                      } else {
+                                        return const CircularProgressIndicator();
+                                      }
+                                    },
+                                  ));
+                            }).toList(),
+                          );
+                        });
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(),
                     );
-                  }).toList(),
-                );
-              },
-            ),
+                  }
+                }),
           ),
-          // CircleAvatar(
-          //   radius: 30,
-          //   backgroundColor: Color.fromRGBO(0, 181, 107, 1),
-          //   child: IconButton(
-          //     icon: Icon(
-          //       Icons.add,
-          //       color: Colors.white,
-          //     ),
-          //     onPressed: () {
-          //       //open widget from new_route.dart
-          //       Navigator.push(context,
-          //           MaterialPageRoute(builder: (context) => const RouteForm()));
-          //     },
-          //   ),
-          // ),
-          //},
           Padding(padding: EdgeInsets.only(bottom: 20))
         ],
       ),
     );
   }
-}
-
-getFavRoutes(uid, favoritesList) {
-  dynamic favList = favoritesList;
-
-  FirebaseFirestore.instance
-      .collection('Bikers')
-      .doc(uid)
-      .get()
-      .then((DocumentSnapshot userData) {
-    if (userData.exists) {
-      try {
-        favList = userData.get('favorites');
-      } on StateError catch (e) {
-        print('ntm');
-      }
-      print('stp fonctionne ${userData.data()}' + favList.toString());
-    }
-    ;
-  });
-
-  return favList;
 }
 
 showAlertDialog(BuildContext context) {
