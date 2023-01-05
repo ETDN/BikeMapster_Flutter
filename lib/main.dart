@@ -10,7 +10,7 @@ import 'screens/Utils.dart';
 import 'screens/new_route.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  await WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(new MaterialApp(
     home: SplashScreen(),
