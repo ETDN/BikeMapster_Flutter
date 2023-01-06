@@ -14,8 +14,10 @@ import 'route_editing.dart';
 
 enum SortMode {
   normal,
-  distance,
-  duration,
+  distance_desc,
+  distance_asc,
+  duration_desc,
+  duration_asc,
 }
 
 enum FilterMode {
@@ -139,14 +141,26 @@ class _AllRouteState extends State<AllRoutes> {
 
   // SORT METHODS //
 
-  void sortByDuration() async {
-    _sortMode = SortMode.duration;
+  void sortByDurationAsc() async {
+    _sortMode = SortMode.duration_asc;
     _filterMode = FilterMode.normal;
     setState(() {});
   }
 
-  void sortByDistance() async {
-    _sortMode = SortMode.distance;
+  void sortByDurationDesc() async {
+    _sortMode = SortMode.duration_desc;
+    _filterMode = FilterMode.normal;
+    setState(() {});
+  }
+
+  void sortByDistanceAsc() async {
+    _sortMode = SortMode.distance_asc;
+    _filterMode = FilterMode.normal;
+    setState(() {});
+  }
+
+  void sortByDistanceDesc() async {
+    _sortMode = SortMode.distance_desc;
     _filterMode = FilterMode.normal;
     setState(() {});
   }
@@ -166,20 +180,6 @@ class _AllRouteState extends State<AllRoutes> {
       _filterMode = FilterMode.favorite;
       _sortMode = SortMode.normal;
     });
-    //   /*final User user = auth.currentUser!;
-    //   final uid = user.uid;
-    //   // sort routes to display only user's favorites
-    //   FirebaseFirestore.instance
-    //       .collection('Bikers')
-    //       .doc(uid)
-    //       .get()
-    //       .then((DocumentSnapshot userData) {
-    //     if (userData.exists) {
-    //       print('Document favorites: ${userData['favorites']}');
-    //     } else {
-    //       print('Document does not exist on the database');
-    //     }
-    //   });*/
   }
 
   @override
@@ -203,13 +203,21 @@ class _AllRouteState extends State<AllRoutes> {
     // Query query = Query(biker_ref).orderBy('favorites');
 
     //order the routes by duration
-    if (_sortMode == SortMode.duration) {
+    if (_sortMode == SortMode.duration_asc) {
       routes = routes.orderBy('duration', descending: false);
     }
 
+    if (_sortMode == SortMode.duration_desc) {
+      routes = routes.orderBy('duration', descending: true);
+    }
+
     //order the routes by distance
-    if (_sortMode == SortMode.distance) {
+    if (_sortMode == SortMode.distance_asc) {
       routes = routes.orderBy('length', descending: false);
+    }
+
+    if (_sortMode == SortMode.distance_desc) {
+      routes = routes.orderBy('length', descending: true);
     }
 
     // reset the routes into the db order
@@ -231,49 +239,6 @@ class _AllRouteState extends State<AllRoutes> {
           .where('name', isGreaterThanOrEqualTo: userNameText)
           .where('name', isLessThan: userNameText + 'z');
     }
-
-    //filter out the routes that are not in the favorites of the biker
-    /*if (_filterMode == FilterMode.favorite) {
-      biker_ref.get().then((bikerValue) {
-        try {
-          print(bikerValue.get("favorites"));
-          //get the favorites of the biker
-          List favorites = bikerValue.get("favorites");
-          //filter the routes to display only the favorites
-
-          routes.get().then((value) {
-            value.docs.forEach((element) {
-              if (favorites.contains(element.id)) {
-                print(element.id);
-              }
-            });
-          });         
-        } catch (e) {
-          print("no favorites");
-        }
-      });
-      //value.get("favorites")
-      //routes = routes.where('favorites', arrayContains: uid);
-    }*/
-
-/*
-    if (_filterMode == FilterMode.favorite) {
-      final User user = auth.currentUser!;
-      final uid = user.uid;
-      // sort routes to display only user's favorites
-      FirebaseFirestore.instance
-          .collection('Bikers')
-          .doc(uid)
-          .get()
-          .then((DocumentSnapshot userData) {
-        if (userData.exists) {
-          print('Document favorites: ${userData['favorites']}');
-          routes = routes.where(userData['favorites'], arrayContains: "id");
-        } else {
-          print('Document does not exist on the database');
-        }
-      });
-    }*/
 
     return Scaffold(
       drawer: const DrawerNav(),
@@ -387,12 +352,28 @@ class _AllRouteState extends State<AllRoutes> {
                           title: Transform.translate(
                             offset: Offset(-20, 0),
                             child: Text(
-                              'Duration',
+                              'Duration asc',
                               style: GoogleFonts.bebasNeue(fontSize: 15),
                             ),
                           ),
                         ),
-                        onTap: () => sortByDuration(),
+                        onTap: () => sortByDurationAsc(),
+                      ),
+                      PopupMenuItem(
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.timer,
+                            color: Color.fromRGBO(53, 66, 74, 1),
+                          ),
+                          title: Transform.translate(
+                            offset: Offset(-20, 0),
+                            child: Text(
+                              'Duration desc',
+                              style: GoogleFonts.bebasNeue(fontSize: 15),
+                            ),
+                          ),
+                        ),
+                        onTap: () => sortByDurationDesc(),
                       ),
                       PopupMenuItem(
                         child: ListTile(
@@ -403,12 +384,28 @@ class _AllRouteState extends State<AllRoutes> {
                           title: Transform.translate(
                             offset: Offset(-20, 0),
                             child: Text(
-                              'Distance',
+                              'Distance asc',
                               style: GoogleFonts.bebasNeue(fontSize: 15),
                             ),
                           ),
                         ),
-                        onTap: () => sortByDistance(),
+                        onTap: () => sortByDistanceAsc(),
+                      ),
+                      PopupMenuItem(
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.straighten,
+                            color: Color.fromRGBO(53, 66, 74, 1),
+                          ),
+                          title: Transform.translate(
+                            offset: Offset(-20, 0),
+                            child: Text(
+                              'Distance desc',
+                              style: GoogleFonts.bebasNeue(fontSize: 15),
+                            ),
+                          ),
+                        ),
+                        onTap: () => sortByDistanceDesc(),
                       ),
                     ]),
           )
@@ -418,7 +415,7 @@ class _AllRouteState extends State<AllRoutes> {
         children: [
           Padding(padding: EdgeInsets.only(top: 20)),
           SizedBox(
-            height: 55,
+            height: 45,
             width: 300,
             child: TextField(
               onChanged: (textInput) {
@@ -428,13 +425,13 @@ class _AllRouteState extends State<AllRoutes> {
                 initSearchingPost(textInput);
               },
               textAlignVertical: TextAlignVertical.center,
+              textAlign: TextAlign.left,
               decoration: InputDecoration(
                   suffixIcon: IconButton(
                       icon: const Icon(Icons.search, color: Colors.black),
                       onPressed: () {
                         initSearchingPost(userNameText);
                       }),
-                  hintText: 'Search a road',
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                       borderSide: const BorderSide(color: Colors.blue))),
@@ -577,76 +574,3 @@ class _AllRouteState extends State<AllRoutes> {
     );
   }
 }
-
-
-// //Search by city method empty
-
-// class CustomSearchDelegate extends SearchDelegate {
-//   List<String> nameCity = [];
-//   // Names of the city stored in the Database ?
-//   //Or hardcoded ?
-
-//   @override
-//   List<Widget>? buildActions(BuildContext context) {
-//     return [
-//       IconButton(
-//         onPressed: () {
-//           query = '';
-//         },
-//         icon: Icon(Icons.clear),
-//       ),
-//     ];
-//   }
-
-//   // second overwrite to pop out of search menu
-//   @override
-//   Widget? buildLeading(BuildContext context) {
-//     return IconButton(
-//       onPressed: () {
-//         close(context, null);
-//       },
-//       icon: Icon(Icons.arrow_back),
-//     );
-//   }
-
-//   // third overwrite to show query result
-//   @override
-//   Widget buildResults(BuildContext context) {
-//     List<String> matchQuery = [];
-//     for (var city in nameCity) {
-//       if (city.toLowerCase().contains(query.toLowerCase())) {
-//         matchQuery.add(city);
-//       }
-//     }
-//     return ListView.builder(
-//       itemCount: matchQuery.length,
-//       itemBuilder: (context, index) {
-//         var result = matchQuery[index];
-//         return ListTile(
-//           title: Text(result),
-//         );
-//       },
-//     );
-//   }
-
-//   // last overwrite to show the
-//   // querying process at the runtime
-//   @override
-//   Widget buildSuggestions(BuildContext context) {
-//     List<String> matchQuery = [];
-//     for (var city in nameCity) {
-//       if (city.toLowerCase().contains(query.toLowerCase())) {
-//         matchQuery.add(city);
-//       }
-//     }
-//     return ListView.builder(
-//       itemCount: matchQuery.length,
-//       itemBuilder: (context, index) {
-//         var result = matchQuery[index];
-//         return ListTile(
-//           title: Text(result),
-//         );
-//       },
-//     );
-//   }
-// }
