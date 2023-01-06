@@ -10,7 +10,7 @@ import 'package:flutter_crashcourse/screens/navbar/drawer_nav.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  await WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const Home());
 }

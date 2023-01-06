@@ -161,26 +161,26 @@ class _AllRouteState extends State<AllRoutes> {
 
   // FILTER METHOD //
 
-  // void filterByFavorite() async {
-  //   setState(() {
-  //     _filterMode = FilterMode.favorite;
-  //     _sortMode = SortMode.normal;
-  //   });
-  //   /*final User user = auth.currentUser!;
-  //   final uid = user.uid;
-  //   // sort routes to display only user's favorites
-  //   FirebaseFirestore.instance
-  //       .collection('Bikers')
-  //       .doc(uid)
-  //       .get()
-  //       .then((DocumentSnapshot userData) {
-  //     if (userData.exists) {
-  //       print('Document favorites: ${userData['favorites']}');
-  //     } else {
-  //       print('Document does not exist on the database');
-  //     }
-  //   });*/
-  // }
+  void filterByFavorite() async {
+    setState(() {
+      _filterMode = FilterMode.favorite;
+      _sortMode = SortMode.normal;
+    });
+    //   /*final User user = auth.currentUser!;
+    //   final uid = user.uid;
+    //   // sort routes to display only user's favorites
+    //   FirebaseFirestore.instance
+    //       .collection('Bikers')
+    //       .doc(uid)
+    //       .get()
+    //       .then((DocumentSnapshot userData) {
+    //     if (userData.exists) {
+    //       print('Document favorites: ${userData['favorites']}');
+    //     } else {
+    //       print('Document does not exist on the database');
+    //     }
+    //   });*/
+  }
 
   @override
   build(BuildContext context) {
@@ -577,6 +577,7 @@ class _AllRouteState extends State<AllRoutes> {
     );
   }
 }
+
 
 // //Search by city method empty
 
