@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_crashcourse/screens/all_routes.dart';
+import 'package:flutter_crashcourse/screens/login.dart';
 
 class Utils {
+  //Method to design the snack bar for the error messages
   static void showSnackBar(BuildContext context, String? message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -45,8 +49,26 @@ class Utils {
   }
 }
 
+//boolean value which changes when the user is an admin
 bool isAdmin = false;
-
+//getter for the isAdmin value
 bool get adminRights {
   return isAdmin;
+}
+
+//Method to check if the user was loged in before he closed the app
+class AuthUtils {
+  static checkLoginState(context) {
+    return Scaffold(
+        body: StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: ((context, snapshot) {
+        if (snapshot.hasData) {
+          return AllRoutes();
+        } else {
+          return LoginPage();
+        }
+      }),
+    ));
+  }
 }
