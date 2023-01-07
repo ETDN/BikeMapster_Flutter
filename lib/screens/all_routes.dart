@@ -2,6 +2,8 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_crashcourse/screens/Map/Route_Map.dart';
+import 'package:flutter_crashcourse/screens/Map/map_page.dart';
 import 'package:flutter_crashcourse/screens/favorites.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
@@ -40,10 +42,10 @@ class _AllRouteState extends State<AllRoutes> {
   FilterMode _filterMode = FilterMode.normal;
   final FirebaseAuth auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
+
   // FAVORITE METHOD //
-  //add the route to the favorites of the Biker
+
   void _toggleFavorite(String routeID) {
-    //get the biker currently logged in
     final User user = auth.currentUser!;
     final uid = user.uid;
     //get the user from firebase with id
@@ -166,20 +168,6 @@ class _AllRouteState extends State<AllRoutes> {
       _filterMode = FilterMode.favorite;
       _sortMode = SortMode.normal;
     });
-    //   /*final User user = auth.currentUser!;
-    //   final uid = user.uid;
-    //   // sort routes to display only user's favorites
-    //   FirebaseFirestore.instance
-    //       .collection('Bikers')
-    //       .doc(uid)
-    //       .get()
-    //       .then((DocumentSnapshot userData) {
-    //     if (userData.exists) {
-    //       print('Document favorites: ${userData['favorites']}');
-    //     } else {
-    //       print('Document does not exist on the database');
-    //     }
-    //   });*/
   }
 
   @override
@@ -448,6 +436,7 @@ class _AllRouteState extends State<AllRoutes> {
                 return ListView(
                   children: snapshot.data!.docs.map((roadTomap) {
                     //check if the route is in the favorites of the Biker and wait for the result
+                    //When clicking on the road, it will appear on the map
                     bool _isFavorited = false;
                     biker_ref.get().then((value) {
                       try {
@@ -515,11 +504,28 @@ class _AllRouteState extends State<AllRoutes> {
                                                   ],
                                                 );
                                               } else {
+                                                //Both the bike icon and the heart icon will appear
                                                 return Column(
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: <Widget>[
+                                                      //Onpressing the bike icon, the road will appear on the RouteMap
+                                                      IconButton(
+                                                        onPressed: () {
+                                                          Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder: (context) =>
+                                                                      RouteMap(
+                                                                          roadTomap
+                                                                              .id)));
+                                                        },
+                                                        icon: const Icon(Icons
+                                                            .directions_bike),
+                                                        color: Color.fromARGB(
+                                                            255, 0, 0, 0),
+                                                      ),
                                                       IconButton(
                                                         icon: (_isFavorited
                                                             ? const Icon(
@@ -532,10 +538,6 @@ class _AllRouteState extends State<AllRoutes> {
                                                             _toggleFavorite(
                                                                 roadTomap.id),
                                                       ),
-                                                      // CircleAvatar(
-                                                      //     backgroundImage:
-                                                      //         NetworkImage(
-                                                      //             "https://images.unsplash.com/photo-1609605988071-0d1cfd25044e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1935&q=80")),
                                                     ]);
                                               }
                                             } else {
@@ -561,69 +563,7 @@ class _AllRouteState extends State<AllRoutes> {
                                                   152, 158, 177, 1)),
                                         ),
                                       ),
-
-                                      // SizedBox(height: 5),
-
                                       SizedBox(height: 5),
-                                      //change color of the icon when the route is in the favorites
-                                      // FutureBuilder(
-                                      //   future: biker_ref.get(),
-                                      //   builder: (BuildContext context,
-                                      //       AsyncSnapshot snapshot) {
-                                      //     if (snapshot.hasData &&
-                                      //         snapshot.data.exists) {
-                                      //       if (snapshot.data.get('isAdmin') ==
-                                      //           true) {
-                                      //         return Column(
-                                      //           mainAxisSize: MainAxisSize.min,
-                                      //           children: <Widget>[
-                                      //             IconButton(
-                                      //               icon:
-                                      //                   const Icon(Icons.edit),
-                                      //               color: Color.fromRGBO(
-                                      //                   0, 181, 107, 1),
-                                      //               onPressed: () => _editRoute(
-                                      //                   roadTomap.id),
-                                      //             ),
-                                      //             IconButton(
-                                      //               icon: const Icon(
-                                      //                   Icons.delete_forever),
-                                      //               color: Color.fromARGB(
-                                      //                   255, 198, 0, 0),
-                                      //               onPressed: () =>
-                                      //                   _deleteRoute(
-                                      //                       roadTomap.id),
-                                      //             ),
-                                      //           ],
-                                      //         );
-                                      //       } else {
-                                      //         return Row(
-                                      //             crossAxisAlignment:
-                                      //                 CrossAxisAlignment.end,
-                                      //             children: <Widget>[
-                                      //               IconButton(
-                                      //                 icon: (_isFavorited
-                                      //                     ? const Icon(
-                                      //                         Icons.favorite)
-                                      //                     : const Icon(Icons
-                                      //                         .favorite_border)),
-                                      //                 color: Color.fromARGB(
-                                      //                     255, 198, 0, 0),
-                                      //                 onPressed: () =>
-                                      //                     _toggleFavorite(
-                                      //                         roadTomap.id),
-                                      //               ),
-                                      //               // CircleAvatar(
-                                      //               //     backgroundImage:
-                                      //               //         NetworkImage(
-                                      //               //             "https://images.unsplash.com/photo-1609605988071-0d1cfd25044e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1935&q=80")),
-                                      //             ]);
-                                      //       }
-                                      //     } else {
-                                      //       return const CircularProgressIndicator();
-                                      //     }
-                                      //   },
-                                      // )
                                     ]))));
                   }).toList(),
                 );
@@ -636,76 +576,3 @@ class _AllRouteState extends State<AllRoutes> {
     );
   }
 }
-
-
-// //Search by city method empty
-
-// class CustomSearchDelegate extends SearchDelegate {
-//   List<String> nameCity = [];
-//   // Names of the city stored in the Database ?
-//   //Or hardcoded ?
-
-//   @override
-//   List<Widget>? buildActions(BuildContext context) {
-//     return [
-//       IconButton(
-//         onPressed: () {
-//           query = '';
-//         },
-//         icon: Icon(Icons.clear),
-//       ),
-//     ];
-//   }
-
-//   // second overwrite to pop out of search menu
-//   @override
-//   Widget? buildLeading(BuildContext context) {
-//     return IconButton(
-//       onPressed: () {
-//         close(context, null);
-//       },
-//       icon: Icon(Icons.arrow_back),
-//     );
-//   }
-
-//   // third overwrite to show query result
-//   @override
-//   Widget buildResults(BuildContext context) {
-//     List<String> matchQuery = [];
-//     for (var city in nameCity) {
-//       if (city.toLowerCase().contains(query.toLowerCase())) {
-//         matchQuery.add(city);
-//       }
-//     }
-//     return ListView.builder(
-//       itemCount: matchQuery.length,
-//       itemBuilder: (context, index) {
-//         var result = matchQuery[index];
-//         return ListTile(
-//           title: Text(result),
-//         );
-//       },
-//     );
-//   }
-
-//   // last overwrite to show the
-//   // querying process at the runtime
-//   @override
-//   Widget buildSuggestions(BuildContext context) {
-//     List<String> matchQuery = [];
-//     for (var city in nameCity) {
-//       if (city.toLowerCase().contains(query.toLowerCase())) {
-//         matchQuery.add(city);
-//       }
-//     }
-//     return ListView.builder(
-//       itemCount: matchQuery.length,
-//       itemBuilder: (context, index) {
-//         var result = matchQuery[index];
-//         return ListTile(
-//           title: Text(result),
-//         );
-//       },
-//     );
-//   }
-// }
