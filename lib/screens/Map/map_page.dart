@@ -297,8 +297,8 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
       currentLocation = pos;
 
       Marker userLocationMarker = Marker(
-        width: 20.0,
-        height: 20.0,
+        width: 30.0,
+        height: 30.0,
         point: LatLng(currentLocation.latitude, currentLocation.longitude),
         builder: (ctx) => Container(
           child: CircleAvatar(
@@ -307,7 +307,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
             child: Icon(
               Icons.person,
               color: Colors.white54,
-              size: 15.0,
+              size: 30.0,
             ),
           ),
         ),

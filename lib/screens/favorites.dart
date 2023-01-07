@@ -47,16 +47,16 @@ class _FavoritesState extends State<Favorites> {
               color: Color.fromRGBO(53, 66, 74, 1)),
         ),
         actions: [
-          IconButton(
-            onPressed: () {
-              // method to show the search bar
-              showSearch(
-                  context: context,
-                  // delegate to customize the search bar
-                  delegate: CustomSearchDelegate());
-            },
-            icon: const Icon(Icons.search),
-          ),
+          // IconButton(
+          //   onPressed: () {
+          //     // method to show the search bar
+          //     showSearch(
+          //         context: context,
+          //         // delegate to customize the search bar
+          //         delegate: CustomSearchDelegate());
+          //   },
+          //   icon: const Icon(Icons.search),
+          // ),
           Padding(
             padding: EdgeInsets.only(right: 10),
 
@@ -123,42 +123,46 @@ class _FavoritesState extends State<Favorites> {
                               data = document.data()! as Map<String, dynamic>;
 
                               return new ListTile(
-                                  title: new Text(data['name'],
-                                      style: GoogleFonts.bebasNeue(
-                                        fontSize: 17,
-                                        color: Color.fromRGBO(53, 66, 74, 1),
-                                      )),
-                                  subtitle: Text(
-                                    data['length'].toString() +
-                                        ' km | ' +
-                                        data['duration'].toString() +
-                                        ' minutes',
+                                title: new Text(data['name'],
                                     style: GoogleFonts.bebasNeue(
-                                        fontSize: 15,
-                                        color:
-                                            Color.fromRGBO(152, 158, 177, 1)),
-                                  ),
-                                  //change color of the icon when the route is in the favorites
-                                  trailing:
-                                      // use with delete button
-                                      FutureBuilder(
-                                    future: biker_ref.get(),
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot snapshot) {
-                                      if (snapshot.hasData) {
-                                        return IconButton(
-                                          icon: (_isDeleted
-                                              ? const Icon(Icons.delete_forever)
-                                              : const Icon(Icons
-                                                  .delete_forever_outlined)),
-                                          color: Color.fromRGBO(139, 0, 0, 1),
-                                          onPressed: () => {},
-                                        );
-                                      } else {
-                                        return const CircularProgressIndicator();
-                                      }
-                                    },
-                                  ));
+                                      fontSize: 17,
+                                      color: Color.fromRGBO(53, 66, 74, 1),
+                                    )),
+                                subtitle: Text(
+                                  data['length'].toString() +
+                                      ' km | ' +
+                                      data['duration'].toString() +
+                                      ' minutes',
+                                  style: GoogleFonts.bebasNeue(
+                                      fontSize: 15,
+                                      color: Color.fromRGBO(152, 158, 177, 1)),
+                                ),
+                                //change color of the icon when the route is in the favorites
+                                trailing:
+                                    // use with delete button
+                                    FutureBuilder(
+                                  future: biker_ref.get(),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot snapshot) {
+                                    if (snapshot.hasData) {
+                                      return IconButton(
+                                        icon: (_isDeleted
+                                            ? const Icon(Icons.delete_forever)
+                                            : const Icon(
+                                                Icons.delete_forever_outlined)),
+                                        color: Color.fromRGBO(139, 0, 0, 1),
+                                        onPressed: () =>
+                                            {showAlertDialog(context)},
+                                      );
+                                    } else {
+                                      return const CircularProgressIndicator();
+                                    }
+                                  },
+                                ),
+                                leading: CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                        "https://images.unsplash.com/photo-1609605988071-0d1cfd25044e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1935&q=80")),
+                              );
                             }).toList(),
                           );
                         });
@@ -177,6 +181,9 @@ class _FavoritesState extends State<Favorites> {
 }
 
 showAlertDialog(BuildContext context) {
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  final User user = auth.currentUser!;
+  final uid = user.uid;
   //set up buttons
 
   Widget cancelButton = TextButton(
@@ -184,7 +191,10 @@ showAlertDialog(BuildContext context) {
       "Cancel",
       style: TextStyle(color: Color.fromRGBO(183, 15, 10, 1)),
     ),
-    onPressed: () {},
+    onPressed: () {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => Favorites()));
+    },
     //do something...
   );
 
@@ -193,7 +203,15 @@ showAlertDialog(BuildContext context) {
       "Continue",
       style: TextStyle(color: Color.fromRGBO(0, 181, 107, 1)),
     ),
-    onPressed: () {},
+    onPressed: () {
+      DocumentReference docRef =
+          FirebaseFirestore.instance.collection("Bikers").doc(uid);
+      docRef.delete();
+
+      // docRef.snapshots().listen((event) {
+      //   setState(() {});
+      // });
+    },
     //do something...
   );
 
@@ -214,72 +232,72 @@ showAlertDialog(BuildContext context) {
   );
 }
 
-class CustomSearchDelegate extends SearchDelegate {
-  List<String> nameCity = [];
-  // Names of the city stored in the Database ?
-  //Or hardcoded ?
+// class CustomSearchDelegate extends SearchDelegate {
+//   List<String> nameCity = [];
+//   // Names of the city stored in the Database ?
+//   //Or hardcoded ?
 
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [
-      IconButton(
-        onPressed: () {
-          query = '';
-        },
-        icon: Icon(Icons.clear),
-      ),
-    ];
-  }
+//   @override
+//   List<Widget>? buildActions(BuildContext context) {
+//     return [
+//       IconButton(
+//         onPressed: () {
+//           query = '';
+//         },
+//         icon: Icon(Icons.clear),
+//       ),
+//     ];
+//   }
 
-  // second overwrite to pop out of search menu
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-      onPressed: () {
-        close(context, null);
-      },
-      icon: Icon(Icons.arrow_back),
-    );
-  }
+//   // second overwrite to pop out of search menu
+//   @override
+//   Widget? buildLeading(BuildContext context) {
+//     return IconButton(
+//       onPressed: () {
+//         close(context, null);
+//       },
+//       icon: Icon(Icons.arrow_back),
+//     );
+//   }
 
-  // third overwrite to show query result
-  @override
-  Widget buildResults(BuildContext context) {
-    List<String> matchQuery = [];
-    for (var city in nameCity) {
-      if (city.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(city);
-      }
-    }
-    return ListView.builder(
-      itemCount: matchQuery.length,
-      itemBuilder: (context, index) {
-        var result = matchQuery[index];
-        return ListTile(
-          title: Text(result),
-        );
-      },
-    );
-  }
+//   // third overwrite to show query result
+//   @override
+//   Widget buildResults(BuildContext context) {
+//     List<String> matchQuery = [];
+//     for (var city in nameCity) {
+//       if (city.toLowerCase().contains(query.toLowerCase())) {
+//         matchQuery.add(city);
+//       }
+//     }
+//     return ListView.builder(
+//       itemCount: matchQuery.length,
+//       itemBuilder: (context, index) {
+//         var result = matchQuery[index];
+//         return ListTile(
+//           title: Text(result),
+//         );
+//       },
+//     );
+//   }
 
-  // last overwrite to show the
-  // querying process at the runtime
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    List<String> matchQuery = [];
-    for (var city in nameCity) {
-      if (city.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(city);
-      }
-    }
-    return ListView.builder(
-      itemCount: matchQuery.length,
-      itemBuilder: (context, index) {
-        var result = matchQuery[index];
-        return ListTile(
-          title: Text(result),
-        );
-      },
-    );
-  }
-}
+//   // last overwrite to show the
+//   // querying process at the runtime
+//   @override
+//   Widget buildSuggestions(BuildContext context) {
+//     List<String> matchQuery = [];
+//     for (var city in nameCity) {
+//       if (city.toLowerCase().contains(query.toLowerCase())) {
+//         matchQuery.add(city);
+//       }
+//     }
+//     return ListView.builder(
+//       itemCount: matchQuery.length,
+//       itemBuilder: (context, index) {
+//         var result = matchQuery[index];
+//         return ListTile(
+//           title: Text(result),
+//         );
+//       },
+//     );
+//   }
+// }

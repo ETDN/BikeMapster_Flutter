@@ -50,7 +50,12 @@ class _MyLoginState extends State<LoginPage> {
       padding: const EdgeInsets.only(left: 25.0, right: 25.0),
       child: ListView(
         children: [
-          SizedBox(height: 90.0),
+          Padding(padding: EdgeInsets.only(top: 80)),
+          Image.asset(
+            'assets/images/logo_white_no_bg.png',
+            scale: 1.5,
+          ),
+          SizedBox(height: 20.0),
           Container(
             height: 80.0,
             width: 200.0,
@@ -68,12 +73,6 @@ class _MyLoginState extends State<LoginPage> {
                   right: 20.0,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/pin_logo.png',
-                        scale: 1.5,
-                      ),
-                    ],
                   ),
                 ),
                 Positioned(
@@ -89,7 +88,7 @@ class _MyLoginState extends State<LoginPage> {
               ],
             ),
           ),
-          SizedBox(height: 25.0),
+          SizedBox(height: 15.0),
           Padding(
             padding: const EdgeInsets.only(left: 5.0),
             child: Container(
@@ -120,31 +119,6 @@ class _MyLoginState extends State<LoginPage> {
               ),
             ),
           ),
-          // Material(
-          //   elevation: 20.0,
-          //   shadowColor: Colors.blue,
-          //   child: TextFormField(
-          //     controller: emailController,
-          //     style: GoogleFonts.bebasNeue(
-          //         fontSize: 15,
-          //         fontWeight: FontWeight.w300,
-          //         color: Color.fromRGBO(53, 66, 74, 1)),
-          //     decoration: const InputDecoration(
-          //       focusedBorder: UnderlineInputBorder(
-          //         borderSide: BorderSide(
-          //           color: Color.fromRGBO(0, 181, 107, 1),
-          //         ),
-          //       ),
-          //       hintText: 'email',
-          //     ),
-          //     validator: (String? value) {
-          //       if (value == null || value.isEmpty) {
-          //         return 'Please enter some text';
-          //       }
-          //       return null;
-          //     },
-          //   ),
-          // ),
 
           Padding(
             padding: const EdgeInsets.only(left: 5.0),
@@ -201,25 +175,6 @@ class _MyLoginState extends State<LoginPage> {
           //   },
           // ),
           SizedBox(height: 5.0),
-          // GestureDetector(
-          //   onTap: () {
-          //     //To do.......
-          //   },
-          //   child: Container(
-          //     alignment: Alignment(1.0, 0.0),
-          //     padding: EdgeInsets.only(top: 15.0, left: 20.0),
-          //     child: InkWell(
-          //       child: Text(
-          //         'No account ? Sign in',
-          //         style: GoogleFonts.bebasNeue(
-          //             fontSize: 15,
-          //             fontWeight: FontWeight.w300,
-          //             color: Color.fromRGBO(117, 169, 249, 1),
-          //             decoration: TextDecoration.underline),
-          //       ),
-          //     ),
-          //   ),
-          // ),
 
           RichText(
               textAlign: TextAlign.right,
@@ -261,6 +216,7 @@ class _MyLoginState extends State<LoginPage> {
                                 builder: (context) => ForgotPassword()));
                       }),
               ])),
+          Padding(padding: EdgeInsets.only(bottom: 2)),
           ElevatedButton(
             onPressed: signIn,
             style: ElevatedButton.styleFrom(
@@ -275,11 +231,8 @@ class _MyLoginState extends State<LoginPage> {
                   color: Colors.white),
             ),
           ),
-          SizedBox(
-            height: 20,
-          ),
 
-          SizedBox(height: 16),
+          SizedBox(height: 10),
           Image.asset(
             'assets/images/cyclists.png',
             height: 200,
