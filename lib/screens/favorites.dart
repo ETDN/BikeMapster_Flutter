@@ -111,8 +111,6 @@ class _FavoritesState extends State<Favorites> {
                             return Text("Loading");
                           }
 
-                          print("Mabite " + favsnapshot.data.toString());
-
                           return new ListView(
                             children:
                                 //check if the route is in the favorites of the Biker and display the result
