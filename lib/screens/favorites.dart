@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'Map/Route_Map.dart';
 import 'navbar/drawer_nav.dart';
 
 class Favorites extends StatefulWidget {
@@ -111,8 +112,6 @@ class _FavoritesState extends State<Favorites> {
                             return Text("Loading");
                           }
 
-                          print("Mabite " + favsnapshot.data.toString());
-
                           return new ListView(
                             children:
                                 //check if the route is in the favorites of the Biker and display the result
@@ -147,14 +146,34 @@ class _FavoritesState extends State<Favorites> {
                                   builder: (BuildContext context,
                                       AsyncSnapshot snapshot) {
                                     if (snapshot.hasData) {
-                                      return IconButton(
-                                        icon: (_isDeleted
-                                            ? const Icon(Icons.delete_forever)
-                                            : const Icon(
-                                                Icons.delete_forever_outlined)),
-                                        color: Color.fromRGBO(139, 0, 0, 1),
-                                        onPressed: () =>
-                                            {showAlertDialog(context)},
+                                      return Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          IconButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          RouteMap(
+                                                            document.id,
+                                                          )));
+                                            },
+                                            icon: const Icon(
+                                                Icons.directions_bike),
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                          ),
+                                          IconButton(
+                                            icon: (_isDeleted
+                                                ? const Icon(
+                                                    Icons.delete_forever)
+                                                : const Icon(Icons
+                                                    .delete_forever_outlined)),
+                                            color: Color.fromRGBO(139, 0, 0, 1),
+                                            onPressed: () =>
+                                                {showAlertDialog(context)},
+                                          ),
+                                        ],
                                       );
                                     } else {
                                       return const CircularProgressIndicator();
@@ -233,73 +252,3 @@ showAlertDialog(BuildContext context) {
     },
   );
 }
-
-// class CustomSearchDelegate extends SearchDelegate {
-//   List<String> nameCity = [];
-//   // Names of the city stored in the Database ?
-//   //Or hardcoded ?
-
-//   @override
-//   List<Widget>? buildActions(BuildContext context) {
-//     return [
-//       IconButton(
-//         onPressed: () {
-//           query = '';
-//         },
-//         icon: Icon(Icons.clear),
-//       ),
-//     ];
-//   }
-
-//   // second overwrite to pop out of search menu
-//   @override
-//   Widget? buildLeading(BuildContext context) {
-//     return IconButton(
-//       onPressed: () {
-//         close(context, null);
-//       },
-//       icon: Icon(Icons.arrow_back),
-//     );
-//   }
-
-//   // third overwrite to show query result
-//   @override
-//   Widget buildResults(BuildContext context) {
-//     List<String> matchQuery = [];
-//     for (var city in nameCity) {
-//       if (city.toLowerCase().contains(query.toLowerCase())) {
-//         matchQuery.add(city);
-//       }
-//     }
-//     return ListView.builder(
-//       itemCount: matchQuery.length,
-//       itemBuilder: (context, index) {
-//         var result = matchQuery[index];
-//         return ListTile(
-//           title: Text(result),
-//         );
-//       },
-//     );
-//   }
-
-//   // last overwrite to show the
-//   // querying process at the runtime
-//   @override
-//   Widget buildSuggestions(BuildContext context) {
-//     List<String> matchQuery = [];
-//     for (var city in nameCity) {
-//       if (city.toLowerCase().contains(query.toLowerCase())) {
-//         matchQuery.add(city);
-//       }
-//     }
-//     return ListView.builder(
-//       itemCount: matchQuery.length,
-//       itemBuilder: (context, index) {
-//         var result = matchQuery[index];
-//         return ListTile(
-//           title: Text(result),
-//         );
-//       },
-//     );
-//   }
-// }
