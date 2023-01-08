@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'Map/Route_Map.dart';
 import 'navbar/drawer_nav.dart';
 
 class Favorites extends StatefulWidget {
@@ -145,14 +146,34 @@ class _FavoritesState extends State<Favorites> {
                                   builder: (BuildContext context,
                                       AsyncSnapshot snapshot) {
                                     if (snapshot.hasData) {
-                                      return IconButton(
-                                        icon: (_isDeleted
-                                            ? const Icon(Icons.delete_forever)
-                                            : const Icon(
-                                                Icons.delete_forever_outlined)),
-                                        color: Color.fromRGBO(139, 0, 0, 1),
-                                        onPressed: () =>
-                                            {showAlertDialog(context)},
+                                      return Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          IconButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          RouteMap(
+                                                            document.id,
+                                                          )));
+                                            },
+                                            icon: const Icon(
+                                                Icons.directions_bike),
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                          ),
+                                          IconButton(
+                                            icon: (_isDeleted
+                                                ? const Icon(
+                                                    Icons.delete_forever)
+                                                : const Icon(Icons
+                                                    .delete_forever_outlined)),
+                                            color: Color.fromRGBO(139, 0, 0, 1),
+                                            onPressed: () =>
+                                                {showAlertDialog(context)},
+                                          ),
+                                        ],
                                       );
                                     } else {
                                       return const CircularProgressIndicator();

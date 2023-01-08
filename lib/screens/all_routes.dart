@@ -504,11 +504,9 @@ class _AllRouteState extends State<AllRoutes> {
                                                   ],
                                                 );
                                               } else {
-                                                //Both the bike icon and the heart icon will appear
-                                                return Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                return Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
                                                     children: <Widget>[
                                                       //Onpressing the bike icon, the road will appear on the RouteMap
                                                       IconButton(

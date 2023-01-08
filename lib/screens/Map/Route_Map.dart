@@ -73,10 +73,6 @@ class _RouteMapState extends State<RouteMap> {
                       ),
                     ));
 
-            //getting all points needed to draw the route
-            //getJsonData();
-            //_getTripInformation();
-
             return Scaffold(
                 appBar: AppBar(
                   title: Text(
@@ -96,8 +92,6 @@ class _RouteMapState extends State<RouteMap> {
                     future: getJsonData(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        print(
-                            "/////////////////////////////////////////////////////////////////////////////////");
                         return Container(
                           child: map(
                               myMarkers: myMarkers,
@@ -112,14 +106,25 @@ class _RouteMapState extends State<RouteMap> {
                     }));
           } else {
             return Scaffold(
-              appBar: AppBar(
-                title: Text("Loading"),
-              ),
-              drawer: DrawerNav(),
-              body: Container(
-                child: Text("Loading"),
-              ),
-            );
+                appBar: AppBar(
+                  title: Text(
+                    "Loading",
+                    style: GoogleFonts.bebasNeue(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w300,
+                        color: Color.fromRGBO(53, 66, 74, 1)),
+                  ),
+                  iconTheme:
+                      IconThemeData(color: Color.fromRGBO(0, 181, 107, 1)),
+                  centerTitle: true,
+                  backgroundColor: Colors.white,
+                ),
+                drawer: DrawerNav(),
+                //loading screen
+                body: Container(
+                    child: Center(
+                  child: CircularProgressIndicator(),
+                )));
           }
         });
   }
@@ -153,30 +158,5 @@ class _RouteMapState extends State<RouteMap> {
     } catch (e) {
       print("Error on map_page, from method 'getJsonData()' : " + e.toString());
     }
-  }
-
-  _getTripInformation() async {
-    //drawing route using ORSM package
-    if (myMarkers.length < 2) {
-      return;
-    }
-    var latStart = myMarkers["start"]!.point.latitude;
-    var lngStart = myMarkers["start"]!.point.longitude;
-    var latEnd = myMarkers["end"]!.point.latitude;
-    var lngEnd = myMarkers["end"]!.point.longitude;
-
-    List<LngLat> waypoints = [
-      LngLat(lng: lngStart, lat: latStart),
-      LngLat(lng: lngEnd, lat: latEnd)
-    ];
-    /*final manager = OSRMManager();
-    roadInfo = await manager.getTrip(
-        waypoints: waypoints,
-        roundTrip: true,
-        destination: DestinationGeoPointOption.last,
-        source: SourceGeoPointOption.first,
-        geometry: Geometries.geojson,
-        steps: true,
-        languageCode: "en");*/
   }
 }
