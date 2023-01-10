@@ -478,10 +478,9 @@ class _AllRouteState extends State<AllRoutes> {
                                               if (snapshot.data
                                                       .get('isAdmin') ==
                                                   true) {
-                                                return Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .baseline,
+                                                return Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
                                                   children: <Widget>[
                                                     IconButton(
                                                       icon: const Icon(
