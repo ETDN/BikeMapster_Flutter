@@ -127,10 +127,10 @@ class _EditRouteState extends State<EditRoute> {
                         .doc(routeID)
                         .update({
                       'name': nameController.text,
-                      'startLat': polyPoints[0].latitude,
-                      'startLong': polyPoints[0].longitude,
-                      'endLat': polyPoints[polyPoints.length - 1].latitude,
-                      'endLong': polyPoints[polyPoints.length - 1].longitude,
+                      'startLat': startLat,
+                      'startLong': startLong,
+                      'endLat': endLat,
+                      'endLong': endLong,
                       'length': roadInfo.distance.toInt(),
                       'duration': roadInfo.duration.toInt(),
 
@@ -150,8 +150,8 @@ class _EditRouteState extends State<EditRoute> {
                 children: <Widget>[
                   Container(
                       //padding: const EdgeInsets.only(bottom: 16.0),
-                      //limit height of the map
-                      height: MediaQuery.of(context).size.height * 0.5,
+                      //maximize the map
+                      height: MediaQuery.of(context).size.height * 0.7,
                       child: map(
                           myMarkers: myMarkers,
                           polyPoints: polyPoints,
