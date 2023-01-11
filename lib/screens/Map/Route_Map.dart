@@ -177,6 +177,8 @@ class _RouteMapState extends State<RouteMap> {
       );
 
       myMarkers["userLocation"] = userLocationMarker;
+    } else {
+      return null;
     }
   }
 
@@ -239,8 +241,14 @@ class _RouteMapState extends State<RouteMap> {
       endLng: myMarkers["end"]!.point.longitude,
     );
 
+    //try to update user location
     try {
       await _updatePosition();
+    } catch (e) {
+      print("Location update went wrong: " + e.toString());
+    }
+
+    try {
       // getData() returns a json Decoded data
       var data = await network.getData();
 
