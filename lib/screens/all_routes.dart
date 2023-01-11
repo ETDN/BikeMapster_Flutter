@@ -42,6 +42,7 @@ class _AllRouteState extends State<AllRoutes> {
   FilterMode _filterMode = FilterMode.normal;
   final FirebaseAuth auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
+  String userNameText = "";
 
   // FAVORITE METHOD //
 
@@ -115,7 +116,7 @@ class _AllRouteState extends State<AllRoutes> {
   }
 
   // SEARCH METHOD //
-  Future<QuerySnapshot>? postDocumentsList;
+  /*Future<QuerySnapshot>? postDocumentsList;
   String userNameText = '';
   initSearchingPost(String textInput) {
     postDocumentsList = FirebaseFirestore.instance
@@ -126,7 +127,7 @@ class _AllRouteState extends State<AllRoutes> {
     setState(() {
       postDocumentsList;
     });
-  }
+  }*/
 
   // SORT METHODS //
 
@@ -216,6 +217,7 @@ class _AllRouteState extends State<AllRoutes> {
       routes = routes.where('duration', isGreaterThan: 60);
     }
     //search the routes by name
+    //must work with upper and lower case
     if (userNameText != '') {
       routes = routes
           .where('name', isGreaterThanOrEqualTo: userNameText)
@@ -404,14 +406,14 @@ class _AllRouteState extends State<AllRoutes> {
                 setState(() {
                   userNameText = textInput;
                 });
-                initSearchingPost(textInput);
+                //initSearchingPost(textInput);
               },
               textAlignVertical: TextAlignVertical.center,
               decoration: InputDecoration(
                   suffixIcon: IconButton(
                       icon: const Icon(Icons.search, color: Colors.black),
                       onPressed: () {
-                        initSearchingPost(userNameText);
+                        //initSearchingPost(userNameText);
                       }),
                   hintText: 'Search a road',
                   focusedBorder: OutlineInputBorder(
