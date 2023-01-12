@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -54,6 +55,7 @@ class _RouteForm extends State<RouteForm> {
   double duration = 0.0;
   LatLng start = LatLng(0, 0);
   LatLng end = LatLng(0, 0);
+  final FirebaseAuth auth = FirebaseAuth.instance;
   var startLocation;
   var destination;
 
@@ -66,6 +68,8 @@ class _RouteForm extends State<RouteForm> {
 
   @override
   Widget build(BuildContext context) {
+    final User user = auth.currentUser!;
+    final uid = user.uid;
     return Scaffold(
       drawer: const DrawerNav(),
       appBar: AppBar(
@@ -112,6 +116,7 @@ class _RouteForm extends State<RouteForm> {
                       'endLong': end.longitude,
                       'startLocation': startLocation.locality,
                       'destination': destination.locality,
+                      'ownerId': uid,
                     });
                     //show success message
                     ScaffoldMessenger.of(context).showSnackBar(
