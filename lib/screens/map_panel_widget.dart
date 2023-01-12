@@ -101,7 +101,6 @@ class PanelWidget extends StatelessWidget {
                               style: GoogleFonts.bebasNeue(fontSize: 14))))
             ],
           ),
-
           ListTile(
             dense: true,
             contentPadding:
@@ -115,7 +114,6 @@ class PanelWidget extends StatelessWidget {
             ),
             leading: Icon(Icons.straighten),
           ),
-
           ListTile(
             dense: true,
             contentPadding:
@@ -129,7 +127,6 @@ class PanelWidget extends StatelessWidget {
             ),
             leading: Icon(Icons.timer),
           ),
-
           ListTile(
             dense: true,
             contentPadding:
@@ -144,13 +141,6 @@ class PanelWidget extends StatelessWidget {
             leading: Icon(Icons.trending_up),
           ),
           Padding(padding: EdgeInsets.only(bottom: 10)),
-          // Text(
-          //   style: GoogleFonts.bebasNeue(
-          //     fontSize: 13,
-          //     color: Color.fromRGBO(53, 66, 74, 1),
-          //   ),
-          //   "Estimated duration : ${roadInfo.duration / 60} min",
-          // ),
           adminRights
               ? ElevatedButton(
                   onPressed: () => saveRoute(roadInfo, context),
