@@ -217,7 +217,7 @@ class _EditRouteState extends State<EditRoute> {
 
   _getTripInformation() async {
     //drawing route using ORSM package
-    if (myMarkers.length != 2) {
+    if (myMarkers["start"] == null || myMarkers["end"] == null) {
       return;
     }
     var latStart = myMarkers["start"]!.point.latitude;
@@ -248,7 +248,7 @@ class _EditRouteState extends State<EditRoute> {
   */
   getJsonData() async {
     //check if both source and destination points are filled out. if not : return
-    if (myMarkers.length != 2) {
+    if (myMarkers["start"] == null || myMarkers["end"] == null) {
       print("not enough pins on the map");
       return;
     }
