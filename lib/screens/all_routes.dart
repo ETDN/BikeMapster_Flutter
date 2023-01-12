@@ -12,6 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'navbar/drawer_nav.dart';
 import 'new_route.dart';
 import 'route_editing.dart';
+import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 
 enum SortMode {
   normal,
@@ -43,6 +44,7 @@ class _AllRouteState extends State<AllRoutes> {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
   String userNameText = "";
+  bool isSwitched = false;
 
   // FAVORITE METHOD //
 
@@ -114,20 +116,6 @@ class _AllRouteState extends State<AllRoutes> {
                   routeID: id,
                 )));
   }
-
-  // SEARCH METHOD //
-  /*Future<QuerySnapshot>? postDocumentsList;
-  String userNameText = '';
-  initSearchingPost(String textInput) {
-    postDocumentsList = FirebaseFirestore.instance
-        .collection('Routes')
-        .where('name', isGreaterThanOrEqualTo: textInput)
-        .get();
-    print(textInput);
-    setState(() {
-      postDocumentsList;
-    });
-  }*/
 
   // SORT METHODS //
 
@@ -226,10 +214,19 @@ class _AllRouteState extends State<AllRoutes> {
           }
           //search the routes by name
           //must work with upper and lower case
-          if (userNameText != '') {
-            routes = routes
-                .where('name', isGreaterThanOrEqualTo: userNameText)
-                .where('name', isLessThan: userNameText + 'z');
+
+          if (_sortMode == SortMode.normal &&
+              _filterMode == FilterMode.normal) {
+            if (isSwitched == true) {
+              routes = routes
+                  .where('startLocation', isGreaterThanOrEqualTo: userNameText)
+                  .where('startLocation', isLessThan: userNameText + 'z');
+            }
+            if (isSwitched == false) {
+              routes = routes
+                  .where('destination', isGreaterThanOrEqualTo: userNameText)
+                  .where('destination', isLessThan: userNameText + 'z');
+            }
           }
 
           return Scaffold(
@@ -406,11 +403,40 @@ class _AllRouteState extends State<AllRoutes> {
             body: Column(
               children: [
                 Padding(padding: EdgeInsets.only(top: 20)),
+                LiteRollingSwitch(
+                  width: 100,
+                  value: isSwitched,
+                  textOn: "start",
+                  textOnColor: Colors.black,
+                  textOff: "end",
+                  textOffColor: Colors.black,
+                  colorOn: Color.fromRGBO(0, 181, 107, 1),
+                  colorOff: Color.fromRGBO(0, 181, 107, 1),
+                  iconOn: Icons.pin_drop,
+                  iconOff: Icons.arrow_right_alt,
+                  onChanged: ((value) {
+                    setState(() {
+                      isSwitched = value;
+                    });
+                  }),
+                  onDoubleTap: () => {},
+                  onSwipe: () => {},
+                  onTap: () => {},
+                ),
+                Padding(padding: EdgeInsets.only(bottom: 10)),
+                // Switch(
+                //     value: isSwitched,
+                //     onChanged: ((value) {
+                //       setState(() {
+                //         isSwitched = value;
+                //       });
+                //     })),
                 SizedBox(
                   height: 55,
                   width: 300,
                   child: TextField(
                     onChanged: (textInput) {
+                      _resetSort();
                       setState(() {
                         userNameText = textInput;
                       });
@@ -479,7 +505,7 @@ class _AllRouteState extends State<AllRoutes> {
                                             ListTile(
                                               leading: Image.network(
                                                 "https://images.unsplash.com/photo-1621576884714-8c4de1175adf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-                                                width: 100,
+                                                width: 70,
                                                 height: 70,
                                               ),
                                               trailing: FutureBuilder(
