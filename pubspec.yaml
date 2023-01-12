@@ -61,16 +61,22 @@ dependencies:
   sliding_up_panel2: ^3.2.2
   geolocator: ^9.0.2
   geocoding: ^2.0.5
+  flutter_launcher_icons: "^0.11.0"
+  flutter_native_splash: ^2.2.16
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: "^0.11.0"
+
+flutter_native_splash:
+  color: "#000000"
+  image: 'assets/icons/mapsterIcon.png'
 
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/icons/BikeMapster_logo.png"
+  image_path: "assets/icons/mapsterIcon.png"
+  adaptive_icon_background: "#000000"
   min_sdk_android: 21 # android min sdk min:16, default 21
   
 
@@ -89,6 +95,7 @@ flutter:
   uses-material-design: true
   assets:
    - assets/images/
+   - assets/icons/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

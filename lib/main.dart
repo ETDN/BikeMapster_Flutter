@@ -1,53 +1,33 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_crashcourse/screens/Utils.dart';
-import 'package:flutter_crashcourse/screens/navbar/drawer_nav.dart';
-import 'package:flutter_crashcourse/screens/landing_page.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:latlong2/latlong.dart';
 
-import 'screens/Utils.dart';
-import 'screens/new_route.dart';
+import 'package:flutter_crashcourse/screens/all_routes.dart';
+import 'package:flutter_crashcourse/screens/login.dart';
+import 'package:flutter_crashcourse/screens/navbar/drawer_nav.dart';
+
+import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  await WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(new MaterialApp(
-    home: SplashScreen(),
-  ));
+  runApp(const Home());
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
   @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: const DrawerNav(),
-      appBar: AppBar(
-        title: Text(
-          'Bike Mapster',
-          style: GoogleFonts.bebasNeue(
-              fontSize: 22,
-              fontWeight: FontWeight.w300,
-              color: Color.fromRGBO(0, 181, 107, 1)),
-        ),
-        iconTheme: IconThemeData(color: Color.fromRGBO(0, 181, 107, 1)),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-      ),
-      body: Container(
-          color: Colors.white,
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Image.asset(
-                  'assets/images/logo_white_no_bg.png',
-                  fit: BoxFit.contain,
-                ),
-              )
-            ],
-          )),
+    return MaterialApp(
+      title: 'BikeMapster',
+      home: AuthUtils.checkLoginState(context),
     );
   }
 }
