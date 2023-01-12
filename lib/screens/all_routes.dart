@@ -217,12 +217,12 @@ class _AllRouteState extends State<AllRoutes> {
 
           if (_sortMode == SortMode.normal &&
               _filterMode == FilterMode.normal) {
-            if (isSwitched == true) {
+            if (isSwitched == true && userNameText != '') {
               routes = routes
                   .where('startLocation', isGreaterThanOrEqualTo: userNameText)
                   .where('startLocation', isLessThan: userNameText + 'z');
             }
-            if (isSwitched == false) {
+            if (isSwitched == false && userNameText != '') {
               routes = routes
                   .where('destination', isGreaterThanOrEqualTo: userNameText)
                   .where('destination', isLessThan: userNameText + 'z');
