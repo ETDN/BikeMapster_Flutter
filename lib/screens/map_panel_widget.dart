@@ -101,6 +101,7 @@ class PanelWidget extends StatelessWidget {
                               style: GoogleFonts.bebasNeue(fontSize: 14))))
             ],
           ),
+          Padding(padding: EdgeInsets.only(bottom: 10)),
           ListTile(
             dense: true,
             contentPadding:
@@ -108,9 +109,9 @@ class PanelWidget extends StatelessWidget {
             visualDensity: VisualDensity(horizontal: 0, vertical: -4),
             title: Transform.translate(
               offset: Offset(-25, 0),
-              child: Text("Distance : ${roadInfo.distance} km",
+              child: Text("Distance : ${roadInfo.distance.round()} km",
                   style: GoogleFonts.bebasNeue(
-                      fontSize: 15, color: Color.fromRGBO(53, 66, 74, 1))),
+                      fontSize: 16, color: Color.fromRGBO(53, 66, 74, 1))),
             ),
             leading: Icon(Icons.straighten),
           ),
@@ -121,24 +122,11 @@ class PanelWidget extends StatelessWidget {
             visualDensity: VisualDensity(horizontal: 0, vertical: -4),
             title: Transform.translate(
               offset: Offset(-25, 0),
-              child: Text("Duration : ${roadInfo.duration / 60} min",
+              child: Text("Duration : ${(roadInfo.duration / 60).round()} min",
                   style: GoogleFonts.bebasNeue(
-                      fontSize: 15, color: Color.fromRGBO(53, 66, 74, 1))),
+                      fontSize: 16, color: Color.fromRGBO(53, 66, 74, 1))),
             ),
             leading: Icon(Icons.timer),
-          ),
-          ListTile(
-            dense: true,
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 15.0, vertical: 0.0),
-            visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-            title: Transform.translate(
-              offset: Offset(-25, 0),
-              child: Text("Elevation : Not available yet",
-                  style: GoogleFonts.bebasNeue(
-                      fontSize: 15, color: Color.fromRGBO(53, 66, 74, 1))),
-            ),
-            leading: Icon(Icons.trending_up),
           ),
           Padding(padding: EdgeInsets.only(bottom: 10)),
           adminRights
