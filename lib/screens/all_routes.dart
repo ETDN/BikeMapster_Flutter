@@ -251,23 +251,18 @@ class _AllRouteState extends State<AllRoutes> {
                           PopupMenuItem(
                             child: ListTile(
                               leading: Icon(
-                                Icons.favorite,
-                                color: Color.fromARGB(255, 198, 0, 0),
+                                Icons.restore,
+                                color: Color.fromRGBO(53, 66, 74, 1),
                               ),
                               title: Transform.translate(
                                 offset: Offset(-20, 0),
                                 child: Text(
-                                  'Favorites',
+                                  'Reset',
                                   style: GoogleFonts.bebasNeue(fontSize: 15),
                                 ),
                               ),
                             ),
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const Favorites()));
-                            },
+                            onTap: () => _resetSort(),
                           ),
                           PopupMenuItem(
                             child: ListTile(
