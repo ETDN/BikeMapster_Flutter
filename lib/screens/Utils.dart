@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_crashcourse/screens/all_routes.dart';
+import 'package:flutter_crashcourse/screens/introductionPage.dart';
 import 'package:flutter_crashcourse/screens/login.dart';
 
 class Utils {
@@ -58,7 +59,7 @@ bool get adminRights {
 
 //Method to check if the user was loged in before he closed the app
 class AuthUtils {
-  static checkLoginState(context) {
+  static checkLoginState(context, bool? firstLoggedin) {
     return Scaffold(
         body: StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
@@ -66,6 +67,9 @@ class AuthUtils {
         if (snapshot.hasData) {
           return AllRoutes();
         } else {
+          if (firstLoggedin == null) {
+            return IntroductionPage();
+          }
           return LoginPage();
         }
       }),
