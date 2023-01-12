@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_crashcourse/screens/Map/map.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -26,7 +28,10 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   //for holding starting and destination points
-  Map<String, Marker> myMarkers = {};
+  Map<String, Marker> myMarkers =
+      {}; // put here the method to instantiate myMarkers with known warnings markers
+  //Firebase
+  final FirebaseAuth auth = FirebaseAuth.instance;
   //for holding all points needed to draw the route
   List<LatLng> polyPoints = [];
   //for knowing if starting point or destination point is selected
@@ -51,6 +56,30 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   var _altitude = "";
   var _speed = "";
   var _address = "";
+
+  @override
+  void initState() {
+    print("HELLO I'm here");
+    FirebaseFirestore.instance
+        .collection('WarningMarkers')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        myMarkers[doc['name']] = Marker(
+            width: 30.0,
+            height: 30.0,
+            point: new LatLng(doc['coords'].latitude, doc['coords'].longitude),
+            builder: (ctx) => Container(
+                  child: Icon(
+                    Icons.warning,
+                    color: Colors.deepOrange,
+                    size: 20,
+                  ),
+                ));
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -305,6 +334,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
           switchLabelPosition: true,
           children: [
             SpeedDialChild(
+              //button to add a warning marker
               child: Align(
                 alignment: Alignment(0.0, 0.0),
                 child: Icon(
@@ -320,6 +350,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
               },
             ),
             SpeedDialChild(
+              //button to clear own warning markers
               child: Align(
                 alignment: Alignment(-0.1, 0.0),
                 child: Icon(
@@ -332,6 +363,22 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
               backgroundColor: Colors.deepOrange,
               onTap: () {
                 clearOwnProblemMarkers();
+              },
+            ),
+            SpeedDialChild(
+              //button to send warnings (saves into db, with limitation)
+              child: Align(
+                alignment: Alignment(0.0, 0.0),
+                child: Icon(
+                  FontAwesomeIcons.arrowUp,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              label: 'submit my problem markers',
+              backgroundColor: Colors.deepOrange,
+              onTap: () {
+                submitProblemMarkers();
               },
             ),
           ]);
@@ -391,6 +438,61 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
       if (key.contains("Own")) keysToRemove.add(key);
     });
     keysToRemove.forEach((key) => myMarkers.remove(key));
+  }
+
+  submitProblemMarkers() {
+    Map<String, Marker> warningMarkersToSubmit = {};
+    print("SUBMIT prob");
+    myMarkers.forEach((key, value) {
+      if (key.contains("Own")) warningMarkersToSubmit[key] = (value);
+    });
+    if (warningMarkersToSubmit.length > 3) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+            title: Text("Warning - Markers limitation -"),
+            content: Text(
+                "As a user, you are limited to sending 3 markers. \n\nBy pressing 'Ok', only the first 3 markers will be sent. \n\nPress 'Cancel' to change your markers before sending."),
+            actions: [
+              TextButton(
+                child: Text('CANCEL'),
+                onPressed: () => {Navigator.pop(context)},
+              ),
+              TextButton(
+                child: Text('OK'),
+                onPressed: () => {sendWarningMarkers(warningMarkersToSubmit)},
+              )
+            ]),
+      );
+    } else {
+      sendWarningMarkers(warningMarkersToSubmit);
+    }
+  }
+
+  sendWarningMarkers(Map<String, Marker> warningMarkersToSubmit) {
+    if (warningMarkersToSubmit.length == 0) {
+      return;
+    }
+
+    //add markers to database
+    CollectionReference warningMarkers =
+        FirebaseFirestore.instance.collection('WarningMarkers');
+    print("send warning markers");
+    warningMarkersToSubmit.forEach((key, value) {
+      //save the marker
+      warningMarkers.add({
+        'name': key,
+        'coords': new GeoPoint(value.point.latitude, value.point.longitude)
+      });
+    });
+
+    //show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('your warnings have been successfully sent'),
+      ),
+    );
+    //clear text fields
   }
 
 // ===================================
