@@ -246,27 +246,6 @@ class _AllRouteState extends State<AllRoutes> {
                     PopupMenuItem(
                       child: ListTile(
                         leading: Icon(
-                          Icons.favorite,
-                          color: Color.fromARGB(255, 198, 0, 0),
-                        ),
-                        title: Transform.translate(
-                          offset: Offset(-20, 0),
-                          child: Text(
-                            'Favorites',
-                            style: GoogleFonts.bebasNeue(fontSize: 15),
-                          ),
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Favorites()));
-                      },
-                    ),
-                    PopupMenuItem(
-                      child: ListTile(
-                        leading: Icon(
                           Icons.timelapse,
                           color: Color.fromRGBO(53, 66, 74, 1),
                         ),
@@ -469,7 +448,7 @@ class _AllRouteState extends State<AllRoutes> {
                                         leading: Image.network(
                                           "https://images.unsplash.com/photo-1621576884714-8c4de1175adf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
                                           width: 100,
-                                          height: 70,
+                                          height: 55,
                                         ),
                                         trailing: FutureBuilder(
                                           future: biker_ref.get(),
