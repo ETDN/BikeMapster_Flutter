@@ -107,79 +107,79 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   }
 
 //managing the adding of start and end point of route when tapped on the map
-  _handleTap(LatLng tappedPoint) {
+  _handleTap(LatLng tappedPoint) async {
     if (currentIndex == null) {
       if (panelController.isPanelOpen) {
         panelController.close();
       }
       return;
     }
-    setState(() async {
-      // myMarkers = [];
-      var markersSizeControl = 0;
-      // Adaptations required if currentLocation is activated (true)
-      if (userLocationAuthorized) {
-        markersSizeControl =
-            1; //adapt the sizeControl variable because myMarkers already contains the currentLocation's marker (at index 0)
 
-        //The "route editing" works with "myMarkers.first" as starting point and "myMarkers.last" as destination.
-        //Meaning the start point HAS TO BE AT INDEX 0 and the destination point HAS TO BE the LAST marker in myMarkers list
+    // myMarkers = [];
+    var markersSizeControl = 0;
+    // Adaptations required if currentLocation is activated (true)
+    if (userLocationAuthorized) {
+      markersSizeControl =
+          1; //adapt the sizeControl variable because myMarkers already contains the currentLocation's marker (at index 0)
+
+      //The "route editing" works with "myMarkers.first" as starting point and "myMarkers.last" as destination.
+      //Meaning the start point HAS TO BE AT INDEX 0 and the destination point HAS TO BE the LAST marker in myMarkers list
+    }
+
+    if (currentIndex == 0) {
+      //meaning we are adding a starter point
+      startingPointPlaced = true;
+      // extract the location from coordinates (geocoding API)
+      List<Placemark> startMarks = await placemarkFromCoordinates(
+          tappedPoint.latitude, tappedPoint.longitude);
+      startLocation = startMarks.first;
+
+      if (myMarkers.length > markersSizeControl) {
+        myMarkers.remove("start");
+        //.removeAt(currentIndex); //starting point is always at index 0
       }
 
-      if (currentIndex == 0) {
-        //meaning we are adding a starter point
-        startingPointPlaced = true;
-        // extract the location from coordinates (geocoding API)
-        List<Placemark> startMarks = await placemarkFromCoordinates(
-            tappedPoint.latitude, tappedPoint.longitude);
-        startLocation = startMarks.first;
+      myMarkers["start"] = (
+          // currentIndex, //has to be inserted at index 0
+          Marker(
+        point: tappedPoint,
+        builder: (context) => Icon(
+          FontAwesomeIcons.locationDot,
+          color: Color.fromRGBO(0, 181, 107, 1),
+          size: 35,
+        ),
+        // key: Key("start"),
+        anchorPos: AnchorPos.align(AnchorAlign.top),
+      ));
+      print(tappedPoint.toString());
+    }
+    //placing destination
+    if (currentIndex == 1) {
+      destinationPointPlaced = true;
+      //extract destination locality
+      List<Placemark> destinationMarks = await placemarkFromCoordinates(
+          tappedPoint.latitude, tappedPoint.longitude);
+      destination = destinationMarks.first;
 
-        if (myMarkers.length > markersSizeControl) {
-          myMarkers.remove("start");
-          //.removeAt(currentIndex); //starting point is always at index 0
-        }
-
-        myMarkers["start"] = (
-            // currentIndex, //has to be inserted at index 0
-            Marker(
-          point: tappedPoint,
-          builder: (context) => Icon(
-            FontAwesomeIcons.locationDot,
-            color: Color.fromRGBO(0, 181, 107, 1),
-            size: 35,
-          ),
-          // key: Key("start"),
-          anchorPos: AnchorPos.align(AnchorAlign.top),
-        ));
-        print(tappedPoint.toString());
+      if (myMarkers.length > markersSizeControl + 1) {
+        myMarkers.remove("end");
+        //.removeAt(pointIndex);
       }
-      //placing destination
-      if (currentIndex == 1) {
-        destinationPointPlaced = true;
-        //extract destination locality
-        List<Placemark> destinationMarks = await placemarkFromCoordinates(
-            tappedPoint.latitude, tappedPoint.longitude);
-        destination = destinationMarks.first;
-
-        if (myMarkers.length > markersSizeControl + 1) {
-          myMarkers.remove("end");
-          //.removeAt(pointIndex);
-        }
-        myMarkers["end"] = (
-            //pointIndex, // has to be inserted either at index 1 or 2
-            Marker(
-          point: tappedPoint,
-          builder: (context) => Icon(
-            FontAwesomeIcons.crosshairs,
-            color: Colors.redAccent,
-            size: 30,
-          ),
-          // key: Key("end"),
-        ));
-      }
-      getJsonData();
-      _getTripInformation();
-    });
+      myMarkers["end"] = (
+          //pointIndex, // has to be inserted either at index 1 or 2
+          Marker(
+        point: tappedPoint,
+        builder: (context) => Icon(
+          FontAwesomeIcons.crosshairs,
+          color: Colors.redAccent,
+          size: 30,
+        ),
+        // key: Key("end"),
+      ));
+    }
+    getJsonData();
+    _getTripInformation();
+    setState(() {});
   }
 
   _getTripInformation() async {
@@ -286,12 +286,12 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   Future<void> _updatePosition() async {
     Position pos = await _determinePosition();
 
-    setState(() {
-      _latitude = pos.latitude.toString();
-      _longitude = pos.longitude.toString();
-      _altitude = pos.altitude.toString();
-      _speed = pos.speed.toString();
-    });
+    //setState(() {
+    _latitude = pos.latitude.toString();
+    _longitude = pos.longitude.toString();
+    _altitude = pos.altitude.toString();
+    _speed = pos.speed.toString();
+    //});
 
     if (userLocationAuthorized) {
       currentLocation = pos;
@@ -336,6 +336,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
 
       myMarkers["userLocation"] = userLocationMarker;
     }
+    setState(() {});
   }
 
 //GPS - user location - code from https://pub.dev/packages/geolocator
