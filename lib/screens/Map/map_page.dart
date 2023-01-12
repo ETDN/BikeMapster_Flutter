@@ -101,6 +101,11 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
           right: 10,
           top: 10,
           child: buildStartDestButton(),
+        ),
+        Positioned(
+          left: 10,
+          top: 10,
+          child: buildRoadProblemButton(),
         )
       ]),
     );
@@ -108,6 +113,8 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
 
 //managing the adding of start and end point of route when tapped on the map
   _handleTap(LatLng tappedPoint) async {
+    //currentIndex is set in this code, according to user's action.
+    // if == null : user should be free to tap on map without trigger an action except closing the slider
     if (currentIndex == null) {
       if (panelController.isPanelOpen) {
         panelController.close();
@@ -150,6 +157,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
         ),
         // key: Key("start"),
         anchorPos: AnchorPos.align(AnchorAlign.top),
+        rotate: true,
       ));
       print(tappedPoint.toString());
     }
@@ -168,15 +176,46 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
       myMarkers["end"] = (
           //pointIndex, // has to be inserted either at index 1 or 2
           Marker(
+              point: tappedPoint,
+              builder: (context) => Icon(
+                    FontAwesomeIcons.crosshairs,
+                    color: Colors.redAccent,
+                    size: 30,
+                  ),
+              rotate: true
+              // key: Key("end"),
+              ));
+    }
+
+    // this part handle that addition of warning markers either by an admin or a normal user
+    if (currentIndex == 2) {
+      // =============================================
+      // MAYBE NOT MANDATORY. SHOULD BE CHECKED
+      startingPointPlaced = false;
+      destinationPointPlaced = false;
+
+      //extract destination locality
+      List<Placemark> destinationMarks = await placemarkFromCoordinates(
+          tappedPoint.latitude, tappedPoint.longitude);
+      destination = destinationMarks.first;
+      // =============================================
+      DateTime current_date = DateTime.now();
+      var warningMarkerName = "Own_Warning_" + current_date.toString();
+
+      myMarkers[warningMarkerName] = (
+          //pointIndex, // has to be inserted either at index 1 or 2
+          Marker(
         point: tappedPoint,
         builder: (context) => Icon(
-          FontAwesomeIcons.crosshairs,
-          color: Colors.redAccent,
+          Icons.warning,
+          color: Colors.deepOrange,
           size: 30,
         ),
+        rotate: true,
         // key: Key("end"),
       ));
     }
+
     getJsonData();
     _getTripInformation();
     setState(() {});
@@ -248,7 +287,57 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
     }
   }
 
+  buildRoadProblemButton() => SpeedDial(
+          overlayOpacity: 0.5,
+          renderOverlay: false,
+          // animatedIcon: AnimatedIcons.menu_close,
+          // icon: Icons.warning_amber,
+          icon: Icons.warning,
+          foregroundColor: Colors.deepOrange,
+          activeIcon: Icons.close_rounded,
+          backgroundColor: Colors.white70,
+          direction: SpeedDialDirection.down,
+          buttonSize: Size(40.0, 40.0),
+          closeManually: true,
+          onClose: () {
+            currentIndex = null;
+          },
+          switchLabelPosition: true,
+          children: [
+            SpeedDialChild(
+              child: Align(
+                alignment: Alignment(0.0, 0.0),
+                child: Icon(
+                  Icons.warning,
+                  color: Colors.deepOrange,
+                  size: 20,
+                ),
+              ),
+              label: 'indicate a problem',
+              backgroundColor: Colors.white70,
+              onTap: () {
+                currentIndex = 2;
+              },
+            ),
+            SpeedDialChild(
+              child: Align(
+                alignment: Alignment(-0.1, 0.0),
+                child: Icon(
+                  FontAwesomeIcons.broom,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              label: 'clear my road problem markers',
+              backgroundColor: Colors.deepOrange,
+              onTap: () {
+                clearOwnProblemMarkers();
+              },
+            ),
+          ]);
+
   buildStartDestButton() => SpeedDial(
+        tooltip: "Select a marker and place it on the map",
         overlayOpacity: 0.5,
         renderOverlay: false,
         // animatedIcon: AnimatedIcons.menu_close,
@@ -278,8 +367,31 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
               currentIndex = 1;
             },
           ),
+          SpeedDialChild(
+            child: Align(
+              alignment: Alignment(0.0, 0.0),
+              child: Icon(
+                Icons.warning,
+                color: Colors.deepOrange,
+                size: 30,
+              ),
+            ),
+            label: 'indicate a problem',
+            backgroundColor: Colors.white70,
+            onTap: () {
+              currentIndex = 2;
+            },
+          ),
         ],
       );
+
+  clearOwnProblemMarkers() {
+    List<String> keysToRemove = [];
+    myMarkers.forEach((key, value) {
+      if (key.contains("Own")) keysToRemove.add(key);
+    });
+    keysToRemove.forEach((key) => myMarkers.remove(key));
+  }
 
 // ===================================
 // update user's live-position
@@ -312,6 +424,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
             ),
           ),
         ),
+        rotate: true,
       );
 
       //adding the marker to list of markers
