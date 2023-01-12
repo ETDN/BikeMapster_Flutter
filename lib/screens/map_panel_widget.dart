@@ -44,7 +44,7 @@ class PanelWidget extends StatelessWidget {
           SizedBox(height: 7),
           Center(
             child: Text(
-              "Your road",
+              "Information",
               style: GoogleFonts.bebasNeue(fontSize: 20),
             ),
           ),
