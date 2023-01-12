@@ -245,6 +245,7 @@ class _MyLoginState extends State<LoginPage> {
       }));
 
       isAdmin = isAdminChecked;
+      debugPrint("Admin right" + isAdmin.toString());
 
       onItemPressed(context, index: 0);
     } on FirebaseAuthException catch (e) {

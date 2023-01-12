@@ -627,7 +627,21 @@ class _AllRouteState extends State<AllRoutes> {
             ),
           );
         } else {
-          return CircularProgressIndicator();
+          return Scaffold(
+              drawer: const DrawerNav(),
+              appBar: AppBar(
+                title: Text(
+                  'All Routes',
+                  style: GoogleFonts.bebasNeue(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w300,
+                      color: Color.fromRGBO(53, 66, 74, 1)),
+                ),
+                iconTheme: IconThemeData(color: Color.fromRGBO(0, 181, 107, 1)),
+                centerTitle: true,
+                backgroundColor: Colors.white,
+              ),
+              body: Center(child: CircularProgressIndicator()));
         }
       },
     );
