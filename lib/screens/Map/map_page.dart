@@ -28,8 +28,10 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   //for holding starting and destination points
-  Map<String, Marker> myMarkers =
-      {}; // put here the method to instantiate myMarkers with known warnings markers
+  Map<String, Marker> myMarkers = {};
+  //for holding markers announcing problem on route
+  Map<String, Marker> warningMarkers = {};
+  bool showWarnings = false;
   //Firebase
   final FirebaseAuth auth = FirebaseAuth.instance;
   //for holding all points needed to draw the route
@@ -57,29 +59,45 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   var _speed = "";
   var _address = "";
 
+  bool _isLoading = false;
+
   @override
   void initState() {
-    print("HELLO I'm here");
+    // instantiate myMarkers with warning markers stored in Firestore
+    getWarningMarkers();
+    super.initState();
+  }
+
+  getWarningMarkers() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     FirebaseFirestore.instance
         .collection('WarningMarkers')
         .get()
         .then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        myMarkers[doc['name']] = Marker(
-            width: 30.0,
-            height: 30.0,
-            point: new LatLng(doc['coords'].latitude, doc['coords'].longitude),
-            builder: (ctx) => Container(
-                  child: Icon(
-                    Icons.warning,
-                    color: Colors.deepOrange,
-                    size: 20,
-                  ),
-                ));
+        warningMarkers[doc['name']] = Marker(
+          width: 30.0,
+          height: 30.0,
+          point: new LatLng(doc['coords'].latitude, doc['coords'].longitude),
+          builder: (ctx) => Container(
+            child: Icon(
+              Icons.warning,
+              color: Colors.deepOrange,
+              size: 20,
+            ),
+          ),
+          rotate: true,
+        );
       });
     });
-    super.initState();
+
+    setState(() => _isLoading = false);
   }
+
+  _toggleShowWarnings() => (showWarnings = !showWarnings);
 
   @override
   Widget build(BuildContext context) {
@@ -100,43 +118,48 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
         backgroundColor: Colors.white,
         centerTitle: true,
       ),
-      body: Stack(alignment: Alignment.topCenter, children: <Widget>[
-        SlidingUpPanel(
-          controller:
-              panelController, //used for managing onTap method to control sliding up
-          maxHeight: panelHeightOpen,
-          minHeight: panelHeightClosed,
-          //for making the map following (moving) when sliding up or down
-          parallaxEnabled: true,
-          parallaxOffset: 0.4,
-          panelBuilder: () => PanelWidget(
-            panelController: panelController,
-            roadInfo: roadInfo,
-            startLocation: startLocation,
-            destination: destination,
-            polyPoints: polyPoints,
-          ),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
-          body: Center(
-            child: Container(
-              child: map(
-                  myMarkers: myMarkers,
+      body: _isLoading
+          ? CircularProgressIndicator() // indicator when loading data in progress
+          : Stack(alignment: Alignment.topCenter, children: <Widget>[
+              SlidingUpPanel(
+                controller:
+                    panelController, //used for managing onTap method to control sliding up
+                maxHeight: panelHeightOpen,
+                minHeight: panelHeightClosed,
+                //for making the map following (moving) when sliding up or down
+                parallaxEnabled: true,
+                parallaxOffset: 0.4,
+                panelBuilder: () => PanelWidget(
+                  panelController: panelController,
+                  roadInfo: roadInfo,
+                  startLocation: startLocation,
+                  destination: destination,
                   polyPoints: polyPoints,
-                  handleTap: _handleTap),
-            ),
-          ),
-        ),
-        Positioned(
-          right: 10,
-          top: 10,
-          child: buildStartDestButton(),
-        ),
-        Positioned(
-          left: 10,
-          top: 10,
-          child: buildRoadProblemButton(),
-        )
-      ]),
+                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+                body: Center(
+                  child: Container(
+                    child: map(
+                      myMarkers: myMarkers,
+                      warningMarkers: warningMarkers,
+                      polyPoints: polyPoints,
+                      handleTap: _handleTap,
+                      showWarnings: showWarnings,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 10,
+                top: 10,
+                child: buildStartDestButton(),
+              ),
+              Positioned(
+                left: 10,
+                top: 10,
+                child: buildRoadProblemButton(),
+              )
+            ]),
     );
   }
 
@@ -237,12 +260,16 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
         point: tappedPoint,
         builder: (context) => Icon(
           Icons.warning,
+          semanticLabel: "New",
           color: Colors.deepOrange,
           size: 30,
         ),
         rotate: true,
         // key: Key("end"),
       ));
+
+      //Reset currentIndex
+      currentIndex = null;
     }
 
     getJsonData();
@@ -282,7 +309,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   getJsonData() async {
     //check if both source and destination points are filled out. if not : return
     if (myMarkers["start"] == null || myMarkers["end"] == null) {
-      print("not enough pins on the map");
+      print("missing starting point or destination");
       return;
     }
 
@@ -327,24 +354,49 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
           backgroundColor: Colors.white70,
           direction: SpeedDialDirection.down,
           buttonSize: Size(40.0, 40.0),
-          closeManually: true,
-          onClose: () {
-            currentIndex = null;
-          },
+          // closeManually: true,
+          // onClose: () {
+          //   currentIndex = null;
+          // },
           switchLabelPosition: true,
           children: [
+            SpeedDialChild(
+              //button to add a warning marker
+              child: showWarnings
+                  ? Align(
+                      alignment: Alignment(-0.1, 0.0),
+                      child: Icon(
+                        FontAwesomeIcons.eyeSlash,
+                        color: Colors.white70,
+                        size: 20,
+                      ),
+                    )
+                  : Align(
+                      alignment: Alignment(-0.1, 0.0),
+                      child: Icon(
+                        FontAwesomeIcons.eye,
+                        color: Colors.white70,
+                        size: 20,
+                      ),
+                    ),
+              label: showWarnings ? "Hide warnings" : "Display warnings",
+              backgroundColor: Colors.deepOrange,
+              onTap: () {
+                _toggleShowWarnings();
+              },
+            ),
             SpeedDialChild(
               //button to add a warning marker
               child: Align(
                 alignment: Alignment(0.0, 0.0),
                 child: Icon(
                   Icons.warning,
-                  color: Colors.deepOrange,
-                  size: 20,
+                  color: Colors.white70,
+                  size: 30,
                 ),
               ),
               label: 'indicate a problem',
-              backgroundColor: Colors.white70,
+              backgroundColor: Colors.deepOrange,
               onTap: () {
                 currentIndex = 2;
               },
@@ -355,12 +407,12 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
                 alignment: Alignment(-0.1, 0.0),
                 child: Icon(
                   FontAwesomeIcons.broom,
-                  color: Colors.white,
+                  color: Colors.deepOrange,
                   size: 20,
                 ),
               ),
               label: 'clear my road problem markers',
-              backgroundColor: Colors.deepOrange,
+              backgroundColor: Colors.white70,
               onTap: () {
                 clearOwnProblemMarkers();
               },
@@ -371,12 +423,12 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
                 alignment: Alignment(0.0, 0.0),
                 child: Icon(
                   FontAwesomeIcons.arrowUp,
-                  color: Colors.white,
+                  color: Colors.deepOrange,
                   size: 20,
                 ),
               ),
               label: 'submit my problem markers',
-              backgroundColor: Colors.deepOrange,
+              backgroundColor: Colors.white70,
               onTap: () {
                 submitProblemMarkers();
               },
@@ -414,21 +466,6 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
               currentIndex = 1;
             },
           ),
-          SpeedDialChild(
-            child: Align(
-              alignment: Alignment(0.0, 0.0),
-              child: Icon(
-                Icons.warning,
-                color: Colors.deepOrange,
-                size: 30,
-              ),
-            ),
-            label: 'indicate a problem',
-            backgroundColor: Colors.white70,
-            onTap: () {
-              currentIndex = 2;
-            },
-          ),
         ],
       );
 
@@ -438,11 +475,16 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
       if (key.contains("Own")) keysToRemove.add(key);
     });
     keysToRemove.forEach((key) => myMarkers.remove(key));
+
+    //Reset currentIndex
+    currentIndex = null;
   }
 
   submitProblemMarkers() {
+    //Reset currentIndex
+    currentIndex = null;
+
     Map<String, Marker> warningMarkersToSubmit = {};
-    print("SUBMIT prob");
     myMarkers.forEach((key, value) {
       if (key.contains("Own")) warningMarkersToSubmit[key] = (value);
     });
@@ -460,7 +502,10 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
               ),
               TextButton(
                 child: Text('OK'),
-                onPressed: () => {sendWarningMarkers(warningMarkersToSubmit)},
+                onPressed: () => {
+                  sendWarningMarkers(warningMarkersToSubmit),
+                  Navigator.pop(context)
+                },
               )
             ]),
       );
@@ -471,15 +516,23 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
 
   sendWarningMarkers(Map<String, Marker> warningMarkersToSubmit) {
     if (warningMarkersToSubmit.length == 0) {
+      //show information message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('no warning marker to send'),
+        ),
+      );
       return;
     }
-
+    int counter = 0;
     //add markers to database
     CollectionReference warningMarkers =
         FirebaseFirestore.instance.collection('WarningMarkers');
-    print("send warning markers");
     warningMarkersToSubmit.forEach((key, value) {
+      if (counter > 2) return;
+      counter += 1;
       //save the marker
+      key = key.replaceAll("Own", "");
       warningMarkers.add({
         'name': key,
         'coords': new GeoPoint(value.point.latitude, value.point.longitude)

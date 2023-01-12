@@ -154,6 +154,7 @@ class _EditRouteState extends State<EditRoute> {
                       height: MediaQuery.of(context).size.height * 0.7,
                       child: map(
                           myMarkers: myMarkers,
+                          warningMarkers: {},
                           polyPoints: polyPoints,
                           handleTap: handleTap)),
                   //Buttons for adding starting and destination points

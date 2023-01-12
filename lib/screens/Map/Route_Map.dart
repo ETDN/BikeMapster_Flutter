@@ -53,6 +53,8 @@ class _RouteMapState extends State<RouteMap> {
 
   //for holding starting and destination points
   Map<String, Marker> myMarkers = {};
+  //for holding starting and destination points
+  Map<String, Marker> warningMarkers = {};
   //for holding all points needed to draw the route
   List<LatLng> polyPoints = [];
 
@@ -138,6 +140,7 @@ class _RouteMapState extends State<RouteMap> {
                                   child: Container(
                                     child: map(
                                         myMarkers: myMarkers,
+                                        warningMarkers: warningMarkers,
                                         polyPoints: polyPoints,
                                         handleTap: _handleTap),
                                   ),

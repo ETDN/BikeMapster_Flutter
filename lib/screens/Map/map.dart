@@ -12,17 +12,24 @@ class map extends StatelessWidget {
   map({
     super.key,
     required Map<String, Marker> myMarkers,
+    required Map<String, Marker> warningMarkers,
     required List<LatLng> polyPoints,
     required Function(LatLng tappedPoint) handleTap,
+    bool? showWarnings,
   }) {
     this.myMarkers = myMarkers;
+    this.warningMarkers = warningMarkers;
     this.polyPoints = polyPoints;
     this._handleTap = handleTap;
+    this._showWarnings = showWarnings == null ? false : showWarnings;
   }
 
   Function _handleTap = (LatLng tappedPoint) {};
   //for holding starting and destination points
   Map<String, Marker> myMarkers = {};
+  // for holding markers indicate problems on road
+  Map<String, Marker> warningMarkers = {};
+  bool _showWarnings = false;
   //for holding all points needed to draw the route
   List<LatLng> polyPoints = [];
   //position of map when open it. May be modified according to customer settings (future improvement)
@@ -45,6 +52,10 @@ class map extends StatelessWidget {
         MarkerLayer(
           markers: myMarkers.values.toList(),
         ),
+        if (_showWarnings)
+          MarkerLayer(
+            markers: warningMarkers.values.toList(),
+          ),
         if (polyPoints != null) BuildPolylineLayer(),
       ],
     ));
