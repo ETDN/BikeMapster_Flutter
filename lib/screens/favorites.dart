@@ -34,6 +34,39 @@ class _FavoritesState extends State<Favorites> {
     CollectionReference routes =
         FirebaseFirestore.instance.collection('Routes');
 
+    void _toggleFavorite(String routeID) {
+      final User user = auth.currentUser!;
+      final uid = user.uid;
+      //get the user from firebase with id
+      DocumentReference biker_ref =
+          FirebaseFirestore.instance.collection("Bikers").doc(uid);
+      //check if the route is already in the favorites and if favorites does exist
+      biker_ref.get().then((value) {
+        try {
+          if (value.get('favorites').contains(routeID)) {
+            //remove the route from the favorites
+            biker_ref.update({
+              'favorites': FieldValue.arrayRemove([routeID])
+            });
+          } else {
+            //add the route to the favorites
+            biker_ref.update({
+              'favorites': FieldValue.arrayUnion([routeID])
+            });
+          }
+        } catch (e) {
+          //create the favorites array and add the route to it
+          biker_ref.update({
+            'favorites': FieldValue.arrayUnion([routeID])
+          });
+        }
+        //get firestore notification that changes have been made
+        biker_ref.snapshots().listen((event) {
+          setState(() {});
+        });
+      });
+    }
+
     return Scaffold(
       drawer: const DrawerNav(),
       appBar: AppBar(
@@ -164,14 +197,12 @@ class _FavoritesState extends State<Favorites> {
                                             color: Color.fromARGB(255, 0, 0, 0),
                                           ),
                                           IconButton(
-                                            icon: (_isDeleted
-                                                ? const Icon(
-                                                    Icons.delete_forever)
-                                                : const Icon(Icons
-                                                    .delete_forever_outlined)),
-                                            color: Color.fromRGBO(139, 0, 0, 1),
-                                            onPressed: () =>
-                                                {showAlertDialog(context)},
+                                            onPressed: () {
+                                              _toggleFavorite(document.id);
+                                            },
+                                            icon: const Icon(Icons.favorite),
+                                            color:
+                                                Color.fromARGB(255, 198, 0, 0),
                                           ),
                                         ],
                                       );

@@ -44,7 +44,7 @@ class PanelWidget extends StatelessWidget {
           SizedBox(height: 7),
           Center(
             child: Text(
-              "Your road",
+              "Information",
               style: GoogleFonts.bebasNeue(fontSize: 20),
             ),
           ),
@@ -192,7 +192,7 @@ class PanelWidget extends StatelessWidget {
     //navigate to the new route page
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return RouteForm(roadInfo.distance, roadInfo.duration / 60, polyPoints[0],
-          polyPoints[polyPoints.length - 1]);
+          polyPoints[polyPoints.length - 1], startLocation, destination);
     }));
   }
 }

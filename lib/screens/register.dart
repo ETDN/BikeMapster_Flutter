@@ -204,6 +204,7 @@ class _MyRegisterState extends State<Register> {
           .doc(FirebaseAuth.instance.currentUser?.uid);
       final json = {
         "email": emailController.text.trim(),
+        "favorites": [],
         "isAdmin": false,
       };
 
