@@ -10,6 +10,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:routing_client_dart/routing_client_dart.dart';
+import 'package:sliding_up_panel2/sliding_up_panel2.dart';
+import '../map_panel_widget.dart';
 
 import '../navbar/drawer_nav.dart';
 import '../networkHelper_map.dart';
@@ -36,13 +38,14 @@ class _RouteMapState extends State<RouteMap> {
   String _altitude = "";
   String _speed = "";
 
+  //for managing onTap method on grey bar to up the sliding panel
+  final panelController = PanelController();
+
   var userLocationAuthorized;
-
   var currentLocation;
-
   var startLocation;
-
   var destination;
+  var roadInfo;
 
   _RouteMapState(String routeId) {
     this.routeId = routeId;
@@ -55,6 +58,8 @@ class _RouteMapState extends State<RouteMap> {
 
   @override
   Widget build(BuildContext context) {
+    final panelHeightOpen = MediaQuery.of(context).size.height * 0.4;
+    final panelHeightClosed = MediaQuery.of(context).size.height * 0.08;
     //_updatePosition();
     return FutureBuilder(
         future:
@@ -109,12 +114,36 @@ class _RouteMapState extends State<RouteMap> {
                     future: getJsonData(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return Container(
-                          child: map(
-                              myMarkers: myMarkers,
-                              polyPoints: polyPoints,
-                              handleTap: _handleTap),
-                        );
+                        return Stack(
+                            alignment: Alignment.topCenter,
+                            children: <Widget>[
+                              SlidingUpPanel(
+                                controller:
+                                    panelController, //used for managing onTap method to control sliding up
+                                maxHeight: panelHeightOpen,
+                                minHeight: panelHeightClosed,
+                                //for making the map following (moving) when sliding up or down
+                                parallaxEnabled: true,
+                                parallaxOffset: 0.4,
+                                panelBuilder: () => PanelWidget(
+                                  panelController: panelController,
+                                  roadInfo: roadInfo,
+                                  startLocation: startLocation,
+                                  destination: destination,
+                                  polyPoints: polyPoints,
+                                ),
+                                borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(18)),
+                                body: Center(
+                                  child: Container(
+                                    child: map(
+                                        myMarkers: myMarkers,
+                                        polyPoints: polyPoints,
+                                        handleTap: _handleTap),
+                                  ),
+                                ),
+                              ),
+                            ]);
                       } else {
                         return Container(
                           child: Center(child: CircularProgressIndicator()),
@@ -251,6 +280,7 @@ class _RouteMapState extends State<RouteMap> {
     try {
       // getData() returns a json Decoded data
       var data = await network.getData();
+      await _getTripInformation();
 
       // We can reach to our desired JSON data manually as following
       LineString ls =
@@ -263,5 +293,40 @@ class _RouteMapState extends State<RouteMap> {
     } catch (e) {
       print("Error on map_page, from method 'getJsonData()' : " + e.toString());
     }
+  }
+
+  _getTripInformation() async {
+    //drawing route using ORSM package
+    if (myMarkers["start"] == null || myMarkers["end"] == null) {
+      return;
+    }
+
+    List<Placemark> startMarks = await placemarkFromCoordinates(
+        myMarkers['start']!.point.latitude,
+        myMarkers['start']!.point.longitude);
+    startLocation = startMarks.first;
+
+    List<Placemark> endMarks = await placemarkFromCoordinates(
+        myMarkers['end']!.point.latitude, myMarkers['end']!.point.longitude);
+    destination = endMarks.first;
+
+    var latStart = myMarkers["start"]!.point.latitude;
+    var lngStart = myMarkers["start"]!.point.longitude;
+    var latEnd = myMarkers["end"]!.point.latitude;
+    var lngEnd = myMarkers["end"]!.point.longitude;
+
+    List<LngLat> waypoints = [
+      LngLat(lng: lngStart, lat: latStart),
+      LngLat(lng: lngEnd, lat: latEnd)
+    ];
+    final manager = OSRMManager();
+    roadInfo = await manager.getTrip(
+        waypoints: waypoints,
+        roundTrip: true,
+        destination: DestinationGeoPointOption.last,
+        source: SourceGeoPointOption.first,
+        geometry: Geometries.geojson,
+        steps: true,
+        languageCode: "en");
   }
 }
