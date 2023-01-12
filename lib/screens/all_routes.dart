@@ -433,7 +433,7 @@ class _AllRouteState extends State<AllRoutes> {
 
                     return new SizedBox(
                         width: 150,
-                        height: 105,
+                        height: 115,
                         child: Card(
                             elevation: 5,
                             shape: RoundedRectangleBorder(

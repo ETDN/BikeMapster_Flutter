@@ -13,20 +13,26 @@ import 'package:flutter/material.dart';
 // Define a custom Form widget.
 class RouteForm extends StatefulWidget {
   RouteForm(double distance, double duration, LatLng start, LatLng end,
+      var startLocation, var destination,
       {Key? key}) {
     this.distance = distance;
     this.duration = duration;
     this.start = start;
     this.end = end;
+    this.startLocation = startLocation;
+    this.destination = destination;
   }
 
+  var startLocation;
+  var destination;
   double duration = 0.0;
   double distance = 0.0;
   LatLng start = LatLng(0, 0);
   LatLng end = LatLng(0, 0);
 
   @override
-  State<RouteForm> createState() => _RouteForm(distance, duration, start, end);
+  State<RouteForm> createState() =>
+      _RouteForm(distance, duration, start, end, startLocation, destination);
 }
 
 // Define a corresponding State class.
@@ -34,17 +40,22 @@ class RouteForm extends StatefulWidget {
 class _RouteForm extends State<RouteForm> {
   final nameController = TextEditingController();
 
-  _RouteForm(double distance, double duration, LatLng start, LatLng end) {
+  _RouteForm(double distance, double duration, LatLng start, LatLng end,
+      var startLocation, var destination) {
     this.lenght = distance;
     this.duration = duration;
     this.start = start;
     this.end = end;
+    this.startLocation = startLocation;
+    this.destination = destination;
   }
 
   double lenght = 0.0;
   double duration = 0.0;
   LatLng start = LatLng(0, 0);
   LatLng end = LatLng(0, 0);
+  var startLocation;
+  var destination;
 
   @override
   void dispose() {
@@ -99,6 +110,8 @@ class _RouteForm extends State<RouteForm> {
                       'startLong': start.longitude,
                       'endLat': end.latitude,
                       'endLong': end.longitude,
+                      'startLocation': startLocation.locality,
+                      'destination': destination.locality,
                     });
                     //show success message
                     ScaffoldMessenger.of(context).showSnackBar(
