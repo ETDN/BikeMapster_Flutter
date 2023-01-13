@@ -3,6 +3,7 @@ import 'package:flutter_crashcourse/screens/Map/map_page.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:latlong2/latlong.dart';
@@ -23,7 +24,7 @@ class EditRoute extends StatefulWidget {
 }
 
 class _EditRouteState extends State<EditRoute> {
-  final nameController = TextEditingController();
+  //final nameController = TextEditingController();
   int length = 0;
   int duration = 0;
   String routeID = "";
@@ -41,6 +42,8 @@ class _EditRouteState extends State<EditRoute> {
   Map<String, Marker> myMarkers = {};
   //for holding all points needed to draw the route
   List<LatLng> polyPoints = [];
+
+  var startLocation;
 
   _EditRouteState(String routeID) {
     this.routeID = routeID;
@@ -99,36 +102,50 @@ class _EditRouteState extends State<EditRoute> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               //Edit the name of the route
-              TextFormField(
+              /*TextFormField(
                 controller: nameController,
                 decoration: InputDecoration(
                   hintText: routeName,
                 ),
-              ),
+              ),*/
               //Submit button
               Container(
                   //padding: const EdgeInsets.only(top: 10.0),
                   child: ElevatedButton(
-                onPressed: () {
-                  if (nameController.text != '' &&
-                      polyPoints != null &&
-                      roadInfo != null) {
+                onPressed: () async {
+                  if (/*nameController.text != '' &&*/
+                      polyPoints != null && roadInfo != null) {
                     //Get instance of the route from firebase and update it
                     startLat = myMarkers["start"]!.point.latitude;
                     startLong = myMarkers["start"]!.point.longitude;
                     endLat = myMarkers["end"]!.point.latitude;
                     endLong = myMarkers["end"]!.point.longitude;
+
+                    List<Placemark> startMarks = await placemarkFromCoordinates(
+                        myMarkers["start"]!.point.latitude,
+                        myMarkers["start"]!.point.longitude);
+                    startLocation = startMarks.first;
+
+                    List<Placemark> endMarks = await placemarkFromCoordinates(
+                        myMarkers["end"]!.point.latitude,
+                        myMarkers["end"]!.point.longitude);
+                    Placemark destination = endMarks.first;
+
                     FirebaseFirestore.instance
                         .collection('Routes')
                         .doc(routeID)
                         .update({
-                      'name': nameController.text,
+                      'name': startLocation.locality.toString() +
+                          ' - ' +
+                          destination.locality.toString(),
                       'startLat': startLat,
                       'startLong': startLong,
                       'endLat': endLat,
                       'endLong': endLong,
                       'length': roadInfo.distance.toInt(),
                       'duration': roadInfo.duration ~/ 60,
+                      'destination': destination.locality,
+                      'startLocation': startLocation.locality,
 
                       //comfirmation message
                     }).then((value) => {
