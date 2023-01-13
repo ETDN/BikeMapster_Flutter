@@ -1,12 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_crashcourse/screens/all_routes.dart';
-import 'package:flutter_crashcourse/screens/navbar/drawer_item.dart';
 import 'package:flutter_crashcourse/screens/favorites.dart';
 import 'package:flutter_crashcourse/screens/login.dart';
 import 'package:flutter_crashcourse/screens/Map/map_page.dart';
 import 'package:flutter_crashcourse/screens/register.dart';
-import 'package:flutter_crashcourse/screens/settings.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class DrawerNav extends StatelessWidget {

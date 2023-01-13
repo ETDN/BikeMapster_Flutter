@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_crashcourse/main.dart';
-import 'package:flutter_crashcourse/screens/favorites.dart';
 import 'package:flutter_crashcourse/screens/login.dart';
 
 class SplashScreen extends StatefulWidget {

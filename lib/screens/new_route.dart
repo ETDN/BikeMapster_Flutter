@@ -1,16 +1,11 @@
-import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_crashcourse/screens/all_routes.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'navbar/drawer_nav.dart';
-import 'package:flutter/material.dart';
 
 // Define a custom Form widget.
 class RouteForm extends StatefulWidget {

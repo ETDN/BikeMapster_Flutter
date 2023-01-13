@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +11,6 @@ import 'package:sliding_up_panel2/sliding_up_panel2.dart';
 import '../map_panel_widget.dart';
 import '../navbar/drawer_nav.dart';
 import 'package:routing_client_dart/routing_client_dart.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
@@ -82,11 +79,16 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
           width: 30.0,
           height: 30.0,
           point: new LatLng(doc['coords'].latitude, doc['coords'].longitude),
-          builder: (ctx) => Container(
-            child: Icon(
-              Icons.warning,
-              color: Colors.deepOrange,
-              size: 20,
+          builder: (ctx) => InkWell(
+            onTap: () {
+              print('Marker tapped');
+            },
+            child: Container(
+              child: Icon(
+                Icons.warning,
+                color: Colors.deepOrange,
+                size: 20,
+              ),
             ),
           ),
           rotate: true,
@@ -265,7 +267,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
           size: 30,
         ),
         rotate: true,
-        // key: Key("end"),
+        key: Key("end"),
       ));
 
       //Reset currentIndex

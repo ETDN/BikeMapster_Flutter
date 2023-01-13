@@ -1,11 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:flutter_crashcourse/screens/Map/map.dart';
 import 'package:flutter_map/flutter_map.dart';
-
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class map extends StatelessWidget {
   //Constructor

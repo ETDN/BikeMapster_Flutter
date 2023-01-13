@@ -1,16 +1,9 @@
-import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_crashcourse/screens/Map/Route_Map.dart';
-import 'package:flutter_crashcourse/screens/Map/map_page.dart';
-import 'package:flutter_crashcourse/screens/favorites.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'navbar/drawer_nav.dart';
-import 'new_route.dart';
 import 'route_editing.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 

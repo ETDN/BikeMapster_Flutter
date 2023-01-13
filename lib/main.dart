@@ -1,13 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_crashcourse/screens/Utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_crashcourse/screens/all_routes.dart';
-import 'package:flutter_crashcourse/screens/login.dart';
-import 'package:flutter_crashcourse/screens/navbar/drawer_nav.dart';
-
-import 'package:google_fonts/google_fonts.dart';
 
 late SharedPreferences sharedPreferences;
 
