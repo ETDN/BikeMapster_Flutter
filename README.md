@@ -12,16 +12,19 @@ Application where you can select a start point and a destination point and it wi
 ## Interfaces 
 
 ### Login page
-![Screenshot 2023-03-13 183051](https://user-images.githubusercontent.com/100126834/224932551-28e30e02-2668-4ae7-9493-e861930c6ec6.png)
+<img src="https://user-images.githubusercontent.com/100126834/224936523-0a3d20cc-984f-4b43-8d72-1e243c943da7.png" title="Screen1" alt="Screen1" width="280" height="500"/>&nbsp;
 
 ### Drawer
-![3](https://user-images.githubusercontent.com/100126834/224932672-96cee5be-9b7a-473c-8e42-feef8b13f6f4.png)
+<img src="https://user-images.githubusercontent.com/100126834/224936630-3f9e3154-1fea-4939-8e8f-868986946925.png" title="Screen2" alt="Screen1" width="280" height="500"/>&nbsp;
 
 ### List of roads
-![2](https://user-images.githubusercontent.com/100126834/224932774-e4974780-99b6-4c7c-a94c-55c5aa982bbe.png)
+
+<img src="https://user-images.githubusercontent.com/100126834/224937042-9690b1f5-deeb-4a94-a072-201e01b3a16c.png" title="Screen3" alt="Screen1" width="280" height="500"/>&nbsp;
 
 ### Display a road
-![4](https://user-images.githubusercontent.com/100126834/224932833-630b0589-17fa-4915-84ab-26ab534b754d.png)
+
+<img src="https://user-images.githubusercontent.com/100126834/224937332-36222cde-13fb-4202-a8c1-fd66d888a34e.png" title="Screen1" alt="Screen4" width="280" height="500"/>&nbsp;
 
 ### Favorites page
-![5](https://user-images.githubusercontent.com/100126834/224932889-ae3f82b1-90d3-4982-a925-8f94a2fa7390.png)
+
+<img src="https://user-images.githubusercontent.com/100126834/224937396-28a037c0-71e9-43a2-9b5e-bf3a0263957d.png" title="Screen5" alt="Screen1" width="280" height="500"/>&nbsp;
